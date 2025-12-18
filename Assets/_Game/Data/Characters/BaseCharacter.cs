@@ -4,7 +4,7 @@ using UnityEngine;
 public class BaseCharacter : ScriptableObject
 {
     public int id;
-    public string name;
+    public string characterName;
     public Sprite sprite;
     public int life;
     public int energy;
