@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class NewEmptyCSharpScript : ScriptableObject
+public class EntityBase : ScriptableObject
 {
     public int id;
     public new string name;
