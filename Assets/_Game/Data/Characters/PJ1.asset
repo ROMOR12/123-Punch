@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::BaseCharacter
   id: 1
   entityName: personaje1
-  sprite: {fileID: 0}
+  sprite: {fileID: -55627271605545387, guid: 29807b777578fca4081d9ed48e6292be, type: 3}
   life: 100
   energy: 100
   force: 5
