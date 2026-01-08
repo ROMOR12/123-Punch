@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ffd65b5f767f0614ca9692572c2b6345, type: 3}
+  m_Name: Aguita fresca
+  m_EditorClassIdentifier: Assembly-CSharp::Pasivo
+  id: 6
+  itemBaseName: Aguita fresca
+  description: "Objeto pasivo: +1 Energia, +1 Recuperaci\xF3n\nSi tienes sed y eres
+    una persona sana, tienes que tomar aguita que es muy buena."
+  icon: {fileID: 0}
+  isSkin: 0
+  bonificaciones:
+  - statType: 1
+    amount: 1
+  - statType: 3
+    amount: 1
