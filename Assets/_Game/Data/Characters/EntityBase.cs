@@ -6,7 +6,7 @@ public class EntityBase : ScriptableObject
     public string entityName;
     public Sprite sprite;
 
-    [Header("Stats")]
+    [Header("Stats Base")]
     public int life;
     public int energy;
     public int force;
