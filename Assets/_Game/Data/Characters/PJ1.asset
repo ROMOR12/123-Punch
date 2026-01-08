@@ -19,3 +19,5 @@ MonoBehaviour:
   energy: 100
   force: 5
   recovery: 5
+  AttackSprite: {fileID: -4624015225422130373, guid: 841b589f3a4859247b9c1a1f92990b52, type: 3}
+  DefetSprite: {fileID: 1693134053311630082, guid: c5bae2cb2cbdfcd448e27efcdaca7b26, type: 3}
