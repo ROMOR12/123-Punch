@@ -149,7 +149,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::NewMonoBehaviourScript
   playerData: {fileID: 11400000, guid: e21da684f40f8574182723508596409c, type: 2}
-  currentEnemy: {fileID: 0}
+  currentEnemy: {fileID: 1810799658}
   defenseSlider: {fileID: 0}
   staminaBar: {fileID: 0}
 --- !u!4 &284555279
@@ -404,6 +404,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1810799657}
   - component: {fileID: 1810799656}
+  - component: {fileID: 1810799658}
   m_Layer: 0
   m_Name: enemy
   m_TagString: Untagged
@@ -484,6 +485,21 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1810799658
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1810799655}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1145e3dbe29e9644c978a1ffd69e17e0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyBot
+  enemyData: {fileID: 11400000, guid: bb1e8fc3fd5e18744893056fabcd1824, type: 2}
+  spriteRenderer: {fileID: 0}
+  hitColor: {r: 1, g: 0, b: 0, a: 1}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

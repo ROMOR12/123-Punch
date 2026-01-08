@@ -14,7 +14,7 @@ public class CombatController : MonoBehaviour
     // Variables de lógica interna
     private float currentEnergy;
     private bool isDefending = false;
-    private const float ATTACK_COST = 20f; // Coste fijo por golpe (puedes moverlo al SO si quieres)
+    private const float ATTACK_COST = 0.5f; // Coste fijo por golpe (puedes moverlo al SO si quieres)
 
     void Start()
     {
