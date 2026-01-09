@@ -17,7 +17,7 @@ MonoBehaviour:
   description: "El alimento de los dioses y tu mejor amigo cuando sales de fiesta.
     Te dejar\xE1 como nuevo. Eso s\xED, saluda de mi parte al v\xE1ter cuando lo
     visites."
-  icon: {fileID: 0}
+  icon: {fileID: -6621263200934043547, guid: 4a92fc26f544304469572b1845ad2a85, type: 3}
   isSkin: 0
   rarity: 3
   recuperacion:
