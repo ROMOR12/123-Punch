@@ -57,8 +57,10 @@ public class EnemyBot : MonoBehaviour
     IEnumerator RutinaCastigo()
     {
         Debug.Log("¡CASTIGO! Golpe Crítico.");
+
+        yield return new WaitForSeconds(1f);
         // Ataque Rápido y Daño Doble
-        yield return StartCoroutine(RealizarAtaque(0.1f, 2f));
+        yield return StartCoroutine(RealizarAtaque(0.4f, 2f));
         yield return new WaitForSeconds(1.5f);
         currentAttackRoutine = StartCoroutine(EnemyAttackLoop());
     }

@@ -16,10 +16,17 @@ public class CombatController : MonoBehaviour
     public Slider staminaBar;
     public ParticleSystem hitParticles;
     public ParticleSystem stunParticles;
+    public GameObject damagePopupPrefab;
 
     [Header("Balance del Juego")]
     public float playerDamageMultiplier = 5f;
     public float staminaRegenMultiplier = 3f;
+    public float maxBlockStaminaCost = 25f;
+
+    [Header("Feedback de Daño")]
+    public float shakeAmount = 0.15f;
+    public float shakeDuration = 0.2f;
+    public Color damageColor = Color.red;
 
     [Header("Barras y Textos de Vida")]
     public Slider playerHealth;
@@ -116,6 +123,7 @@ public class CombatController : MonoBehaviour
             if (currentEnemy != null)
             {
                 currentEnemy.TakeDamage(damageDealt);
+                ShowDamagePopup(damageDealt, false);
 
                 if (enemyHealthBar != null)
                 {
@@ -128,16 +136,6 @@ public class CombatController : MonoBehaviour
         else
         {
             Debug.Log("¡Sin energía!");
-        }
-    }
-    void PlayHitParticles()
-    {
-        if (hitParticles != null && currentEnemy != null)
-        {
-            // 1. Mover el efecto a la posición del enemigo
-            hitParticles.transform.position = currentEnemy.transform.position;
-            // 2. ¡Acción!
-            hitParticles.Play();
         }
     }
 
@@ -153,6 +151,7 @@ public class CombatController : MonoBehaviour
 
             // <--- CORREGIDO: APLICAMOS MULTIPLICADOR * 2 (Fuerza * 5 * 2)
             int damageDealt = Mathf.RoundToInt(playerData.force * playerDamageMultiplier * 2f);
+            ShowDamagePopup(damageDealt, false);
 
             StartCoroutine(ShowAttackVisuals());
 
@@ -174,26 +173,50 @@ public class CombatController : MonoBehaviour
         }
     }
 
+    void PlayHitParticles()
+    {
+        if (hitParticles != null && currentEnemy != null)
+        {
+            // 1. Mover el efecto a la posición del enemigo
+            hitParticles.transform.position = currentEnemy.transform.position;
+            // 2. ¡Acción!
+            hitParticles.Play();
+        }
+    }
+
     public void ReceiveDamage(int damageAmount)
     {
-        // Si ya estás muerto, ignoramos todo
         if (isDead) return;
 
-        // 1. Si bloqueamos
+        int danioFinal = damageAmount;
+
         if (isDefending)
         {
             if (!isStunned)
             {
-                Debug.Log("¡Bloqueado!");
-                GastarEnergia(15f);
-                return;
+                float porcentajeBloqueo = defenseSlider.value; // De 0.0 a 1.0
+
+                // 1. CALCULAR DAÑO
+                float factorDeDaño = 1.0f - porcentajeBloqueo;
+                danioFinal = Mathf.RoundToInt(damageAmount * factorDeDaño);
+
+                // 2. CALCULAR GASTO DE ESTAMINA (Proporcional al bloqueo)
+                float gastoEnergia = maxBlockStaminaCost * porcentajeBloqueo;
+
+                GastarEnergia(gastoEnergia);
+
+                Debug.Log($"Bloqueo: {porcentajeBloqueo * 100}% | Daño: {danioFinal} | Estamina gastada: {gastoEnergia}");
             }
         }
 
-        // 2. Recibimos daño
-        currentLife -= damageAmount;
+        // Aplicar daño
+        currentLife -= danioFinal;
 
-        // Evitar negativos
+        if (currentLife > 0)
+        {
+            StartCoroutine(EfectoDañoJugador());
+        }
+
         if (currentLife < 0) currentLife = 0;
 
         if (playerHealth != null)
@@ -202,12 +225,49 @@ public class CombatController : MonoBehaviour
             UpdateHealthText(playerHealthText, currentLife, playerData.life);
         }
 
-        // 3. Comprobar Muerte
         if (currentLife <= 0)
         {
-            Debug.Log("¡K.O.! Has perdido.");
-            StartCoroutine(AnimacionMuerte()); // <--- ¡AQUÍ EMPIEZA LA CAÍDA!
+            Debug.Log("¡K.O.!");
+            StartCoroutine(AnimacionMuerte());
         }
+    }
+
+    IEnumerator EfectoDañoJugador()
+    {
+        // 1. CHEQUEOS DE SEGURIDAD
+        if (playerSpriteRenderer == null) yield break;
+
+        // Guardamos el estado original
+        Transform targetTransform = playerSpriteRenderer.transform;
+        Vector3 originalPos = targetTransform.position;
+        Color originalColor = playerSpriteRenderer.color;
+
+        // 2. sprte en rojo
+        playerSpriteRenderer.color = damageColor;
+
+        // 3. VIBRACIÓN
+        float elapsed = 0f;
+        while (elapsed < shakeDuration)
+        {
+            // Generamos una posición aleatoria muy cerca de la original
+            float x = Random.Range(-1f, 1f) * shakeAmount;
+            float y = Random.Range(-1f, 1f) * shakeAmount;
+
+            // Movemos la FOTO, no el script
+            targetTransform.position = originalPos + new Vector3(x, y, 0);
+
+            elapsed += Time.deltaTime;
+            yield return null;
+        }
+
+        // 4. RESTAURAR TODO
+        targetTransform.position = originalPos;
+
+        // Si estamos stuneados, volvemos a gris, si no, al color que tuviera antes
+        if (isStunned)
+            playerSpriteRenderer.color = Color.gray;
+        else
+            playerSpriteRenderer.color = Color.white; // O 'originalColor' si prefieres
     }
 
     IEnumerator AnimacionMuerte()
@@ -322,15 +382,44 @@ public class CombatController : MonoBehaviour
     {
         if (!isStunned && playerData != null && currentEnergy < playerData.energy)
         {
-            // <--- CORREGIDO: AHORA USAMOS EL MULTIPLICADOR DE REGENERACIÓN
             float actualRecoverySpeed = (float)playerData.recovery * staminaRegenMultiplier;
 
-            if (isDefending) actualRecoverySpeed *= 0.5f; // Penalización por defender
+            // LÓGICA DINÁMICA:
+            if (isDefending)
+            {
+                // Si el slider está al 1.0 (100%), el factor es 0.0 -> No regeneras.
+                // Si el slider está al 0.2 (20%), el factor es 0.8 -> Regeneras rápido.
+                float factorPenalizacion = 1.0f - defenseSlider.value;
+
+                // Nos aseguramos de que nunca sea negativo (por si acaso)
+                factorPenalizacion = Mathf.Clamp(factorPenalizacion, 0f, 1f);
+
+                actualRecoverySpeed *= factorPenalizacion;
+            }
 
             currentEnergy += actualRecoverySpeed * Time.deltaTime;
+
             if (currentEnergy > playerData.energy) currentEnergy = playerData.energy;
 
             UpdateUI();
+        }
+    }
+
+    void ShowDamagePopup(int damage, bool isCritical)
+    {
+        if (damagePopupPrefab != null && currentEnemy != null)
+        {
+            // Instanciar el texto en la posición del enemigo (un poco más arriba)
+            Vector3 spawnPos = currentEnemy.transform.position + new Vector3(0, 1.5f, 0); // Ajusta la altura (1.5f)
+
+            GameObject popup = Instantiate(damagePopupPrefab, spawnPos, Quaternion.identity);
+
+            // Configurar el número
+            DamagePopup popupScript = popup.GetComponent<DamagePopup>();
+            if (popupScript != null)
+            {
+                popupScript.Setup(damage, isCritical);
+            }
         }
     }
 
