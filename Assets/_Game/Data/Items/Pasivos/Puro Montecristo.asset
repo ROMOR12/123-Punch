@@ -10,16 +10,17 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ffd65b5f767f0614ca9692572c2b6345, type: 3}
-  m_Name: Aguita fresca
+  m_Name: Puro Montecristo
   m_EditorClassIdentifier: Assembly-CSharp::Pasivo
-  id: 6
-  itemBaseName: Aguita fresca
-  description: Si tienes sed y eres una persona sana, tienes que tomar aguita que
-    es muy buena.
+  id: 8
+  itemBaseName: Puro Montecristo
+  description: "Los puros que se met\xEDa tu abuelo en las bodas. Te suben la testosterona,
+    pero di adi\xF3s a tus pulmones."
   icon: {fileID: 0}
   isSkin: 0
+  rarity: 2
   bonificaciones:
+  - statType: 2
+    amount: 4
   - statType: 1
-    amount: 1
-  - statType: 3
-    amount: 1
+    amount: -40

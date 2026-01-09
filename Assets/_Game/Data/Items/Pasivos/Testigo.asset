@@ -10,16 +10,20 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ffd65b5f767f0614ca9692572c2b6345, type: 3}
-  m_Name: Aguita fresca
+  m_Name: Testigo
   m_EditorClassIdentifier: Assembly-CSharp::Pasivo
-  id: 6
-  itemBaseName: Aguita fresca
-  description: Si tienes sed y eres una persona sana, tienes que tomar aguita que
-    es muy buena.
+  id: 9
+  itemBaseName: Testigo
+  description: "Conocido por el palo de las carreras de relevos, este \"palo\" te
+    dar\xE1 la resistencia y recuperaci\xF3n de un atleta, pero no se puede tener
+    todo en la vida. Te vas a quedar con menos fuerza, por espabilao."
   icon: {fileID: 0}
   isSkin: 0
+  rarity: 1
   bonificaciones:
   - statType: 1
-    amount: 1
+    amount: 30
   - statType: 3
-    amount: 1
+    amount: 2
+  - statType: 2
+    amount: -1

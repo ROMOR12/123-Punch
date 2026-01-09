@@ -6,11 +6,11 @@ public class Consumible : ItemBase
 {
     public List<StatModifier> recuperacion;
 
-    public void Usar(CharacterStats stats)
+    public void Usar(CombatController playerCombat)
     {
         foreach (var efecto in recuperacion)
         {
-            stats.AplicarModificador(efecto.statType, efecto.amount, true);
+            //playerCombat.AplicarConsumible(efecto.statType, efecto.amount, true);
         }
         Debug.Log($"Usado consumible: {itemBaseName}");
     }

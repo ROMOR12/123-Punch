@@ -14,9 +14,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Pasivo
   id: 1
   itemBaseName: Energetica
-  description: 'Objeto pasivo: +2 Energia'
+  description: "Bebida de marca blanca. Sabe a jarabe para la tos, pero te mantendr\xE1
+    despierto."
   icon: {fileID: 0}
   isSkin: 0
+  rarity: 1
   bonificaciones:
   - statType: 1
     amount: 2

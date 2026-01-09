@@ -8,6 +8,15 @@ public enum StatType
     Recovery
 }
 
+public enum ItemRarity
+{
+    Comun,      
+    Raro,        
+    Epico,        
+    Legendario,   
+    Ilegal
+}
+
 [System.Serializable]
 public struct StatModifier
 {

@@ -14,12 +14,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Pasivo
   id: 7
   itemBaseName: Casco Acolchado
-  description: 'Objeto pasivo: +30 Vida
-
-    Te noquean facil, prueba a ponerte un
-    casco "Totalmente Legal" que no te pillen utilizandolo.'
+  description: Te noquean facil, prueba a ponerte un casco "Totalmente Legal" que
+    no te pillen utilizandolo.
   icon: {fileID: 0}
   isSkin: 0
+  rarity: 2
   bonificaciones:
   - statType: 0
     amount: 30

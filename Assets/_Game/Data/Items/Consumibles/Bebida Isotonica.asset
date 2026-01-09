@@ -10,17 +10,15 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f6266be883c0fa14d8e995d92519cd8c, type: 3}
-  m_Name: Clembuterol
+  m_Name: Bebida Isotonica
   m_EditorClassIdentifier: Assembly-CSharp::Consumible
-  id: 5
-  itemBaseName: Clembuterol
-  description: Estas cansado de ser un flojeras, tomate esto para estar to fuerte
-    y recuperarte de los entrenos.
+  id: 3
+  itemBaseName: "Bebida Isot\xF3nica"
+  description: "Bebida consumida mayormente por crossfiteros. Te ayudar\xE1 a recuperarte
+    de la paliza del adversario."
   icon: {fileID: 0}
   isSkin: 0
-  rarity: 4
+  rarity: 1
   recuperacion:
-  - statType: 2
-    amount: 3
-  - statType: 3
-    amount: 1
+  - statType: 0
+    amount: 40
