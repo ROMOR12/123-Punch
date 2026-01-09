@@ -1,86 +1,127 @@
 using UnityEngine;
 using System.Collections;
-using UnityEngine.UIElements;
 
 public class EnemyBot : MonoBehaviour
 {
     [Header("Configuración")]
-    public EnemyBase enemyData; // <-- Arrastra aquí tu ScriptableObject de Enemigo
+    public EnemyBase enemyData;
     public SpriteRenderer spriteRenderer;
-    public CombatController playerCombat; // Referencia para saber a quién pegar
-    public float minWaitTime = 2f; // Tiempo mínimo entre golpes
-    public float maxWaitTime = 4f; // Tiempo máximo
+    public CombatController playerCombat;
+    public float minWaitTime = 2f;
+    public float maxWaitTime = 4f;
+
+    [Header("Balance del Juego")]
+    public float damageMultiplier = 5f;
 
     [Header("Feedback Visual")]
     public Color hitColor = Color.red;
+    public float shakeAmount = 0.1f; // <--- NUEVO: Cuánto vibra (0.1 es suave, 0.5 es terremoto)
+    public float shakeDuration = 0.2f; // <--- NUEVO: Cuánto dura el temblor
     private Color originalColor;
 
-    // Variables de estado
     private float currentLife;
+    private Coroutine currentAttackRoutine;
 
     void Start()
     {
-        // 1. Inicializamos al enemigo con los datos del archivo
         if (enemyData != null)
         {
             currentLife = enemyData.life;
-            name = enemyData.name; // Cambia el nombre en la jerarquía
-
+            name = enemyData.name;
             if (spriteRenderer != null)
             {
                 spriteRenderer.sprite = enemyData.sprite;
                 originalColor = spriteRenderer.color;
             }
-
-            StartCoroutine(EnemyAttackLoop());
-        }
-        else
-        {
-            Debug.LogError("¡Falta asignar el EnemyData en el inspector!");
+            currentAttackRoutine = StartCoroutine(EnemyAttackLoop());
         }
     }
 
     IEnumerator EnemyAttackLoop()
     {
-        while (currentLife > 0) // Mientras esté vivo
+        while (currentLife > 0)
         {
-            // 1. ESPERAR: Tiempo aleatorio pensando
             float waitTime = Random.Range(minWaitTime, maxWaitTime);
             yield return new WaitForSeconds(waitTime);
-
-            // 2. AVISAR: Se pone AMARILLO (Prepara el golpe)
-            if (spriteRenderer != null) spriteRenderer.color = Color.yellow;
-
-            // Le damos 0.5 segundos al jugador para reaccionar
-            yield return new WaitForSeconds(0.5f);
-
-            // 3. ATACAR
-            // Volvemos al color normal
-            if (spriteRenderer != null) spriteRenderer.color = Color.white;
-
-            // Llamamos a la función del jugador para hacerle daño
-            if (playerCombat != null)
-            {
-                playerCombat.ReceiveDamage(enemyData.force * 15);
-            }
-
-            // 4. REPOSO: Espera un poquito después de pegar
-            yield return new WaitForSeconds(1f);
+            // Ataque Normal
+            yield return StartCoroutine(RealizarAtaque(0.5f, 1f));
         }
+    }
+
+    public void CastigarJugador()
+    {
+        if (currentAttackRoutine != null) StopCoroutine(currentAttackRoutine);
+        currentAttackRoutine = StartCoroutine(RutinaCastigo());
+    }
+
+    IEnumerator RutinaCastigo()
+    {
+        Debug.Log("¡CASTIGO! Golpe Crítico.");
+
+        yield return new WaitForSeconds(1f);
+        // Ataque Rápido y Daño Doble
+        yield return StartCoroutine(RealizarAtaque(0.4f, 2f));
+        yield return new WaitForSeconds(1.5f);
+        currentAttackRoutine = StartCoroutine(EnemyAttackLoop());
+    }
+
+    IEnumerator RealizarAtaque(float tiempoAviso, float criticalMultiplier)
+    {
+        if (spriteRenderer != null) spriteRenderer.color = Color.yellow;
+        yield return new WaitForSeconds(tiempoAviso);
+
+        if (spriteRenderer != null) spriteRenderer.color = originalColor;
+
+        if (playerCombat != null && enemyData != null)
+        {
+            float baseDamage = enemyData.force * damageMultiplier;
+            int finalDamage = Mathf.RoundToInt(baseDamage * criticalMultiplier);
+            playerCombat.ReceiveDamage(finalDamage);
+        }
+        yield return new WaitForSeconds(0.5f);
     }
 
     public void TakeDamage(int damage)
     {
         currentLife -= damage;
-        Debug.Log($"El enemigo recibió {damage} de daño. Vida restante: {currentLife}");
+        if (currentLife < 0) currentLife = 0;
 
-        // Efecto visual de golpe
-        if (spriteRenderer != null) StartCoroutine(FlashEffect());
+        // --- EFECTOS VISUALES ---
+        if (spriteRenderer != null)
+        {
+            StartCoroutine(FlashEffect()); // Parpadeo Rojo
+            StartCoroutine(ShakeEffect()); // <--- NUEVO: TEMBLOR
+        }
 
         if (currentLife <= 0)
         {
-            Die();
+            StopAllCoroutines();
+            gameObject.SetActive(false);
         }
+    }
+
+    // --- NUEVA RUTINA DE VIBRACIÓN ---
+    private IEnumerator ShakeEffect()
+    {
+        // 1. Guardamos la posición original para no perderla
+        Vector3 originalPos = transform.position;
+        float elapsed = 0.0f;
+
+        while (elapsed < shakeDuration)
+        {
+            // 2. Calculamos una posición aleatoria muy cerca de la original
+            float x = Random.Range(-1f, 1f) * shakeAmount;
+            float y = Random.Range(-1f, 1f) * shakeAmount;
+
+            // 3. Movemos al enemigo
+            transform.position = originalPos + new Vector3(x, y, 0);
+
+            elapsed += Time.deltaTime;
+            yield return null; // Esperamos al siguiente frame
+        }
+
+        // 4. IMPORTANTE: Devolvemos al enemigo a su sitio exacto
+        transform.position = originalPos;
     }
 
     private IEnumerator FlashEffect()
@@ -88,12 +129,5 @@ public class EnemyBot : MonoBehaviour
         spriteRenderer.color = hitColor;
         yield return new WaitForSeconds(0.2f);
         spriteRenderer.color = originalColor;
-    }
-
-    private void Die()
-    {
-        Debug.Log("¡K.O.! Has ganado.");
-        // Aquí dispararíamos la animación de caer o la ventana de victoria
-        gameObject.SetActive(false);
     }
 }

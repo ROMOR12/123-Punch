@@ -17,5 +17,5 @@ MonoBehaviour:
   sprite: {fileID: -5226934352487284604, guid: d05fbe893096363499773bcd352f3a5e, type: 3}
   life: 75
   energy: 75
-  force: 1
+  force: 3
   recovery: 1
