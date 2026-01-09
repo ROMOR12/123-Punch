@@ -1,5 +1,7 @@
 using UnityEngine;
 using System.Collections;
+using UnityEngine.Rendering;
+using UnityEditor.Rendering;
 
 public class EnemyBot : MonoBehaviour
 {
@@ -16,11 +18,13 @@ public class EnemyBot : MonoBehaviour
     [Header("Feedback Visual")]
     public Color hitColor = Color.red;
     public float shakeAmount = 0.1f; // <--- NUEVO: Cuánto vibra (0.1 es suave, 0.5 es terremoto)
-    public float shakeDuration = 0.2f; // <--- NUEVO: Cuánto dura el temblor
-    private Color originalColor;
+    public float shakeDuration = 0.2f;// <--- NUEVO: Cuánto dura el temblor
+    public GameObject deathEffectPrefab;
 
+    private Color originalColor;
     private float currentLife;
     private Coroutine currentAttackRoutine;
+    private int countSpecialAttacks = 0;
 
     void Start()
     {
@@ -43,8 +47,16 @@ public class EnemyBot : MonoBehaviour
         {
             float waitTime = Random.Range(minWaitTime, maxWaitTime);
             yield return new WaitForSeconds(waitTime);
-            // Ataque Normal
-            yield return StartCoroutine(RealizarAtaque(0.5f, 1f));
+            int dice = Random.Range(0, 100);
+            bool specialAttack = (dice < 50);
+            if (specialAttack)
+            {
+                yield return StartCoroutine(RealizarAtaqueInparable(1f, 1.5f));
+            }
+            else
+            {
+                yield return StartCoroutine(RealizarAtaque(1f, 1f));
+            }
         }
     }
 
@@ -81,6 +93,31 @@ public class EnemyBot : MonoBehaviour
         yield return new WaitForSeconds(0.5f);
     }
 
+    IEnumerator RealizarAtaqueInparable(float tiempoAviso, float criticalMultiplier)
+    {
+        if (spriteRenderer != null) spriteRenderer.color = Color.magenta;
+        yield return new WaitForSeconds(tiempoAviso);
+        if (spriteRenderer != null) spriteRenderer.color = originalColor;
+        if (playerCombat != null && enemyData != null)
+        {
+            if (countSpecialAttacks >= 2)
+            {
+                Debug.Log("¡El enemigo está agotado después de tantos ataques especiales!");
+                spriteRenderer.color = Color.grey; // Cambiamos el color para indicar agotamiento
+                yield return new WaitForSeconds(1f); // Pausa para el efecto visual
+                countSpecialAttacks = 0; // Reiniciamos el contador
+                playerCombat.recuperarEnergia(20); // El jugador recupera energía
+                yield break; // Cancelamos el ataque especial
+            }
+
+            float baseDamage = enemyData.force * damageMultiplier;
+            int finalDamage = Mathf.RoundToInt(baseDamage * criticalMultiplier);
+            playerCombat.ReceiveUnstoppableDamage(finalDamage);
+        }
+        yield return new WaitForSeconds(0.5f);
+        countSpecialAttacks++;
+    }
+
     public void TakeDamage(int damage)
     {
         currentLife -= damage;
@@ -96,7 +133,7 @@ public class EnemyBot : MonoBehaviour
         if (currentLife <= 0)
         {
             StopAllCoroutines();
-            gameObject.SetActive(false);
+            EnemyDead();
         }
     }
 
@@ -129,5 +166,17 @@ public class EnemyBot : MonoBehaviour
         spriteRenderer.color = hitColor;
         yield return new WaitForSeconds(0.2f);
         spriteRenderer.color = originalColor;
+    }
+
+    private void EnemyDead()
+    {
+
+        if (deathEffectPrefab != null)
+        {
+            Instantiate(deathEffectPrefab, transform.position, Quaternion.identity);
+        }
+        Destroy(gameObject);
+        playerCombat.Win();
+
     }
 }

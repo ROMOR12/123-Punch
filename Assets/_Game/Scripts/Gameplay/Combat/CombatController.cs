@@ -1,4 +1,4 @@
-using UnityEngine;
+Ôªøusing UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
 using TMPro;
@@ -23,28 +23,39 @@ public class CombatController : MonoBehaviour
     public float staminaRegenMultiplier = 3f;
     public float maxBlockStaminaCost = 25f;
 
-    [Header("Feedback de DaÒo")]
+    [Header("Feedback de Da√±o")]
     public float shakeAmount = 0.15f;
     public float shakeDuration = 0.2f;
     public Color damageColor = Color.red;
+
+    [Header("Efectos de victoria")]
+    public ParticleSystem victoriaConfeti;
+    public GameObject victoriaTextoUI;
 
     [Header("Barras y Textos de Vida")]
     public Slider playerHealth;
     public TMP_Text playerHealthText;
 
+    [Header("Efectos UI")]
+    public Image staminaFillImage;
+    public Color normalStaminaColor = Color.yellow;
+    public Color lowStaminaColor = Color.red;
+
     public Slider enemyHealthBar;
     public TMP_Text enemyHealthText;
 
-    // Variables de lÛgica interna
     private float currentEnergy;
     private float currentLife;
     private bool isDefending = false;
     private bool isStunned = false;
     private bool isDead = false;
     private const float ATTACK_COST = 15f;
+    private bool isHardAttack = false;
+    private bool victory = false;
 
     void Start()
     {
+        HandleStaminaRegen();
         if (playerData != null)
         {
             currentEnergy = (float)playerData.energy;
@@ -53,7 +64,7 @@ public class CombatController : MonoBehaviour
             if (playerSpriteRenderer != null && playerData.sprite != null)
                 playerSpriteRenderer.sprite = playerData.sprite;
 
-            // --- CONFIGURACI”N JUGADOR ---
+            // --- CONFIGURACI√ìN JUGADOR ---
             if (playerHealth != null)
             {
                 playerHealth.maxValue = (float)playerData.life;
@@ -61,7 +72,7 @@ public class CombatController : MonoBehaviour
                 UpdateHealthText(playerHealthText, currentLife, playerData.life);
             }
 
-            // --- CONFIGURACI”N ENEMIGO ---
+            // --- CONFIGURACI√ìN ENEMIGO ---
             if (enemyHealthBar != null && currentEnemy != null)
             {
                 float enemyMax = (float)currentEnemy.enemyData.life;
@@ -82,6 +93,7 @@ public class CombatController : MonoBehaviour
     {
         HandleDefense();
         HandleStaminaRegen();
+        HandleStaminaColor();
     }
 
     void UpdateHealthText(TMP_Text label, float current, float max)
@@ -109,7 +121,7 @@ public class CombatController : MonoBehaviour
 
     public void PerformAttack()
     {
-        if (isDefending || isStunned || isDead) return;
+        if (victory || isDefending || isStunned || isDead || isHardAttack) return;
 
         if (currentEnergy >= ATTACK_COST)
         {
@@ -135,13 +147,13 @@ public class CombatController : MonoBehaviour
         }
         else
         {
-            Debug.Log("°Sin energÌa!");
+            Debug.Log("¬°Sin energ√≠a!");
         }
     }
 
     public void HardAttack()
     {
-        if (isDefending || isStunned || isDead) return;
+        if (victory || isDefending || isStunned || isDead) return;
 
         float hardAttackCost = ATTACK_COST * 2f;
 
@@ -153,6 +165,7 @@ public class CombatController : MonoBehaviour
             int damageDealt = Mathf.RoundToInt(playerData.force * playerDamageMultiplier * 2f);
             ShowDamagePopup(damageDealt, false);
 
+            isHardAttack = true;
             StartCoroutine(ShowAttackVisuals());
 
             if (currentEnemy != null)
@@ -169,7 +182,7 @@ public class CombatController : MonoBehaviour
         }
         else
         {
-            Debug.Log("°Sin energÌa para ataque fuerte!");
+            Debug.Log("¬°Sin energ√≠a para ataque fuerte!");
         }
     }
 
@@ -177,9 +190,9 @@ public class CombatController : MonoBehaviour
     {
         if (hitParticles != null && currentEnemy != null)
         {
-            // 1. Mover el efecto a la posiciÛn del enemigo
+            // 1. Mover el efecto a la posici√≥n del enemigo
             hitParticles.transform.position = currentEnemy.transform.position;
-            // 2. °AcciÛn!
+            // 2. ¬°Acci√≥n!
             hitParticles.Play();
         }
     }
@@ -196,25 +209,25 @@ public class CombatController : MonoBehaviour
             {
                 float porcentajeBloqueo = defenseSlider.value; // De 0.0 a 1.0
 
-                // 1. CALCULAR DA—O
-                float factorDeDaÒo = 1.0f - porcentajeBloqueo;
-                danioFinal = Mathf.RoundToInt(damageAmount * factorDeDaÒo);
+                // 1. CALCULAR DA√ëO
+                float factorDeDa√±o = 1.0f - porcentajeBloqueo;
+                danioFinal = Mathf.RoundToInt(damageAmount * factorDeDa√±o);
 
                 // 2. CALCULAR GASTO DE ESTAMINA (Proporcional al bloqueo)
                 float gastoEnergia = maxBlockStaminaCost * porcentajeBloqueo;
 
                 GastarEnergia(gastoEnergia);
 
-                Debug.Log($"Bloqueo: {porcentajeBloqueo * 100}% | DaÒo: {danioFinal} | Estamina gastada: {gastoEnergia}");
+                Debug.Log($"Bloqueo: {porcentajeBloqueo * 100}% | Da√±o: {danioFinal} | Estamina gastada: {gastoEnergia}");
             }
         }
 
-        // Aplicar daÒo
+        // Aplicar da√±o
         currentLife -= danioFinal;
 
         if (currentLife > 0)
         {
-            StartCoroutine(EfectoDaÒoJugador());
+            StartCoroutine(EfectoDa√±oJugador());
         }
 
         if (currentLife < 0) currentLife = 0;
@@ -227,12 +240,61 @@ public class CombatController : MonoBehaviour
 
         if (currentLife <= 0)
         {
-            Debug.Log("°K.O.!");
+            Debug.Log("¬°K.O.!");
             StartCoroutine(AnimacionMuerte());
         }
     }
 
-    IEnumerator EfectoDaÒoJugador()
+    public void ReceiveUnstoppableDamage(int damageAmount)
+    {
+        if (isDead) return;
+
+        // Margen de error (0.95)
+        if (defenseSlider.value > 0.95f)
+        {
+            Debug.Log("¬°PERFECT PARRY! Energ√≠a recuperada.");
+
+            // 1. Sumamos energ√≠a
+            currentEnergy += 25f;
+
+            // 2. CLAMP (Tope): Importante para que no supere el m√°ximo y haga cosas raras
+            if (currentEnergy > playerData.energy)
+                currentEnergy = (float)playerData.energy;
+
+            // 3. Actualizamos la barra visualmente YA
+            UpdateUI();
+
+            return; // No recibes da√±o.
+        }
+
+        Debug.Log("¬°El ataque rompi√≥ tu defensa!");
+
+        // Da√±o directo
+        currentLife -= damageAmount;
+        if (currentLife > 0) StartCoroutine(EfectoDa√±oJugador());
+        if (currentLife < 0) currentLife = 0;
+
+        // Actualizar UI Vida
+        if (playerHealth != null)
+        {
+            playerHealth.value = currentLife;
+            UpdateHealthText(playerHealthText, currentLife, playerData.life);
+        }
+
+        if (currentLife <= 0)
+        {
+            Debug.Log("¬°K.O.!");
+            StartCoroutine(AnimacionMuerte());
+        }
+    }
+
+    public void recuperarEnergia(int cantidad) 
+    {
+        currentEnergy += cantidad;
+        UpdateUI();
+    }
+
+    IEnumerator EfectoDa√±oJugador()
     {
         // 1. CHEQUEOS DE SEGURIDAD
         if (playerSpriteRenderer == null) yield break;
@@ -245,11 +307,11 @@ public class CombatController : MonoBehaviour
         // 2. sprte en rojo
         playerSpriteRenderer.color = damageColor;
 
-        // 3. VIBRACI”N
+        // 3. VIBRACI√ìN
         float elapsed = 0f;
         while (elapsed < shakeDuration)
         {
-            // Generamos una posiciÛn aleatoria muy cerca de la original
+            // Generamos una posici√≥n aleatoria muy cerca de la original
             float x = Random.Range(-1f, 1f) * shakeAmount;
             float y = Random.Range(-1f, 1f) * shakeAmount;
 
@@ -282,14 +344,14 @@ public class CombatController : MonoBehaviour
         float duracionCaida = 1.5f;
         float tiempoPasado = 0f;
 
-        // --- EL CAMBIO EST¡ AQUÕ ---
+        // --- EL CAMBIO EST√Å AQU√ç ---
         // 1. Buscamos el Transform DE LA FOTO, no del script
         Transform transformDeLaFoto = playerSpriteRenderer.transform;
         // ---------------------------
 
         Quaternion rotacionInicial = transformDeLaFoto.rotation;
 
-        // Giramos -90 grados (tumbado hacia atr·s). 
+        // Giramos -90 grados (tumbado hacia atr√°s). 
         // Si cae hacia el otro lado, cambia -90 por 90.
         Quaternion rotacionFinal = Quaternion.Euler(0, 0, -90);
 
@@ -302,28 +364,27 @@ public class CombatController : MonoBehaviour
             yield return null;
         }
 
-        // Aseguramos la posiciÛn final
+        // Aseguramos la posici√≥n final
         transformDeLaFoto.rotation = rotacionFinal;
-        Debug.Log("AnimaciÛn de muerte terminada.");
+        Debug.Log("Animaci√≥n de muerte terminada.");
     }
 
     IEnumerator EnterStunState()
     {
         isStunned = true;
         isDefending = false;
-        Debug.Log("°FATIGA! No puedes moverte.");
+        Debug.Log("¬°FATIGA! No puedes moverte.");
 
         if (playerSpriteRenderer != null) playerSpriteRenderer.color = Color.gray;
 
         if (stunParticles != null) stunParticles.Play();
 
-        // <--- CORREGIDO: LLAMAMOS AL ENEMIGO AL PRINCIPIO, NO AL FINAL
         if (currentEnemy != null)
         {
             currentEnemy.CastigarJugador();
         }
 
-        // Ahora sÌ esperamos sufriendo
+        // Ahora s√≠ esperamos sufriendo
         yield return new WaitForSeconds(2f);
 
         if (stunParticles != null) stunParticles.Stop();
@@ -338,10 +399,15 @@ public class CombatController : MonoBehaviour
 
     IEnumerator ShowAttackVisuals()
     {
-        // <--- CORREGIDO: CAMBIADO A 'spriteAttack' (Nombre est·ndar)
-        if (playerSpriteRenderer != null && playerData.AttackSprite != null)
+        if (playerSpriteRenderer != null && playerData.AttackSprite != null && isHardAttack == false)
         {
             playerSpriteRenderer.sprite = playerData.AttackSprite;
+        }
+
+        if (playerSpriteRenderer != null && playerData.AttackSprite != null && isHardAttack == true)
+        {
+            isHardAttack = false;
+            playerSpriteRenderer.sprite = playerData.HardAttackSprite;
         }
 
         yield return new WaitForSeconds(0.2f);
@@ -384,11 +450,11 @@ public class CombatController : MonoBehaviour
         {
             float actualRecoverySpeed = (float)playerData.recovery * staminaRegenMultiplier;
 
-            // L”GICA DIN¡MICA:
+            // L√ìGICA DIN√ÅMICA:
             if (isDefending)
             {
-                // Si el slider est· al 1.0 (100%), el factor es 0.0 -> No regeneras.
-                // Si el slider est· al 0.2 (20%), el factor es 0.8 -> Regeneras r·pido.
+                // Si el slider est√° al 1.0 (100%), el factor es 0.0 -> No regeneras.
+                // Si el slider est√° al 0.2 (20%), el factor es 0.8 -> Regeneras r√°pido.
                 float factorPenalizacion = 1.0f - defenseSlider.value;
 
                 // Nos aseguramos de que nunca sea negativo (por si acaso)
@@ -405,22 +471,79 @@ public class CombatController : MonoBehaviour
         }
     }
 
+    private void HandleStaminaColor()
+    {
+        if (staminaFillImage == null || playerData == null) return;
+
+        // 1. Calculamos el porcentaje (0.0 a 1.0)
+        float porcentaje = currentEnergy / (float)playerData.energy;
+
+        // 2. Si es menor al 25% (0.25)
+        if (porcentaje <= 0.25f)
+        {
+            // --- PARPADEO ---
+            // Mathf.PingPong hace que el valor suba y baje entre 0 y 1 muy r√°pido
+            float parpadeo = Mathf.PingPong(Time.time * 5f, 1f);
+
+            // Lerp mezcla los dos colores bas√°ndose en el parpadeo
+            staminaFillImage.color = Color.Lerp(normalStaminaColor, lowStaminaColor, parpadeo);
+        }
+        else
+        {
+            // 3. ESTADO NORMAL
+            staminaFillImage.color = normalStaminaColor;
+        }
+    }
+
     void ShowDamagePopup(int damage, bool isCritical)
     {
         if (damagePopupPrefab != null && currentEnemy != null)
         {
-            // Instanciar el texto en la posiciÛn del enemigo (un poco m·s arriba)
+            // Instanciar el texto en la posici√≥n del enemigo (un poco m√°s arriba)
             Vector3 spawnPos = currentEnemy.transform.position + new Vector3(0, 1.5f, 0); // Ajusta la altura (1.5f)
 
             GameObject popup = Instantiate(damagePopupPrefab, spawnPos, Quaternion.identity);
 
-            // Configurar el n˙mero
+            // Configurar el n√∫mero
             DamagePopup popupScript = popup.GetComponent<DamagePopup>();
             if (popupScript != null)
             {
                 popupScript.Setup(damage, isCritical);
             }
         }
+    }
+
+    public void Win()
+    {
+        if (isDead || victory) return;
+
+        victory = true;
+        isDefending = false; // Bajamos guardia
+
+        Debug.Log("¬°VICTORIA!");
+
+        // 1. Activar Animaci√≥n
+        if (playerAnimator != null)
+        {
+            playerAnimator.SetBool("IsWinner", true);
+        }
+
+        // 2. Activar Confeti
+        if (victoriaConfeti != null)
+        {
+            victoriaConfeti.gameObject.SetActive(true);
+            victoriaConfeti.Play();
+        }
+
+        // 3. Activar Texto
+        if (victoriaTextoUI != null)
+        {
+            victoriaTextoUI.SetActive(true);
+        }
+
+        // Opcional: Recuperar energ√≠a visualmente
+        currentEnergy = (float)playerData.energy;
+        UpdateUI();
     }
 
     private void UpdateUI()
