@@ -16,7 +16,7 @@ MonoBehaviour:
   itemBaseName: Energetica
   description: "Bebida de marca blanca. Sabe a jarabe para la tos, pero te mantendr\xE1
     despierto."
-  icon: {fileID: 0}
+  icon: {fileID: -8950503755687733834, guid: 3504360424ba5b94a935a6ff1f21d1e6, type: 3}
   isSkin: 0
   rarity: 1
   bonificaciones:
