@@ -2,6 +2,7 @@
 using UnityEngine.UI;
 using System.Collections;
 using TMPro;
+using UnityEngine.InputSystem;
 
 public class CombatController : MonoBehaviour
 {
@@ -9,6 +10,16 @@ public class CombatController : MonoBehaviour
     public BaseCharacter playerData;
     public SpriteRenderer playerSpriteRenderer;
     public Animator playerAnimator;
+
+    [Header("Sistema de Esquiva")]
+    public int dodgeDirection = 0; // 0=Centro, -1=Izquierda, 1=Derecha
+    private bool isDodging = false;
+    private Vector3 originalPosition;
+
+    [Header("Control Táctil (Swipe)")]
+    private Vector2 startTouchPosition;
+    private Vector2 endTouchPosition;
+    public float minSwipeDistance = 50f;
 
     [Header("Referencias de Escena")]
     public EnemyBot currentEnemy;
@@ -86,11 +97,23 @@ public class CombatController : MonoBehaviour
                 staminaBar.maxValue = (float)playerData.energy;
                 staminaBar.value = currentEnergy;
             }
+
+            if (playerAnimator != null)
+            {
+                // Apagamos el Animator para que NO moleste a tus ataques manuales
+                playerAnimator.enabled = false;
+            }
+            // Guardamos la posición original para la esquiva
+            if (playerSpriteRenderer != null)
+            {
+                originalPosition = playerSpriteRenderer.transform.position;
+            }
         }
     }
 
     void Update()
     {
+        DetectarInputSwipe();
         HandleDefense();
         HandleStaminaRegen();
         HandleStaminaColor();
@@ -525,6 +548,15 @@ public class CombatController : MonoBehaviour
         // 1. Activar Animación
         if (playerAnimator != null)
         {
+            // --- AÑADE ESTA LÍNEA ---
+            playerAnimator.enabled = true;
+
+            playerAnimator.SetBool("IsWinner", true);
+        }
+
+        // 1. Activar Animación
+        if (playerAnimator != null)
+        {
             playerAnimator.SetBool("IsWinner", true);
         }
 
@@ -549,5 +581,116 @@ public class CombatController : MonoBehaviour
     private void UpdateUI()
     {
         if (staminaBar != null) staminaBar.value = currentEnergy;
+    }
+
+    private void DetectarInputSwipe()
+    {
+        if (isDead || victory || isStunned) return;
+
+        // --- LÓGICA PARA MÓVIL (TOUCH) - VERSIÓN BLINDADA ---
+        if (Touchscreen.current != null)
+        {
+            // Usamos 'primaryTouch' en vez de 'touches[0]' porque es más seguro
+            var touch = Touchscreen.current.primaryTouch;
+
+            // 1. Al tocar (Press)
+            if (touch.press.wasPressedThisFrame)
+            {
+                startTouchPosition = touch.position.ReadValue();
+            }
+            // 2. Al soltar (Release) - Esto solo ocurre 1 vez, imposible que haga bucle
+            else if (touch.press.wasReleasedThisFrame)
+            {
+                endTouchPosition = touch.position.ReadValue();
+                ProcesarSwipe();
+            }
+        }
+        // --- LÓGICA PARA PC (RATÓN) ---
+        else if (Mouse.current != null)
+        {
+            if (Mouse.current.leftButton.wasPressedThisFrame)
+            {
+                startTouchPosition = Mouse.current.position.ReadValue();
+            }
+            else if (Mouse.current.leftButton.wasReleasedThisFrame)
+            {
+                endTouchPosition = Mouse.current.position.ReadValue();
+                ProcesarSwipe();
+            }
+        }
+    }
+
+    private void ProcesarSwipe()
+    {
+        Vector2 swipeDelta = endTouchPosition - startTouchPosition;
+
+        // Si el movimiento es muy corto, no hacemos nada
+        if (swipeDelta.magnitude < minSwipeDistance) return;
+
+        // Comprobar si es horizontal
+        if (Mathf.Abs(swipeDelta.x) > Mathf.Abs(swipeDelta.y))
+        {
+            // Si swipeDelta.x es positivo -> Derecha (1)
+            // Si swipeDelta.x es negativo -> Izquierda (-1)
+            if (swipeDelta.x > 0)
+            {
+                // DERECHA
+                if (!isDodging && !isStunned && !isDead && !victory)
+                    StartCoroutine(RutinaEsquiva(1));
+            }
+            else
+            {
+                // IZQUIERDA
+                if (!isDodging && !isStunned && !isDead && !victory)
+                    StartCoroutine(RutinaEsquiva(-1));
+            }
+        }
+    }
+    IEnumerator RutinaEsquiva(int direccion)
+    {
+        isDodging = true;
+        dodgeDirection = direccion;
+
+        // 1. Calculamos el destino basándonos en el CENTRO FIJO, no en donde esté el muñeco ahora
+        float distancia = 1.5f;
+
+        // Destino = El centro guardado + el desplazamiento
+        Vector3 destino = originalPosition + new Vector3(direccion * distancia, 0, 0);
+
+        // 2. Ida rápida
+        float timer = 0f;
+        float duracionIda = 0.1f;
+
+        // Guardamos desde dónde sale (por si acaso no estaba en el centro perfecto al empezar la animación)
+        Vector3 inicioReal = playerSpriteRenderer.transform.position;
+
+        while (timer < duracionIda)
+        {
+            playerSpriteRenderer.transform.position = Vector3.Lerp(inicioReal, destino, timer / duracionIda);
+            timer += Time.deltaTime;
+            yield return null;
+        }
+        playerSpriteRenderer.transform.position = destino; // Aseguramos que llega al sitio exacto
+
+        // 3. Esperar (Mantener la esquiva)
+        yield return new WaitForSeconds(0.4f);
+
+        // 4. Vuelta al CENTRO FIJO
+        timer = 0f;
+        float duracionVuelta = 0.1f;
+
+        while (timer < duracionVuelta)
+        {
+            // Volvemos desde donde estamos hasta la POSICIÓN INICIAL guardada en Start
+            playerSpriteRenderer.transform.position = Vector3.Lerp(destino, originalPosition, timer / duracionVuelta);
+            timer += Time.deltaTime;
+            yield return null;
+        }
+
+        // 5. ¡Paso clave! Forzamos la posición al centro exacto para evitar errores decimales
+        playerSpriteRenderer.transform.position = originalPosition;
+
+        dodgeDirection = 0;
+        isDodging = false;
     }
 }
