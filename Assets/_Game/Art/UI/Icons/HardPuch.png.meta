@@ -1,10 +1,13 @@
 fileFormatVersion: 2
-guid: 0887b087ace28c84dae04c5b1c933b27
+guid: 0f3fa08a73109a84781baa8b48012558
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 4815476061570213978
-    second: star_0
+      213: -1665297480408519264
+    second: HardPuch_0
+  - first:
+      213: -786726879704347559
+    second: HardPuch_1
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -113,23 +116,23 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: star_0
+      name: HardPuch_1
       rect:
         serializedVersion: 2
-        x: 0
-        y: 0
-        width: 1200
-        height: 1200
+        x: 221
+        y: 363
+        width: 222
+        height: 235
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: a582a4ae6f104d240800000000000000
-      internalID: 4815476061570213978
+      spriteID: 95c88f7321cf415f0800000000000000
+      internalID: -786726879704347559
       vertices: []
       indices: 
       edges: []
@@ -138,7 +141,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: b4a26fd14d69f3f49bbc14711ba363dc
     internalID: 0
     vertices: []
     indices: 
@@ -148,7 +151,8 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      star_0: 4815476061570213978
+      HardPuch_0: -1665297480408519264
+      HardPuch_1: -786726879704347559
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

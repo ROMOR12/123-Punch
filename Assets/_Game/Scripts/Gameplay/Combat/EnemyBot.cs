@@ -15,15 +15,20 @@ public class EnemyBot : MonoBehaviour
 
     [Header("Feedback Visual")]
     public Color hitColor = Color.red;
-    public float shakeAmount = 0.1f; // <--- NUEVO: Cuánto vibra (0.1 es suave, 0.5 es terremoto)
-    public float shakeDuration = 0.2f;// <--- NUEVO: Cuánto dura el temblor
+    public float shakeAmount = 0.1f;
+    public float shakeDuration = 0.2f;
     public GameObject deathEffectPrefab;
+    public GameObject AlertIcon;
+    public SpriteRenderer alertaSpriteRenderer;
+    public Sprite iconoAtaqueNormal;
+    public Sprite iconoAtaqueFuerte;
+    public Sprite iconoFinta;
+
 
     private Color originalColor;
     private float currentLife;
     private Coroutine currentAttackRoutine;
     private int countSpecialAttacks = 0;
-    private bool isSpecialAttack = false;
 
     void Start()
     {
@@ -40,24 +45,74 @@ public class EnemyBot : MonoBehaviour
         }
     }
 
-    IEnumerator ShowEnemyAttackVisuals()
+    IEnumerator ShowEnemyAttackVisuals(bool esAtaqueFuerte)
     {
-        if (spriteRenderer != null && enemyData.AttackSprite != null && !isSpecialAttack)
+        if (spriteRenderer != null && enemyData != null)
         {
-            spriteRenderer.sprite = enemyData.AttackSprite;
+            if (esAtaqueFuerte)
+            {
+                // Si es fuerte, ponemos el sprite fuerte
+                if (enemyData.HardAttackSprite != null)
+                    spriteRenderer.sprite = enemyData.HardAttackSprite;
+            }
+            else
+            {
+                // Si NO es fuerte, ponemos el normal
+                if (enemyData.AttackSprite != null)
+                    spriteRenderer.sprite = enemyData.AttackSprite;
+            }
         }
 
-        if (spriteRenderer != null && enemyData.AttackSprite != null && isSpecialAttack)
-        {
-            isSpecialAttack = false;
-            spriteRenderer.sprite = enemyData.HardAttackSprite;
-        }
+        yield return new WaitForSeconds(0.2f); // Tiempo que se ve el golpe
 
-        yield return new WaitForSeconds(0.2f);
-
+        // Volvemos a la pose normal (Idle)
         if (spriteRenderer != null)
         {
             spriteRenderer.sprite = enemyData.sprite;
+        }
+    }
+
+    IEnumerator MostrarAlerta(Sprite nuevoSprite, Color colorAviso, float duracion)
+    {
+        if (AlertIcon != null && alertaSpriteRenderer != null)
+        {
+            // Configurar Sprite y activar
+            if (nuevoSprite != null) alertaSpriteRenderer.sprite = nuevoSprite;
+            AlertIcon.SetActive(true);
+
+            // Un pequeño "pop" inicial de tamaño
+            AlertIcon.transform.localScale = Vector3.one * 1.5f;
+
+            //BUCLE DE PARPADEO
+            float tiempoPasado = 0f;
+            float velocidadParpadeo = 5f;
+
+            while (tiempoPasado < duracion)
+            {
+                // Calculamos la transparencia
+                // PingPong hace que el valor vaya de 0 a 1 y de 1 a 0 repetidamente
+                float alpha = Mathf.PingPong(Time.time * velocidadParpadeo, 1f);
+
+                //Que no desaparezca del todo (mínimo 0.3 de opacidad) para que siempre se vea algo
+                alpha = Mathf.Clamp(alpha, 0.4f, 1f);
+
+                // Creamos el color nuevo respetando el color original (blanco, rojo, etc)
+                Color colorFinal = colorAviso;
+                colorFinal.a = alpha; // Solo cambiamos la "a" (transparencia)
+
+                alertaSpriteRenderer.color = colorFinal;
+
+                tiempoPasado += Time.deltaTime;
+                yield return null; // Esperamos al siguiente frame
+            }
+
+            // Apagar
+            AlertIcon.SetActive(false);
+
+            // Restauramos el color con opacidad al 100% por si acaso para la próxima
+            Color restaurar = colorAviso;
+            restaurar.a = 1f;
+            alertaSpriteRenderer.color = restaurar;
         }
     }
 
@@ -98,35 +153,28 @@ public class EnemyBot : MonoBehaviour
 
     IEnumerator RealizarFinta()
     {
-        // 1. ELEGIR LADO: -1 (Izquierda) o 1 (Derecha)
         int ladoAtaque = (Random.Range(0, 2) == 0) ? -1 : 1;
 
-        // 2. AVISO VISUAL (Se pone CIAN y se mueve un poco a ese lado)
+        // AVISO VISUAL
         if (spriteRenderer != null) spriteRenderer.color = Color.cyan;
 
+        StartCoroutine(MostrarAlerta(iconoFinta, Color.white, 0.7f));
+
         Vector3 originalPos = transform.position;
-        // Se mueve un poco para indicar de dónde viene el golpe
         transform.position = originalPos + new Vector3(ladoAtaque * 1.5f, 0, 0);
 
-        Debug.Log($"¡FINTA CIAN! Viene por la {(ladoAtaque == -1 ? "IZQUIERDA" : "DERECHA")}. ¡Esquiva al otro lado!");
+        Debug.Log($"¡FINTA CIAN! Viene por la {(ladoAtaque == -1 ? "IZQUIERDA" : "DERECHA")}");
 
-        // 3. TIEMPO DE REACCIÓN (El jugador debe deslizar ahora)
+        // 2. TIEMPO DE REACCIÓN
         yield return new WaitForSeconds(1f);
 
-        // 4. EL GOLPE (Vuelve al sitio y comprueba)
+        // 3. GOLPE
         transform.position = originalPos;
         if (spriteRenderer != null) spriteRenderer.color = originalColor;
 
         if (playerCombat != null)
         {
-            // LÓGICA MATEMÁTICA DE LA ESQUIVA:
-            // Si viene por Izquierda (-1), jugador debe estar en Derecha (1). (-1 != 1) -> SAFE
-            // Si viene por Derecha (1), jugador debe estar en Izquierda (-1). (1 != -1) -> SAFE
-            // Si jugador está en 0 (Centro) o en el mismo lado -> DAÑO
-
             bool esquivaExitosa = false;
-
-            // Si estamos en lados opuestos, nos salvamos
             if (playerCombat.dodgeDirection != 0 && playerCombat.dodgeDirection != ladoAtaque)
             {
                 esquivaExitosa = true;
@@ -134,18 +182,14 @@ public class EnemyBot : MonoBehaviour
 
             if (esquivaExitosa)
             {
-                Debug.Log("¡Esquiva perfecta! 😎");
-                // Opcional: Sonido de "Swish"
+                Debug.Log("¡Esquiva perfecta!");
             }
             else
             {
-                Debug.Log("¡Te pilló! No esquivaste al lado correcto.");
-                // Daño crítico por fallar la esquiva (x3 daño)
+                Debug.Log("¡Te comiste la finta!");
                 float baseDamage = enemyData.force * damageMultiplier;
                 int damageFinta = Mathf.RoundToInt(baseDamage * 3f);
-
-                // Usamos el daño imparable para que el bloqueo no sirva, TIENES que esquivar
-                playerCombat.ReceiveUnstoppableDamage(damageFinta);
+                playerCombat.ReceiveTrueDamage(damageFinta);
             }
         }
         yield return new WaitForSeconds(0.5f);
@@ -171,10 +215,14 @@ public class EnemyBot : MonoBehaviour
     IEnumerator RealizarAtaque(float tiempoAviso, float criticalMultiplier)
     {
         if (spriteRenderer != null) spriteRenderer.color = Color.yellow;
+
+        StartCoroutine(MostrarAlerta(iconoAtaqueNormal, Color.white, tiempoAviso));
+
         yield return new WaitForSeconds(tiempoAviso);
 
         if (spriteRenderer != null) spriteRenderer.color = originalColor;
-        StartCoroutine(ShowEnemyAttackVisuals());
+        StartCoroutine(ShowEnemyAttackVisuals(false));
+        
 
         if (playerCombat != null && enemyData != null)
         {
@@ -187,22 +235,35 @@ public class EnemyBot : MonoBehaviour
 
     IEnumerator RealizarAtaqueInparable(float tiempoAviso, float criticalMultiplier)
     {
+        // 1. AVISO VISUAL (Color + Icono)
         if (spriteRenderer != null) spriteRenderer.color = Color.magenta;
+
+        // --- CORRECCIÓN: ESTA LÍNEA AHORA ESTÁ ANTES DEL WAIT ---
+        StartCoroutine(MostrarAlerta(iconoAtaqueFuerte, Color.white, 0.7f));
+        // --------------------------------------------------------
+
+        // 2. ESPERA (Ahora el jugador ve el aviso mientras espera)
         yield return new WaitForSeconds(tiempoAviso);
+
+
+        // 3. GOLPE
         if (spriteRenderer != null) spriteRenderer.color = originalColor;
+
         if (playerCombat != null && enemyData != null)
         {
+            // Lógica de cansancio
             if (countSpecialAttacks >= 2)
             {
-                Debug.Log("¡El enemigo está agotado después de tantos ataques especiales!");
-                spriteRenderer.color = Color.grey; // Cambiamos el color para indicar agotamiento
-                yield return new WaitForSeconds(1f); // Pausa para el efecto visual
-                countSpecialAttacks = 0; // Reiniciamos el contador
-                playerCombat.recuperarEnergia(20); // El jugador recupera energía
-                yield break; // Cancelamos el ataque especial
+                Debug.Log("¡El enemigo está agotado!");
+                spriteRenderer.color = Color.grey;
+                yield return new WaitForSeconds(1f);
+                countSpecialAttacks = 0;
+                playerCombat.recuperarEnergia(20);
+                yield break;
             }
-            StartCoroutine(ShowEnemyAttackVisuals());
-            isSpecialAttack = true;
+
+            StartCoroutine(ShowEnemyAttackVisuals(true)); // Sprite de ataque fuerte
+
             float baseDamage = enemyData.force * damageMultiplier;
             int finalDamage = Mathf.RoundToInt(baseDamage * criticalMultiplier);
             playerCombat.ReceiveUnstoppableDamage(finalDamage);
@@ -230,7 +291,6 @@ public class EnemyBot : MonoBehaviour
         }
     }
 
-    // --- NUEVA RUTINA DE VIBRACIÓN ---
     private IEnumerator ShakeEffect()
     {
         // 1. Guardamos la posición original para no perderla

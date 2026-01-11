@@ -43,9 +43,11 @@ public class CombatController : MonoBehaviour
     public ParticleSystem victoriaConfeti;
     public GameObject victoriaTextoUI;
 
-    [Header("Barras y Textos de Vida")]
+    [Header("Barras y Textos")]
     public Slider playerHealth;
     public TMP_Text playerHealthText;
+    public TMP_Text playerName;
+    public TMP_Text EnemyName;
 
     [Header("Efectos UI")]
     public Image staminaFillImage;
@@ -78,6 +80,7 @@ public class CombatController : MonoBehaviour
             // --- CONFIGURACIÓN JUGADOR ---
             if (playerHealth != null)
             {
+                playerName.text = playerData.name;
                 playerHealth.maxValue = (float)playerData.life;
                 playerHealth.value = currentLife;
                 UpdateHealthText(playerHealthText, currentLife, playerData.life);
@@ -86,6 +89,7 @@ public class CombatController : MonoBehaviour
             // --- CONFIGURACIÓN ENEMIGO ---
             if (enemyHealthBar != null && currentEnemy != null)
             {
+                EnemyName.text = currentEnemy.enemyData.name;
                 float enemyMax = (float)currentEnemy.enemyData.life;
                 enemyHealthBar.maxValue = enemyMax;
                 enemyHealthBar.value = enemyMax;
@@ -270,29 +274,26 @@ public class CombatController : MonoBehaviour
 
     public void ReceiveUnstoppableDamage(int damageAmount)
     {
-        if (isDead) return;
+        if (isDead || victory) return;
 
-        // Margen de error (0.95)
+        // --- LÓGICA DE PERFECT PARRY ---
         if (defenseSlider.value > 0.95f)
         {
-            Debug.Log("¡PERFECT PARRY! Energía recuperada.");
+            Debug.Log("¡PERFECT PARRY!");
 
-            // 1. Sumamos energía
+            // 1. Efecto Visual (NUEVO)
+            StartCoroutine(EfectoParryExitoso());
+
+            // 2. Recuperar Energía
             currentEnergy += 25f;
-
-            // 2. CLAMP (Tope): Importante para que no supere el máximo y haga cosas raras
             if (currentEnergy > playerData.energy)
                 currentEnergy = (float)playerData.energy;
 
-            // 3. Actualizamos la barra visualmente YA
             UpdateUI();
 
-            return; // No recibes daño.
+            return;
         }
-
         Debug.Log("¡El ataque rompió tu defensa!");
-
-        // Daño directo
         currentLife -= damageAmount;
         if (currentLife > 0) StartCoroutine(EfectoDañoJugador());
         if (currentLife < 0) currentLife = 0;
@@ -307,6 +308,33 @@ public class CombatController : MonoBehaviour
         if (currentLife <= 0)
         {
             Debug.Log("¡K.O.!");
+            StartCoroutine(AnimacionMuerte());
+        }
+    }
+
+    public void ReceiveTrueDamage(int damageAmount)
+    {
+        if (isDead || victory) return;
+
+        Debug.Log("¡GOLPE DE FINTA! No se puede bloquear.");
+
+        // Aplicamos el daño
+        currentLife -= damageAmount;
+
+        // Feedback visual
+        if (currentLife > 0) StartCoroutine(EfectoDañoJugador());
+        if (currentLife < 0) currentLife = 0;
+
+        // Actualizar UI
+        if (playerHealth != null)
+        {
+            playerHealth.value = currentLife;
+            UpdateHealthText(playerHealthText, currentLife, playerData.life);
+        }
+
+        // Muerte
+        if (currentLife <= 0)
+        {
             StartCoroutine(AnimacionMuerte());
         }
     }
@@ -465,6 +493,29 @@ public class CombatController : MonoBehaviour
                 playerSpriteRenderer.sprite = playerData.sprite;
             }
         }
+    }
+
+    IEnumerator EfectoParryExitoso()
+    {
+        // 1. Guardamos estado original
+        Color colorOriginal = Color.white; // Asumimos que el original es blanco (sin tinte)
+                                           // O si tu personaje tiene tintes, usa: playerSpriteRenderer.color;
+
+        Vector3 escalaOriginal = playerSpriteRenderer.transform.localScale;
+
+        // 2. EFECTO:
+        // Usamos CYAN (Azul claro) porque se nota mucho sobre cualquier color
+        playerSpriteRenderer.color = Color.lightGray;
+
+        // Hacemos el efecto "pop" un poco más grande (1.2f = 20% más grande)
+        playerSpriteRenderer.transform.localScale = escalaOriginal * 1.1f;
+
+        // 3. Esperamos muy poco (un parpadeo rápido)
+        yield return new WaitForSeconds(0.15f);
+
+        // 4. Volvemos a la normalidad
+        playerSpriteRenderer.color = colorOriginal;
+        playerSpriteRenderer.transform.localScale = escalaOriginal;
     }
 
     private void HandleStaminaRegen()
@@ -687,7 +738,7 @@ public class CombatController : MonoBehaviour
             yield return null;
         }
 
-        // 5. ¡Paso clave! Forzamos la posición al centro exacto para evitar errores decimales
+        // Forzamos la posición al centro exacto para evitar errores decimales
         playerSpriteRenderer.transform.position = originalPosition;
 
         dodgeDirection = 0;
