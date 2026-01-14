@@ -114,6 +114,9 @@ public class CombatController : MonoBehaviour
         if (currentEnergy >= ATTACK_COST)
         {
             GastarEnergia(ATTACK_COST);
+            
+            // ---> AQUÍ: Reproducimos el sonido al confirmar el ataque
+            SoundManager.PlaySound(SoundType.HIT);
 
             // <--- CORREGIDO: APLICAMOS EL MULTIPLICADOR (Fuerza * 5)
             int damageDealt = Mathf.RoundToInt(playerData.force * playerDamageMultiplier);
@@ -148,6 +151,8 @@ public class CombatController : MonoBehaviour
         if (currentEnergy >= hardAttackCost)
         {
             GastarEnergia(hardAttackCost);
+
+            SoundManager.PlaySound(SoundType.StrongHit);
 
             // <--- CORREGIDO: APLICAMOS MULTIPLICADOR * 2 (Fuerza * 5 * 2)
             int damageDealt = Mathf.RoundToInt(playerData.force * playerDamageMultiplier * 2f);
@@ -190,6 +195,8 @@ public class CombatController : MonoBehaviour
 
         int danioFinal = damageAmount;
 
+        
+
         if (isDefending)
         {
             if (!isStunned)
@@ -207,6 +214,11 @@ public class CombatController : MonoBehaviour
 
                 Debug.Log($"Bloqueo: {porcentajeBloqueo * 100}% | Daño: {danioFinal} | Estamina gastada: {gastoEnergia}");
             }
+        }
+
+        if (!isDefending)
+        {
+            SoundManager.PlaySound(SoundType.GuardStrike);
         }
 
         // Aplicar daño
