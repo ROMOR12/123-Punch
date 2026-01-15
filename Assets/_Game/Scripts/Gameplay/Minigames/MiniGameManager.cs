@@ -1,5 +1,7 @@
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
+using System.Collections;
 
 public class MiniGameMana : MonoBehaviour
 {
@@ -11,13 +13,24 @@ public class MiniGameMana : MonoBehaviour
     public TextMeshProUGUI timerText;
     public TextMeshProUGUI clickText;
 
+    [Header("Efecto Sopa")]
+    public Image imagenSopa;
+    public Sprite[] estadosSopa;
+    public float fuerzaSalto = 20f;
+    public float duracionSalto = 0.1f;
+    public ParticleSystem particulasSopa;
+
     private int clicksActuales = 0;
+    private int clicksSopa = 0;
     private float tiempoRestante;
     private bool juegoActivo = true;
+    private Vector3 posicionOriginalSopa;
 
     private void Start()
     {
         tiempoRestante = tiempoLimite;
+        posicionOriginalSopa = imagenSopa.rectTransform.anchoredPosition;
+        ActualizarSopa();
         ActualizarInterfaz();
     }
 
@@ -42,12 +55,39 @@ public class MiniGameMana : MonoBehaviour
         if (!juegoActivo) return;
         
         clicksActuales++;
+        clicksSopa++;
         ActualizarInterfaz();
+        ActualizarSopa();
+        StopAllCoroutines();
+        StartCoroutine(EfectoSaltarSopa());
+
+        if(particulasSopa != null)
+        {
+            particulasSopa.Play();
+        }
 
         if(clicksActuales >= clicksObjetivo)
         {
             FinalizarJuego(true);
         }
+    }
+
+    IEnumerator EfectoSaltarSopa()
+    {
+        RectTransform rt = imagenSopa.rectTransform;
+
+        rt.anchoredPosition = posicionOriginalSopa + new Vector3(0, fuerzaSalto);
+        yield return new WaitForSeconds(duracionSalto);
+
+        rt.anchoredPosition = posicionOriginalSopa;
+    }
+
+    public void ActualizarSopa()
+    {
+        if (estadosSopa.Length == 0) return;
+
+        int indice = clicksSopa % estadosSopa.Length;
+        imagenSopa.sprite = estadosSopa[indice];
     }
 
     public void ActualizarInterfaz()
