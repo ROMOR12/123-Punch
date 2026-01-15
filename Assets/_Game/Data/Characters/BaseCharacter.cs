@@ -6,5 +6,6 @@ public class BaseCharacter : EntityBase
     [Header("Sprites")]
     public Sprite AttackSprite;
     public Sprite DefetSprite;
+    public Sprite HardAttackSprite;
    
 }
