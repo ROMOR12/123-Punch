@@ -98,6 +98,7 @@ public class EnemyBot : MonoBehaviour
             StopAllCoroutines();
             gameObject.SetActive(false);
         }
+        SoundManager.PlaySound(SoundType.Consumable, 0.2f);
     }
 
     // --- NUEVA RUTINA DE VIBRACIÓN ---

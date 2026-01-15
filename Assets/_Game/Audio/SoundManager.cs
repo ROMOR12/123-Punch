@@ -100,9 +100,14 @@ public class SoundManager : MonoBehaviour
             PlayMusic(instance.BackgroundMusic);
     }
 
-    public static void PlaySound(SoundType sound)
+    public static async void PlaySound(SoundType sound, float delay = 0f)
     {
         if (instance == null || instance.soundList == null) return;
+
+        if (delay > 0f)
+        {
+            await System.Threading.Tasks.Task.Delay((int)(delay * 1000));
+        }
 
         if (instance.soundList.Length > (int)sound)
         {
