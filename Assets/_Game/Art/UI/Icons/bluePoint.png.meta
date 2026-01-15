@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: ae4953b4a45d98e4ea9d3b906dd53dc3
+guid: cdbe99d16a3ef1440a5522792728b86c
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 2001395901533224620
-    second: enemy1-upper_0
+      213: 4165970799409925672
+    second: bluePoint_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -113,13 +113,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: enemy1-upper_0
+      name: bluePoint_0
       rect:
         serializedVersion: 2
         x: 299
-        y: 99
-        width: 202
-        height: 602
+        y: 474
+        width: 102
+        height: 102
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -128,8 +128,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: cae7fc5f7f266cb10800000000000000
-      internalID: 2001395901533224620
+      spriteID: 82e8a7bae5080d930800000000000000
+      internalID: 4165970799409925672
       vertices: []
       indices: 
       edges: []
@@ -148,7 +148,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      enemy1-upper_0: 2001395901533224620
+      bluePoint_0: 4165970799409925672
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
