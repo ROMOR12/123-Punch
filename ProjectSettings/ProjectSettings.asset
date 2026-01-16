@@ -12,7 +12,11 @@ PlayerSettings:
   targetDevice: 2
   useOnDemandResources: 0
   accelerometerFrequency: 60
+<<<<<<< Updated upstream
   companyName: DefaultCompany
+=======
+  companyName: PeraStudios
+>>>>>>> Stashed changes
   productName: 123-Punch!
   defaultCursor: {fileID: 0}
   cursorHotspot: {x: 0, y: 0}
@@ -166,6 +170,10 @@ PlayerSettings:
   androidMaxAspectRatio: 2.4
   androidMinAspectRatio: 1
   applicationIdentifier:
+<<<<<<< Updated upstream
+=======
+    Android: com.PeraStudios.BoxingGame
+>>>>>>> Stashed changes
     Standalone: com.DefaultCompany.2D-URP
   buildNumber:
     Standalone: 0
