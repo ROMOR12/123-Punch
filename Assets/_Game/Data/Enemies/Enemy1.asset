@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b78ec7da10b5b5d4abc0b4bc5289282c, type: 3}
+  m_Name: Enemy1
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyBase
+  id: 1
+  entityName: Enemy1
+  sprite: {fileID: -7965226298060125710, guid: 92cf728d758608443bc44f8c8c20385a, type: 3}
+  life: 75
+  energy: 75
+  force: 3
+  recovery: 1
+  AttackSprite: {fileID: 6450538179461080165, guid: d6e9fe1c423b8ce4887a6153a21c5f7c, type: 3}
+  HardAttackSprite: {fileID: 2001395901533224620, guid: ae4953b4a45d98e4ea9d3b906dd53dc3, type: 3}
