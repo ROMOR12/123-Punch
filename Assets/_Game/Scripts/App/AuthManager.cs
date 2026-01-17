@@ -1,14 +1,19 @@
-using UnityEngine;
+using Firebase;
 using Firebase.Auth;
-using TMPro;
-using UnityEngine.SceneManagement;
+using System.Collections;
 using System.Threading.Tasks;
+using TMPro;
+using UnityEngine;
+using UnityEngine.SceneManagement;
+using System.Text.RegularExpressions;
 
 public class AuthManager : MonoBehaviour
 {
     [Header("--- PANELES UI ---")]
     public GameObject panelLoginUI;
     public GameObject panelRegistroUI;
+    public GameObject panelOlvidoUI;
+    public GameObject panelVerificacionUI;
 
     [Header("--- UI LOGIN ---")]
     public TMP_InputField emailLoginInput;
@@ -20,11 +25,20 @@ public class AuthManager : MonoBehaviour
     public TMP_InputField passRegisterInput;
     public TMP_InputField passRegisterConfirmInput;
 
+    [Header("--- UI OLVIDO ---")]
+    public TMP_InputField emailOlvidoInput;
+
     [Header("--- FEEDBACK ---")]
     public TMP_Text feedbackText;
 
     private FirebaseAuth auth;
-    private bool cambiarDeEscena = false;
+    private bool irAlJuego = false;
+    private bool recargarEscena = false;
+
+    // REGEX PATTERNS
+    private const string MatchEmailPattern =
+        @"^(([\w-]+\.)+[\w-]+|([a-zA-Z]{1}|[\w-]{2,}))@((([0-1]?[0-9]{1,2}|25[0-5]|2[0-4][0-9])\.([0-1]?[0-9]{1,2}|25[0-5]|2[0-4][0-9])\.([0-1]?[0-9]{1,2}|25[0-5]|2[0-4][0-9])\.([0-1]?[0-9]{1,2}|25[0-5]|2[0-4][0-9])){1}|([a-zA-Z]+[\w-]+\.)+[a-zA-Z]{2,4})$";
+    private const string MatchPasswordPattern = @"^(?=.*[a-zA-Z])(?=.*\d).{6,}$";
 
     void Awake()
     {
@@ -33,50 +47,149 @@ public class AuthManager : MonoBehaviour
 
     void Start()
     {
-        // iniciamos en el panel de login
-        IrALogin();
+        CerrarTodosPaneles();
+        panelLoginUI.SetActive(true);
 
-        // si ya hay una sesión iniciada, vamos al menú principal
         if (auth.CurrentUser != null)
         {
-            Debug.Log("Sesión encontrada: " + auth.CurrentUser.UserId);
-            if (feedbackText != null) feedbackText.text = "Iniciando sesión...";
-            cambiarDeEscena = true;
+            auth.CurrentUser.ReloadAsync().ContinueWith(task =>
+            {
+                if (task.IsFaulted || task.IsCanceled)
+                {
+                    auth.SignOut();
+                    return;
+                }
+
+                FirebaseUser user = auth.CurrentUser;
+                if (user.IsEmailVerified || user.IsAnonymous) irAlJuego = true;
+                else recargarEscena = true;
+            });
         }
     }
 
     void Update()
     {
-        // Unity solo permite cambiar de escena desde el hilo principal (Update)
-        if (cambiarDeEscena)
+        if (irAlJuego)
         {
-            cambiarDeEscena = false;
-            //SceneManager.LoadScene(""); aqui hay que poner el nombre de la escena del menu principal
+            irAlJuego = false;
+            SceneManager.LoadScene("Assets/_Game/Scenes/Combat/CombateDePrueba.unity");
+        }
+
+        if (recargarEscena)
+        {
+            recargarEscena = false;
+            if (auth.CurrentUser != null && !auth.CurrentUser.IsEmailVerified)
+            {
+                CerrarTodosPaneles();
+                panelVerificacionUI.SetActive(true);
+                if (feedbackText) feedbackText.text = "Verifica tu correo para continuar.";
+            }
+            else
+            {
+                SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+            }
         }
     }
 
-    // navegación entre paneles 
-    public void IrARegistro()
+    // --- VALIDACIONES ---
+    bool EsEmailValido(string email)
+    {
+        if (string.IsNullOrEmpty(email)) return false;
+        return Regex.IsMatch(email, MatchEmailPattern);
+    }
+
+    bool EsPasswordValida(string pass)
+    {
+        if (string.IsNullOrEmpty(pass)) return false;
+        return Regex.IsMatch(pass, MatchPasswordPattern);
+    }
+
+    public void IrARegistro() 
+    {
+        CerrarTodosPaneles(); 
+        panelRegistroUI.SetActive(true); 
+    }
+    public void IrALogin() 
+    { 
+        CerrarTodosPaneles(); 
+        panelLoginUI.SetActive(true); 
+    }
+    public void IrAOlvido() 
+    { 
+        CerrarTodosPaneles(); 
+        panelOlvidoUI.SetActive(true); 
+    }
+
+    public void CerrarTodosPaneles()
     {
         panelLoginUI.SetActive(false);
-        panelRegistroUI.SetActive(true);
-        LimpiarFeedback();
-    }
-
-    public void IrALogin()
-    {
         panelRegistroUI.SetActive(false);
-        panelLoginUI.SetActive(true);
+        panelOlvidoUI.SetActive(false);
+        panelVerificacionUI.SetActive(false);
+
         LimpiarFeedback();
+        LimpiarInputs();
     }
 
-    // limpiar mensajes de feedback
-    void LimpiarFeedback()
+    void LimpiarInputs()
     {
-        if (feedbackText != null) feedbackText.text = "";
+        if (emailLoginInput) emailLoginInput.text = "";
+        if (passLoginInput) passLoginInput.text = "";
+
+        if (usernameRegisterInput) usernameRegisterInput.text = "";
+        if (emailRegisterInput) emailRegisterInput.text = "";
+        if (passRegisterInput) passRegisterInput.text = "";
+        if (passRegisterConfirmInput) passRegisterConfirmInput.text = "";
+
+        if (emailOlvidoInput) emailOlvidoInput.text = "";
     }
 
-    // login con email y contraseña
+    void LimpiarFeedback() 
+    { 
+        if (feedbackText != null) feedbackText.text = ""; 
+    }
+
+    public void Boton_ChequearVerificacion() 
+    { 
+        StartCoroutine(ChequearEmailCorrutina()); 
+    }
+
+    IEnumerator ChequearEmailCorrutina()
+    {
+        feedbackText.text = "Comprobando...";
+        FirebaseUser user = auth.CurrentUser;
+
+        if (user != null)
+        {
+            var task = user.ReloadAsync();
+            yield return new WaitUntil(() => task.IsCompleted);
+
+            if (user.IsEmailVerified)
+            {
+                feedbackText.text = "¡Verificado!";
+                yield return new WaitForSeconds(1f);
+                irAlJuego = true;
+            }
+            else feedbackText.text = "Aún no verificado. Revisa tu correo.";
+        }
+    }
+
+    public void Boton_ReenviarCorreo()
+    {
+        if (auth.CurrentUser != null)
+        {
+            auth.CurrentUser.SendEmailVerificationAsync();
+            feedbackText.text = "Correo reenviado.";
+        }
+    }
+
+    public void Boton_CancelarVerificacion()
+    {
+        auth.SignOut();
+        IrALogin();
+    }
+
+    // --- LOGIN ---
     public void LoginConEmail()
     {
         string email = emailLoginInput.text;
@@ -88,41 +201,36 @@ public class AuthManager : MonoBehaviour
             return;
         }
 
+        if (!EsEmailValido(email))
+        {
+            feedbackText.text = "El formato del correo no es válido.";
+            return;
+        }
+
         feedbackText.text = "Verificando...";
 
         auth.SignInWithEmailAndPasswordAsync(email, pass).ContinueWith(task =>
         {
             if (task.IsCanceled || task.IsFaulted)
             {
-                Debug.LogError("Error Login: " + task.Exception);
-                // Usamos un dispatcher simple o esperamos al usuario para ver el error en consola
-                // Nota: No se puede tocar UI compleja desde aquí sin Dispatcher, 
-                // pero cambiar escenas con el bool sí funciona.
+                string errorMsg = ObtenerMensajeError(task.Exception);
+                UnityMainThreadDispatcher.Instance().Enqueue(() => { feedbackText.text = errorMsg; });
                 return;
             }
 
-            // Usuario logueado
-            cambiarDeEscena = true;
+            FirebaseUser user = task.Result.User;
+            if (user.IsEmailVerified) irAlJuego = true;
+            else recargarEscena = true;
         });
     }
 
-    // iniciar sesion como invitado
     public void LoginInvitado()
     {
         feedbackText.text = "Entrando como invitado...";
-
-        auth.SignInAnonymouslyAsync().ContinueWith(task =>
-        {
-            if (task.IsFaulted)
-            {
-                Debug.LogError("Error Invitado: " + task.Exception);
-                return;
-            }
-            cambiarDeEscena = true;
-        });
+        auth.SignInAnonymouslyAsync().ContinueWith(task => { if (!task.IsFaulted) irAlJuego = true; });
     }
 
-    // registro con email y contraseña
+    // --- REGISTRO ---
     public void Registrarse()
     {
         string usuario = usernameRegisterInput.text;
@@ -130,10 +238,27 @@ public class AuthManager : MonoBehaviour
         string pass = passRegisterInput.text;
         string passConf = passRegisterConfirmInput.text;
 
-        // Validaciones
         if (string.IsNullOrEmpty(usuario) || string.IsNullOrEmpty(email) || string.IsNullOrEmpty(pass))
         {
             feedbackText.text = "Rellena todos los campos";
+            return;
+        }
+
+        if (usuario.Length < 3)
+        {
+            feedbackText.text = "El usuario debe tener mínimo 3 caracteres.";
+            return;
+        }
+
+        if (!EsEmailValido(email))
+        {
+            feedbackText.text = "El formato del correo no es válido.";
+            return;
+        }
+
+        if (!EsPasswordValida(pass))
+        {
+            feedbackText.text = "La contraseña necesita 6 caracteres, 1 número y 1 letra.";
             return;
         }
 
@@ -149,18 +274,71 @@ public class AuthManager : MonoBehaviour
         {
             if (task.IsCanceled || task.IsFaulted)
             {
-                Debug.LogError("Error Registro: " + task.Exception);
+                string errorMsg = ObtenerMensajeError(task.Exception);
+                UnityMainThreadDispatcher.Instance().Enqueue(() => { feedbackText.text = errorMsg; });
                 return;
             }
 
             FirebaseUser newUser = task.Result.User;
-
-            Debug.Log("Usuario creado: " + newUser.UserId);
-
-            // AQUI PONDREMOS LA BASE DE DATOS LUEGO
-
-            // Usuario registrado y logueado
-            cambiarDeEscena = true;
+            newUser.SendEmailVerificationAsync();
+            recargarEscena = true;
         });
+    }
+
+    // --- OLVIDO ---
+    public void EnviarCorreoRecuperacion()
+    {
+        string email = emailOlvidoInput.text;
+
+        if (string.IsNullOrEmpty(email))
+        {
+            feedbackText.text = "Escribe tu correo primero.";
+            return;
+        }
+
+        if (!EsEmailValido(email))
+        {
+            feedbackText.text = "El formato del correo no es válido.";
+            return;
+        }
+
+        feedbackText.text = "Enviando...";
+        auth.SendPasswordResetEmailAsync(email).ContinueWith(task =>
+        {
+            if (task.IsFaulted || task.IsCanceled)
+            {
+                string errorMsg = ObtenerMensajeError(task.Exception);
+                UnityMainThreadDispatcher.Instance().Enqueue(() => { feedbackText.text = errorMsg; });
+                return;
+            }
+
+            UnityMainThreadDispatcher.Instance().Enqueue(() => {
+                feedbackText.text = "¡Correo enviado! Revisa tu bandeja.";
+            });
+        });
+    }
+
+    // --- ERRORES ---
+    string ObtenerMensajeError(System.AggregateException exception)
+    {
+        if (exception == null) return "Error desconocido.";
+        FirebaseException firebaseEx = null;
+        foreach (System.Exception e in exception.Flatten().InnerExceptions)
+        {
+            if (e is FirebaseException) { firebaseEx = (FirebaseException)e; break; }
+        }
+
+        if (firebaseEx != null)
+        {
+            var codigoError = (AuthError)firebaseEx.ErrorCode;
+            switch (codigoError)
+            {
+                case AuthError.EmailAlreadyInUse: return "Ese correo ya está registrado.";
+                case AuthError.WrongPassword: return "Contraseña incorrecta.";
+                case AuthError.UserNotFound: return "Esa cuenta no existe.";
+                default: return "Error: " + codigoError.ToString();
+            }
+        }
+        return "Error de conexión o desconocido.";
     }
 }
