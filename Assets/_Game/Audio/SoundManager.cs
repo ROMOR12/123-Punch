@@ -10,7 +10,11 @@ public enum SoundType
     GuardStrike,
     Win,
     Lose,
-    Consumable
+    Consumable,
+    EnemyComplaint,
+    Complaint,
+    BrokeGuard,
+    Dizzy
 }
 
 [RequireComponent(typeof(AudioSource)), ExecuteInEditMode]

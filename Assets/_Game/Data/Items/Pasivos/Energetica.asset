@@ -21,4 +21,6 @@ MonoBehaviour:
   rarity: 1
   bonificaciones:
   - statType: 1
-    amount: 2
+    amount: 30
+  - statType: 0
+    amount: 50
