@@ -3,8 +3,10 @@ using UnityEngine;
 public class EntityBase : ScriptableObject
 {
     public int id;
-    public new string name;
+    public string entityName;
     public Sprite sprite;
+
+    [Header("Stats Base")]
     public int life;
     public int energy;
     public int force;
