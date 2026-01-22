@@ -53,20 +53,17 @@ public class MiniGameMana : MonoBehaviour
     public void RegistrarClick()
     {
         if (!juegoActivo) return;
-        
+       
         clicksActuales++;
         clicksSopa++;
         ActualizarInterfaz();
         ActualizarSopa();
         StopAllCoroutines();
         StartCoroutine(EfectoSaltarSopa());
+        particulasSopa.Play();
 
-        if(particulasSopa != null)
-        {
-            particulasSopa.Play();
-        }
 
-        if(clicksActuales >= clicksObjetivo)
+        if (clicksActuales >= clicksObjetivo)
         {
             FinalizarJuego(true);
         }
