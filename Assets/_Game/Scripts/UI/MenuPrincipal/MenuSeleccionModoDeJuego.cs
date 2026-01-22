@@ -61,16 +61,16 @@ public class Menu : MonoBehaviour
         switch(index)
         {
             case 0:
-                escena = "CombatPrototype";
+                escena = "CombateDePrueba";
             break;
             case 1:
-                escena = "CombatPrototype";
+                escena = "CombateDePrueba";
             break;
             case 2:
-                escena = "CombatPrototype";
+                escena = "CombateDePrueba";
             break;  
             default:
-                escena = "CombatPrototype";
+                escena = "CombateDePrueba";
             break;
         }
         SceneManager.LoadScene(escena);

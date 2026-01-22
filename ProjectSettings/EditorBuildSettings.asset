@@ -12,7 +12,7 @@ EditorBuildSettings:
     path: Assets/_Game/Scenes/Menu/Menu.unity
     guid: 7c556f92ec8e95f4897eb1d84fe57364
   - enabled: 1
-    path: Assets/_Game/Scenes/Combat/CombatPrototype.unity
+    path: Assets/_Game/Scenes/Combat/CombateDePrueba.unity
     guid: 699f59774322269439debaefc29fcd59
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
