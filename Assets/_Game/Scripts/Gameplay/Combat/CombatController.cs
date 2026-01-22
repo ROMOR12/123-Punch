@@ -73,6 +73,7 @@ public class CombatController : MonoBehaviour
 
     [Header("Inventario en combate")]
     public List<Consumible> mochilaConsumibles;
+    public Image imagenBotonConsumible;
 
     public Slider enemyHealthBar;
     public TMP_Text enemyHealthText;
@@ -103,13 +104,16 @@ public class CombatController : MonoBehaviour
                 }
             }
 
-            if (playerData.objetosConsumibles != null)
+            if (mochilaConsumibles.Count == 0)
             {
-                mochilaConsumibles = new List<Consumible>(playerData.objetosConsumibles);
-            }
-            else
-            {
-                mochilaConsumibles = new List<Consumible>();
+                if (playerData.objetosConsumibles != null)
+                {
+                    mochilaConsumibles = new List<Consumible>(playerData.objetosConsumibles);
+                }
+                else
+                {
+                    mochilaConsumibles = new List<Consumible>();
+                }
             }
 
             foreach (var pasivo in pasivosEquipados)
@@ -162,6 +166,7 @@ public class CombatController : MonoBehaviour
         }
 
         HandleStaminaRegen();
+        ActualizarInterfazObjeto();
     }
 
     void Update()
@@ -399,6 +404,12 @@ public class CombatController : MonoBehaviour
 
         Debug.Log("¡El ataque rompió tu defensa!");
         currentLife -= damageAmount;
+
+        float porcentajeBloqueo = defenseSlider.value;
+        float gastoEnergia = maxBlockStaminaCost * porcentajeBloqueo;
+
+        GastarEnergia(gastoEnergia);
+
         if (currentLife > 0) StartCoroutine(EfectoDañoJugador());
         if (currentLife < 0) currentLife = 0;
 
@@ -432,6 +443,12 @@ public class CombatController : MonoBehaviour
         Debug.Log("¡GOLPE DE FINTA! No se puede bloquear.");
 
         currentLife -= damageAmount;
+        if (defenseSlider != null)
+        {
+            float porcentajeBloqueo = defenseSlider.value;
+            float gastoEnergia = maxBlockStaminaCost * porcentajeBloqueo;
+            GastarEnergia(gastoEnergia);
+        }
 
         if (currentLife > 0) StartCoroutine(EfectoDañoJugador());
         if (currentLife < 0) currentLife = 0;
@@ -807,6 +824,55 @@ public class CombatController : MonoBehaviour
         else
         {
             Debug.Log("¡No te quedan existencias de este objeto!");
+        }
+    }
+
+    //Boton dinamico
+    void ActualizarInterfazObjeto()
+    {
+        // Si se nos olvidó arrastrar la imagen en el inspector, no hacemos nada para evitar errores
+        if (imagenBotonConsumible == null) return;
+
+        if (mochilaConsumibles.Count > 0)
+        {
+            // Si el objeto tiene un icono asignado, lo ponemos en el botón
+            if (mochilaConsumibles[0].icon != null)
+            {
+                imagenBotonConsumible.sprite = mochilaConsumibles[0].icon;
+                imagenBotonConsumible.enabled = true; // Hacemos visible la imagen
+            }
+        }
+        else
+        {
+            // Si la mochila está vacía, ocultamos el dibujo del botón
+            imagenBotonConsumible.enabled = false;
+        }
+    }
+
+    public void UsarPrimerConsumible()
+    {
+        if (isDead || victory || isStunned) return;
+
+        if (mochilaConsumibles.Count > 0)
+        {
+            // 1. Cogemos el primer objeto de la fila
+            Consumible item = mochilaConsumibles[0];
+
+            // 2. Lo usamos
+            item.Usar(this);
+            SoundManager.PlaySound(SoundType.Consumable);
+
+            // 3. Lo borramos de la mochila (ya lo hemos gastado)
+            mochilaConsumibles.RemoveAt(0);
+
+            Debug.Log($"Objeto usado. Quedan: {mochilaConsumibles.Count}");
+
+            // 4. Actualizamos el dibujo para mostrar el SIGUIENTE objeto de la lista
+            ActualizarInterfazObjeto();
+        }
+        else
+        {
+            Debug.Log("¡Mochila vacía!");
         }
     }
 }

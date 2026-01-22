@@ -24,6 +24,4 @@ MonoBehaviour:
   HardAttackSprite: {fileID: -1517447945832409196, guid: ef38bef11e8565f459d396c3864ea37b, type: 3}
   objetosPasivos:
   - {fileID: 11400000, guid: e4c2e5ebcdd13144f8a6bdc9bbbb846c, type: 2}
-  objetosConsumibles:
-  - {fileID: 11400000, guid: e03390070aec2a941b7eab4860725c17, type: 2}
-  - {fileID: 11400000, guid: e03390070aec2a941b7eab4860725c17, type: 2}
+  objetosConsumibles: []

@@ -5459,6 +5459,7 @@ MonoBehaviour:
   normalStaminaColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
   lowStaminaColor: {r: 1, g: 0, b: 0, a: 1}
   mochilaConsumibles: []
+  imagenBotonConsumible: {fileID: 0}
   enemyHealthBar: {fileID: 0}
   enemyHealthText: {fileID: 0}
 --- !u!1 &180367574
@@ -15552,6 +15553,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 20254b90ca672594bbfbd9296bb8b8df, type: 2}
   - {fileID: 11400000, guid: 79d76a364f49cb84bb01f44d1ced196e, type: 2}
   - {fileID: 11400000, guid: 24c029b27ce02c64496ebcd5ff737964, type: 2}
+  imagenBotonConsumible: {fileID: 398213106}
   enemyHealthBar: {fileID: 928405473}
   enemyHealthText: {fileID: 395867583}
 --- !u!4 &284555279
@@ -15707,7 +15709,8 @@ MonoBehaviour:
     sounds:
     - {fileID: 8300000, guid: f0c985dba9191b84086c760193839abc, type: 3}
   - name: Dizzy
-    sounds: []
+    sounds:
+    - {fileID: 8300000, guid: f6b468b7edecfdb468a72b89ea007266, type: 3}
   musicSource: {fileID: 284555280}
   BackgroundMusic: {fileID: 8300000, guid: 7805e87ae31d4e748acaa7645d7cb63a, type: 3}
 --- !u!82 &284555282
@@ -15956,7 +15959,7 @@ GameObject:
   - component: {fileID: 398213106}
   - component: {fileID: 398213105}
   m_Layer: 5
-  m_Name: Button
+  m_Name: BotonConsumible
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -15979,8 +15982,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -727, y: -685}
-  m_SizeDelta: {x: 160, y: 30}
+  m_AnchoredPosition: {x: -724.27, y: -551}
+  m_SizeDelta: {x: 235.46, y: 339.879}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &398213105
 MonoBehaviour:
@@ -16028,11 +16031,11 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 284555278}
         m_TargetAssemblyTypeName: CombatController, Assembly-CSharp
-        m_MethodName: UsarConsumible
-        m_Mode: 2
+        m_MethodName: UsarPrimerConsumible
+        m_Mode: 1
         m_Arguments:
-          m_ObjectArgument: {fileID: 11400000, guid: e03390070aec2a941b7eab4860725c17, type: 2}
-          m_ObjectArgumentAssemblyTypeName: Consumible, Assembly-CSharp
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
@@ -16058,8 +16061,8 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 10905, guid: 0000000000000000f000000000000000, type: 0}
-  m_Type: 1
+  m_Sprite: {fileID: 0}
+  m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 4
@@ -23669,7 +23672,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Button
+  m_text: 
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
