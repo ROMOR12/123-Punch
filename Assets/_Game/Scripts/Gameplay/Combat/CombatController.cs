@@ -74,6 +74,7 @@ public class CombatController : MonoBehaviour
     [Header("Inventario en combate")]
     public List<Consumible> mochilaConsumibles;
     public Image imagenBotonConsumible;
+    public GameObject FlechaConsumible;
 
     public Slider enemyHealthBar;
     public TMP_Text enemyHealthText;
@@ -830,22 +831,38 @@ public class CombatController : MonoBehaviour
     //Boton dinamico
     void ActualizarInterfazObjeto()
     {
-        // Si se nos olvidó arrastrar la imagen en el inspector, no hacemos nada para evitar errores
-        if (imagenBotonConsumible == null) return;
-
-        if (mochilaConsumibles.Count > 0)
+        // --- PARTE 1: La Foto del Objeto (Kebab, etc) ---
+        if (imagenBotonConsumible != null)
         {
-            // Si el objeto tiene un icono asignado, lo ponemos en el botón
-            if (mochilaConsumibles[0].icon != null)
+            if (mochilaConsumibles.Count > 0)
             {
-                imagenBotonConsumible.sprite = mochilaConsumibles[0].icon;
-                imagenBotonConsumible.enabled = true; // Hacemos visible la imagen
+                // Si hay items, ponemos la foto del primero
+                if (mochilaConsumibles[0].icon != null)
+                {
+                    imagenBotonConsumible.sprite = mochilaConsumibles[0].icon;
+                    imagenBotonConsumible.enabled = true;
+                }
+            }
+            else
+            {
+                // Si no hay items, ocultamos la foto
+                imagenBotonConsumible.enabled = false;
             }
         }
-        else
+
+        // --- PARTE 2: La Flecha (FlechaConsumible) ---
+        if (FlechaConsumible != null)
         {
-            // Si la mochila está vacía, ocultamos el dibujo del botón
-            imagenBotonConsumible.enabled = false;
+            // Solo mostramos la flecha si hay 2 o más objetos para poder cambiar.
+            // Si tienes 0 o 1, la ocultamos.
+            if (mochilaConsumibles.Count > 1)
+            {
+                FlechaConsumible.SetActive(true);
+            }
+            else
+            {
+                FlechaConsumible.SetActive(false);
+            }
         }
     }
 
@@ -874,5 +891,28 @@ public class CombatController : MonoBehaviour
         {
             Debug.Log("¡Mochila vacía!");
         }
+    }
+
+    public void SiguienteConsumible()
+    {
+        // Si no hay objetos o solo hay 1, no tiene sentido cambiar
+        if (mochilaConsumibles.Count <= 1) return;
+
+        // 1. Guardamos el objeto que está primero (el actual)
+        Consumible objetoActual = mochilaConsumibles[0];
+
+        // 2. Lo borramos de la primera posición
+        mochilaConsumibles.RemoveAt(0);
+
+        // 3. Lo añadimos al final de la lista (a la cola)
+        mochilaConsumibles.Add(objetoActual);
+
+        // 4. Feedback de sonido (opcional, si tienes un sonido de click/swap)
+        // SoundManager.PlaySound(SoundType.UI_Click); 
+
+        Debug.Log("Has pasado el objeto al fondo de la mochila.");
+
+        // 5. IMPORTANTE: Actualizamos el dibujo para ver el nuevo objeto
+        ActualizarInterfazObjeto();
     }
 }
