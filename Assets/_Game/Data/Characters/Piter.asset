@@ -19,3 +19,6 @@ MonoBehaviour:
   energy: 90
   force: 2
   recovery: 4
+  AttackSprite: {fileID: 0}
+  DefetSprite: {fileID: 0}
+  HardAttackSprite: {fileID: 0}
