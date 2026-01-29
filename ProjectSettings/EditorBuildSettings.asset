@@ -11,5 +11,8 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/_Game/Scenes/Combat/CombateDePrueba.unity
     guid: 699f59774322269439debaefc29fcd59
+  - enabled: 1
+    path: Assets/_Game/Scenes/Boot/LogoScene.unity
+    guid: ec59a1fd76f508b49833c943fb22f303
   m_configObjects: {}
   m_UseUCBPForAssetBundles: 0
