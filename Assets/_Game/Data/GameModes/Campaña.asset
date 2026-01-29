@@ -1,0 +1,17 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0d286d4811116714092929e27ca6e650, type: 3}
+  m_Name: "Campa\xF1a"
+  m_EditorClassIdentifier: Assembly-CSharp::ModosDeJuego
+  ModoDeJuego: {fileID: 0}
+  Imagen: {fileID: -7631899635669074067, guid: a7ddc055f6533a54dac3be47517d7577, type: 3}
+  Nombre: "Campa\xF1a"

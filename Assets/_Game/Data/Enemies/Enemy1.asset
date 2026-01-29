@@ -14,8 +14,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::EnemyBase
   id: 1
   entityName: Enemy1
-  sprite: {fileID: 0}
+  sprite: {fileID: -7965226298060125710, guid: 92cf728d758608443bc44f8c8c20385a, type: 3}
   life: 75
   energy: 75
-  force: 1
+  force: 3
   recovery: 1
+  AttackSprite: {fileID: 6450538179461080165, guid: d6e9fe1c423b8ce4887a6153a21c5f7c, type: 3}
+  HardAttackSprite: {fileID: 2001395901533224620, guid: ae4953b4a45d98e4ea9d3b906dd53dc3, type: 3}

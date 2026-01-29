@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f6266be883c0fa14d8e995d92519cd8c, type: 3}
+  m_Name: Preentreno
+  m_EditorClassIdentifier: Assembly-CSharp::Consumible
+  id: 11
+  itemBaseName: Preentreno
+  description: "Si lo que quieres es rendir a tope, esto es perfecto. Eso s\xED,
+    no te pases con la dosis o prep\xE1rate para las consecuencias."
+  icon: {fileID: 0}
+  isSkin: 0
+  rarity: 1
+  recuperacion:
+  - statType: 1
+    amount: 10
+  - statType: 3
+    amount: 1
+  - statType: 2
+    amount: 1
