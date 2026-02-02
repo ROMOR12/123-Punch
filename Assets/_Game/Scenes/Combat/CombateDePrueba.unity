@@ -5330,7 +5330,6 @@ GameObject:
   m_Component:
   - component: {fileID: 164788749}
   - component: {fileID: 164788750}
-  - component: {fileID: 164788751}
   m_Layer: 5
   m_Name: StaminaBar
   m_TagString: Untagged
@@ -5410,59 +5409,6 @@ MonoBehaviour:
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls: []
---- !u!114 &164788751
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 164788748}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5ba1086333fd661479a72ec9bad77413, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::CombatController
-  playerData: {fileID: 0}
-  maxLife: 0
-  maxEnergy: 0
-  currentForce: 0
-  currentRecovery: 0
-  playerSpriteRenderer: {fileID: 0}
-  playerAnimator: {fileID: 0}
-  pasivosEquipados: []
-  dodgeDirection: 0
-  minSwipeDistance: 50
-  currentEnemy: {fileID: 0}
-  defenseSlider: {fileID: 0}
-  staminaBar: {fileID: 0}
-  hitParticles: {fileID: 0}
-  stunParticles: {fileID: 0}
-  damagePopupPrefab: {fileID: 0}
-  roundManager: {fileID: 0}
-  playerDamageMultiplier: 5
-  staminaRegenMultiplier: 3
-  maxBlockStaminaCost: 25
-  shakeAmount: 0.15
-  shakeDuration: 0.2
-  damageColor: {r: 1, g: 0, b: 0, a: 1}
-  victoriaConfeti: {fileID: 0}
-  victoriaTextoUI: {fileID: 0}
-  playerHealth: {fileID: 0}
-  playerHealthText: {fileID: 0}
-  playerName: {fileID: 0}
-  EnemyName: {fileID: 0}
-  defenseFillImage: {fileID: 0}
-  colorDefensaNormal: {r: 0, g: 0, b: 1, a: 1}
-  colorParry: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
-  zonaParry: 0.95
-  staminaFillImage: {fileID: 0}
-  normalStaminaColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
-  lowStaminaColor: {r: 1, g: 0, b: 0, a: 1}
-  mochilaConsumibles: []
-  imagenBotonConsumible: {fileID: 0}
-  FlechaConsumible: {fileID: 0}
-  enemyHealthBar: {fileID: 0}
-  enemyHealthText: {fileID: 0}
 --- !u!1 &180367574
 GameObject:
   m_ObjectHideFlags: 0
@@ -15547,9 +15493,7 @@ MonoBehaviour:
   staminaFillImage: {fileID: 446838746}
   normalStaminaColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
   lowStaminaColor: {r: 1, g: 0, b: 0, a: 1}
-  mochilaConsumibles:
-  - {fileID: 11400000, guid: e03390070aec2a941b7eab4860725c17, type: 2}
-  - {fileID: 11400000, guid: 472364919acc43e46b32db059ca31b0a, type: 2}
+  mochilaConsumibles: []
   imagenBotonConsumible: {fileID: 398213106}
   FlechaConsumible: {fileID: 756709093}
   enemyHealthBar: {fileID: 928405473}
@@ -15566,8 +15510,7 @@ Transform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 1513749972}
+  m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!82 &284555280
@@ -23528,7 +23471,7 @@ GameObject:
   - component: {fileID: 1513749973}
   m_Layer: 0
   m_Name: player
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -23605,7 +23548,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 257666616}
-  m_Father: {fileID: 284555279}
+  m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!95 &1513749973
 Animator:
@@ -26308,6 +26251,7 @@ SceneRoots:
   m_Roots:
   - {fileID: 1585015792}
   - {fileID: 1810799657}
+  - {fileID: 1513749972}
   - {fileID: 284555279}
   - {fileID: 1520904029}
   - {fileID: 829065324}

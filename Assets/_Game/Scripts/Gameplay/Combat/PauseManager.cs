@@ -28,11 +28,19 @@ public class PauseManager : MonoBehaviour
     }
     public void ReiniciarNivel()
     {
-        // reiniciar el nivel actual
         Time.timeScale = 1f;
         JuegoPausado = false;
 
-        // llamamos a la escena actual para reiniciarla
+        // Buscamos todos los objetos que tengan el combatController y los guardamos en un array
+        CombatController[] scriptsJugador = FindObjectsByType<CombatController>(FindObjectsSortMode.None);
+
+        // Recorremos el array para borrar todos los objetos
+        foreach (CombatController script in scriptsJugador)
+        {
+            // Borramos los objetos para que no vaya entre escenas
+            DestroyImmediate(script.gameObject);
+        }
+
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
     public void CerrarJuego()

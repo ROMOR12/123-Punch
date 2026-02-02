@@ -72,7 +72,7 @@ public class CombatController : MonoBehaviour
     public Color lowStaminaColor = Color.red;
 
     [Header("Inventario en combate")]
-    public List<Consumible> mochilaConsumibles;
+    public List<Consumible> mochilaConsumibles = new List<Consumible>();
     public Image imagenBotonConsumible;
     public GameObject FlechaConsumible;
 
@@ -90,48 +90,54 @@ public class CombatController : MonoBehaviour
 
     void Start()
     {
+        // -----------------------------------------------------------------------
+        // 1. INICIALIZACIÓN SEGURA DE LISTA (Corrección Inventario)
+        // -----------------------------------------------------------------------
+        mochilaConsumibles = new List<Consumible>(); // Reiniciamos lista siempre
+
         if (playerData != null)
         {
+            // Cargar consumibles solo si existen
+            if (playerData.objetosConsumibles != null)
+            {
+                // Filtramos para no añadir huecos vacíos (nulls)
+                foreach (var item in playerData.objetosConsumibles)
+                {
+                    if (item != null) mochilaConsumibles.Add(item);
+                }
+            }
+
+            // Cargar Datos Básicos
             maxLife = (float)playerData.life;
             maxEnergy = (float)playerData.energy;
             currentForce = (float)playerData.force;
             currentRecovery = (float)playerData.recovery;
 
+            // Cargar Pasivos
             if (playerData.objetosPasivos != null)
             {
                 foreach (var item in playerData.objetosPasivos)
-                {
                     if (item != null) item.Equipar(this);
-                }
-            }
-
-            if (mochilaConsumibles.Count == 0)
-            {
-                if (playerData.objetosConsumibles != null)
-                {
-                    mochilaConsumibles = new List<Consumible>(playerData.objetosConsumibles);
-                }
-                else
-                {
-                    mochilaConsumibles = new List<Consumible>();
-                }
             }
 
             foreach (var pasivo in pasivosEquipados)
-            {
-                // Le pasamos 'this' porque ahora CombatController es el que se encarga de los items
                 if (pasivo != null) pasivo.Equipar(this);
-            }
 
-            // Asignamos vida y energía inicial usando los NUEVOS máximos (que pueden haber crecido por items)
+            // Valores Iniciales
             currentLife = maxLife;
             currentEnergy = maxEnergy;
 
-            // Configuración visual
+            // Visuales
             if (playerSpriteRenderer != null && playerData.sprite != null)
                 playerSpriteRenderer.sprite = playerData.sprite;
 
-            // --- CONFIGURACIÓN JUGADOR UI ---
+            if (playerSpriteRenderer != null)
+                originalPosition = playerSpriteRenderer.transform.position;
+
+            if (playerAnimator != null) playerAnimator.enabled = false;
+
+            // --- UI ---
+            // Solo actualizamos si las referencias existen. Si están "Missing", no hacemos nada para evitar errores.
             if (playerHealth != null)
             {
                 playerName.text = playerData.name;
@@ -147,26 +153,19 @@ public class CombatController : MonoBehaviour
             }
         }
 
+        // UI Enemigo
         if (enemyHealthBar != null && currentEnemy != null)
         {
-            EnemyName.text = currentEnemy.enemyData.name;
+            if (EnemyName != null) EnemyName.text = currentEnemy.enemyData.name;
             float enemyMax = (float)currentEnemy.enemyData.life;
             enemyHealthBar.maxValue = enemyMax;
             enemyHealthBar.value = enemyMax;
             UpdateHealthText(enemyHealthText, enemyMax, enemyMax);
         }
 
-        if (playerAnimator != null)
-        {
-            playerAnimator.enabled = false;
-        }
-
-        if (playerSpriteRenderer != null)
-        {
-            originalPosition = playerSpriteRenderer.transform.position;
-        }
-
         HandleStaminaRegen();
+
+        // 2. ACTUALIZAR INTERFAZ (Ahora es seguro llamarlo)
         ActualizarInterfazObjeto();
     }
 
@@ -831,38 +830,39 @@ public class CombatController : MonoBehaviour
     //Boton dinamico
     void ActualizarInterfazObjeto()
     {
-        // --- PARTE 1: La Foto del Objeto (Kebab, etc) ---
-        if (imagenBotonConsumible != null)
+        // Comprobar que el consumible tenga icono
+        if (imagenBotonConsumible == null) return;
+
+        // Comprobamos si hay objetos
+        if (mochilaConsumibles != null && mochilaConsumibles.Count > 0)
         {
-            if (mochilaConsumibles.Count > 0)
+            // Cogemos el primero
+            Consumible primerItem = mochilaConsumibles[0];
+
+            //  Comprobamos que el item no sea null antes de pedir su icono
+            if (primerItem != null && primerItem.icon != null)
             {
-                // Si hay items, ponemos la foto del primero
-                if (mochilaConsumibles[0].icon != null)
-                {
-                    imagenBotonConsumible.sprite = mochilaConsumibles[0].icon;
-                    imagenBotonConsumible.enabled = true;
-                }
+                imagenBotonConsumible.sprite = primerItem.icon;
+                imagenBotonConsumible.enabled = true;
             }
             else
             {
-                // Si no hay items, ocultamos la foto
+                // Si el item está vacío, ocultamos la imagen
                 imagenBotonConsumible.enabled = false;
             }
         }
+        else
+        {
+            // Si la mochila está vacía, ocultamos la imagen
+            imagenBotonConsumible.enabled = false;
+        }
 
-        // --- PARTE 2: La Flecha (FlechaConsumible) ---
+        // Flecha
         if (FlechaConsumible != null)
         {
-            // Solo mostramos la flecha si hay 2 o más objetos para poder cambiar.
-            // Si tienes 0 o 1, la ocultamos.
-            if (mochilaConsumibles.Count > 1)
-            {
-                FlechaConsumible.SetActive(true);
-            }
-            else
-            {
-                FlechaConsumible.SetActive(false);
-            }
+            // Solo activar si hay más de 1 item y la lista no es nula
+            bool activarFlecha = (mochilaConsumibles != null && mochilaConsumibles.Count > 1);
+            FlechaConsumible.SetActive(activarFlecha);
         }
     }
 
