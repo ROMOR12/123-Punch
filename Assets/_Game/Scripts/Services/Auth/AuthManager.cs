@@ -241,7 +241,7 @@ public class AuthManager : MonoBehaviour
     }
 
     // --- REGISTRO ---
-    public void Registrarse()
+    public async void Registrarse()
     {
         string usuario = usernameRegisterInput.text;
         string email = emailRegisterInput.text;
@@ -281,25 +281,26 @@ public class AuthManager : MonoBehaviour
 
         feedbackText.text = "Creando cuenta...";
 
-        auth.CreateUserWithEmailAndPasswordAsync(email, pass).ContinueWithOnMainThread((Task<AuthResult> task) =>
+        try
         {
-            if (task.IsCanceled || task.IsFaulted)
-            {
-                string errorMsg = ObtenerMensajeError(task.Exception);
-                feedbackText.text = errorMsg;
-                return;
-            }
+            AuthResult result = await auth.CreateUserWithEmailAndPasswordAsync(email, pass);
+            FirebaseUser newUser = result.User;
 
-            FirebaseUser newUser = task.Result.User;
+            bool resultado = await DatabaseManager.shared.CrearUsuarioNuevo(newUser.UserId, usuario, email);
 
-            DatabaseManager.shared.CrearUsuarioNuevo(newUser.UserId, usuario, email);
-
-            newUser.SendEmailVerificationAsync();
+            await newUser.SendEmailVerificationAsync();
 
             Debug.Log("Usuario creado y guardado en BD.");
-
             recargarEscena = true;
-        });
+        }
+        catch (System.AggregateException e)
+        {
+            feedbackText.text = ObtenerMensajeError(e);
+        }
+        catch (System.Exception e)
+        {
+            feedbackText.text = e.Message;
+        }
     }
 
     // --- OLVIDO ---

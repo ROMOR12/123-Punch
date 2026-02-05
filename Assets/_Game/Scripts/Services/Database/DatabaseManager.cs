@@ -2,6 +2,7 @@
 using Firebase.Firestore;
 using Firebase.Extensions;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 public class DatabaseManager : MonoBehaviour
 {
@@ -28,33 +29,34 @@ public class DatabaseManager : MonoBehaviour
     }
 
     // Metodo para crear un nuevo usuario en la base de datos
-    public void CrearUsuarioNuevo(string userId, string nombre, string email)
+    public async Task<bool> CrearUsuarioNuevo(string userId, string nombre, string email)
     {
         DocumentReference docRef = db.Collection("usuarios").Document(userId);
 
-        // Preparamos los datos del jugador
-        Dictionary<string, object> datosJugador = new Dictionary<string, object>
+        Usuario usuarioNuevo = new Usuario()
         {
-            { "username", nombre },
-            { "email", email },
-            { "monedas", 100 },
-            { "nivel", 1 },
-            { "xp", 0 },
-            { "fecha_creacion", FieldValue.ServerTimestamp }
+            id = userId,
+            username = nombre,
+            email = email,
+            first_log = Timestamp.GetCurrentTimestamp(),
+            last_log = Timestamp.GetCurrentTimestamp(),
+            free_coin = 100,
+            premium_coin = 0,
+            is_admin = false,
+            xp = 0,
+            id_world = 1,
+            id_level = 1,
+            referenciaObjetos = new List<ReferenciaObjeto>()
+            { new ReferenciaObjeto(){id_Objeto = "",cantidad = 1}},
+            refereniaPersonajes = new List<string>()
+            {""}
+
         };
 
         // Guardamos los datos del jugador en la base de datos en la nube
-        docRef.SetAsync(datosJugador).ContinueWithOnMainThread(task =>
-        {
-            if (task.IsFaulted)
-            {
-                Debug.LogError("Error al guardar datos: " + task.Exception);
-            }
-            else
-            {
+        await docRef.SetAsync(usuarioNuevo, SetOptions.MergeAll);
 
-                Debug.Log("¡Usuario guardado en la Base de Datos!");
-            }
-        });
+        return true;
+       
     }
 }
