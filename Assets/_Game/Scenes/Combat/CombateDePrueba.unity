@@ -15623,7 +15623,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SoundManager
   musicVolume: 0.126
-  sfxVolume: 0.915
+  sfxVolume: 0.948
   soundList:
   - name: HIT
     sounds:
@@ -15635,11 +15635,13 @@ MonoBehaviour:
     sounds:
     - {fileID: 8300000, guid: db32a7200e8cec14f9913a3057952b2c, type: 3}
   - name: Win
-    sounds: []
+    sounds:
+    - {fileID: 8300000, guid: f66499951ed56344190d77ff01fd534a, type: 3}
   - name: Lose
     sounds: []
   - name: Consumable
-    sounds: []
+    sounds:
+    - {fileID: 8300000, guid: da9811d352346b14abd9b1619bae41f6, type: 3}
   - name: EnemyComplaint
     sounds:
     - {fileID: 8300000, guid: cdc56982bdb20f84bbcffe9c04f8c095, type: 3}
@@ -15652,6 +15654,9 @@ MonoBehaviour:
   - name: Dizzy
     sounds:
     - {fileID: 8300000, guid: f6b468b7edecfdb468a72b89ea007266, type: 3}
+  - name: Dodge
+    sounds:
+    - {fileID: 8300000, guid: 75743e524964022469f902dcbce62ede, type: 3}
   musicSource: {fileID: 284555280}
   BackgroundMusic: {fileID: 8300000, guid: 7805e87ae31d4e748acaa7645d7cb63a, type: 3}
 --- !u!82 &284555282
@@ -15667,7 +15672,7 @@ AudioSource:
   m_audioClip: {fileID: 0}
   m_Resource: {fileID: 0}
   m_PlayOnAwake: 0
-  m_Volume: 0.915
+  m_Volume: 0.948
   m_Pitch: 1
   Loop: 0
   Mute: 0
@@ -15923,8 +15928,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -724.27, y: -551}
-  m_SizeDelta: {x: 235.46, y: 339.879}
+  m_AnchoredPosition: {x: -724, y: -530.79004}
+  m_SizeDelta: {x: 232.744, y: 380.302}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &398213105
 MonoBehaviour:
@@ -17037,7 +17042,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -484, y: -551}
+  m_AnchoredPosition: {x: -481, y: -530.79}
   m_SizeDelta: {x: 211.683, y: 121.797}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &756709095
@@ -23812,7 +23817,7 @@ MonoBehaviour:
   m_VertexBufferAutoSizeReduction: 0
   m_useMaxVisibleDescender: 1
   m_pageToDisplay: 1
-  m_margin: {x: 0, y: 0, z: 0, w: 0}
+  m_margin: {x: 0, y: 0, z: -2.4671783, w: 0}
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
   m_hasFontAssetChanged: 0

@@ -16,7 +16,7 @@ MonoBehaviour:
   itemBaseName: Clembuterol
   description: Estas cansado de ser un flojeras, tomate esto para estar to fuerte
     y recuperarte de los entrenos.
-  icon: {fileID: 0}
+  icon: {fileID: -5519141506789908618, guid: 499f61dd47537cc4a9649baf85c890e0, type: 3}
   isSkin: 0
   rarity: 4
   recuperacion:

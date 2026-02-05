@@ -12,6 +12,7 @@ public class PauseManager : MonoBehaviour
 
     public void Pausar()
     {
+        SoundManager.PauseMusic();
         // activar el menu de pausa y desactivar el boton de pausa
         menuPausaUI.SetActive(true);
         pauseButom.SetActive(false);
@@ -20,6 +21,7 @@ public class PauseManager : MonoBehaviour
     }
     public void Reanudar()
     {
+        SoundManager.ResumeMusic();
         // desactivar el menu de pausa y activar el boton de pausa
         menuPausaUI.SetActive(false);
         pauseButom.SetActive(true);

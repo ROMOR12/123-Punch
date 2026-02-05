@@ -609,11 +609,13 @@ public class CombatController : MonoBehaviour
             {
                 if (!isDodging && !isStunned && !isDead && !victory)
                     StartCoroutine(RutinaEsquiva(1));
+                    SoundManager.PlaySound(SoundType.Dodge);
             }
             else
             {
                 if (!isDodging && !isStunned && !isDead && !victory)
                     StartCoroutine(RutinaEsquiva(-1));
+                    SoundManager.PlaySound(SoundType.Dodge);
             }
         }
     }
@@ -803,7 +805,8 @@ public class CombatController : MonoBehaviour
     {
         if (victory || isDead) return;
         victory = true;
-
+        SoundManager.StopMusic();
+        
         if (roundManager != null) roundManager.RegistrarFinDeRonda(true);
     }
 

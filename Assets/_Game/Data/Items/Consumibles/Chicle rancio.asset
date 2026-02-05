@@ -16,7 +16,7 @@ MonoBehaviour:
   itemBaseName: Chicle Rancio
   description: "Este chicle, que tiene aspecto de haberse ca\xEDdo al suelo, parece
     haber adquirido efectos curativos."
-  icon: {fileID: 6704085292601513190, guid: 68b355bf131fc9d468a5445aed253dd3, type: 3}
+  icon: {fileID: -419025598415563076, guid: 3877f7f7ec043234ebd887c0ef43b74f, type: 3}
   isSkin: 0
   rarity: 0
   recuperacion:
