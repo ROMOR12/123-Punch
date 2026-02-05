@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "81543289499",
+    "project_id": "punch-bbdae",
+    "storage_bucket": "punch-bbdae.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:81543289499:android:3a333898f43f5d47a2843e",
+        "android_client_info": {
+          "package_name": "com.PeraStudios.BoxingGame"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAPrYkaFI4aBSWZz36-9ViuZsJRZYcFPmk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

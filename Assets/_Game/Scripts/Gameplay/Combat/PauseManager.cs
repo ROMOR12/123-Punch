@@ -1,3 +1,4 @@
+using Firebase.Auth;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -39,6 +40,11 @@ public class PauseManager : MonoBehaviour
     {
         Time.timeScale = 1f; // reanudar el tiempo del juego
         // Cerramos la aplicación, por ahora, aqui hay que llamar a SceneManager para ir al menu principal
-        Application.Quit();
+        if (FirebaseAuth.DefaultInstance != null)
+        {
+            FirebaseAuth.DefaultInstance.SignOut();
+
+            SceneManager.LoadScene("Assets/_Game/Scenes/Menu/LoginScene.unity");
+        }
     }
 }
