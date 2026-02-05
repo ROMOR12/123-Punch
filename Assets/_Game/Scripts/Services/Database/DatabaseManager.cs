@@ -52,6 +52,7 @@ public class DatabaseManager : MonoBehaviour
             }
             else
             {
+
                 Debug.Log("¡Usuario guardado en la Base de Datos!");
             }
         });
