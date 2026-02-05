@@ -1,16 +1,24 @@
+using Firebase.Firestore;
 using UnityEngine;
 
-public class PersonajeDatos : MonoBehaviour
+[FirestoreData]
+public class PersonajeDatos
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
-        
-    }
+    [FirestoreProperty]
+    public string id { get; set; }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
+    [FirestoreProperty]
+    public string name { get; set; }
+
+    [FirestoreProperty]
+    public int life { get; set; }
+
+    [FirestoreProperty]
+    public int energy { get; set; }
+
+    [FirestoreProperty]
+    public int force { get; set; }
+
+    [FirestoreProperty]
+    public int recovery { get; set; }
 }
