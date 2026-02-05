@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ffd65b5f767f0614ca9692572c2b6345, type: 3}
+  m_Name: Puro Montecristo
+  m_EditorClassIdentifier: Assembly-CSharp::Pasivo
+  id: 8
+  itemBaseName: Puro Montecristo
+  description: "Los puros que se met\xEDa tu abuelo en las bodas. Te suben la testosterona,
+    pero di adi\xF3s a tus pulmones."
+  icon: {fileID: 0}
+  isSkin: 0
+  rarity: 2
+  bonificaciones:
+  - statType: 2
+    amount: 4
+  - statType: 1
+    amount: -40

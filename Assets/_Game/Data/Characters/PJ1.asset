@@ -22,3 +22,12 @@ MonoBehaviour:
   AttackSprite: {fileID: -4624015225422130373, guid: 841b589f3a4859247b9c1a1f92990b52, type: 3}
   DefetSprite: {fileID: 1693134053311630082, guid: c5bae2cb2cbdfcd448e27efcdaca7b26, type: 3}
   HardAttackSprite: {fileID: -1517447945832409196, guid: ef38bef11e8565f459d396c3864ea37b, type: 3}
+  objetosPasivos:
+  - {fileID: 0}
+  objetosConsumibles:
+  - {fileID: 11400000, guid: e03390070aec2a941b7eab4860725c17, type: 2}
+  - {fileID: 11400000, guid: 472364919acc43e46b32db059ca31b0a, type: 2}
+  - {fileID: 11400000, guid: f5f21042f594594449d5da50c43f8bca, type: 2}
+  - {fileID: 11400000, guid: 79d76a364f49cb84bb01f44d1ced196e, type: 2}
+  - {fileID: 11400000, guid: 24c029b27ce02c64496ebcd5ff737964, type: 2}
+  - {fileID: 11400000, guid: 20254b90ca672594bbfbd9296bb8b8df, type: 2}

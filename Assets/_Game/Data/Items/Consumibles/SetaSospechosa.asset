@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f6266be883c0fa14d8e995d92519cd8c, type: 3}
+  m_Name: SetaSospechosa
+  m_EditorClassIdentifier: Assembly-CSharp::Consumible
+  id: 12
+  itemBaseName: Seta Sospechosa
+  description: "Una seta que parece salida de un juego de un fontanero que rescata
+    princesas. Al consumirla, te sentir\xE1s invencible."
+  icon: {fileID: 5322294753751271358, guid: f329fa983bbfc7e4a9a0ea4421ed585c, type: 3}
+  isSkin: 0
+  rarity: 4
+  recuperacion:
+  - statType: 1
+    amount: 30
+  - statType: 2
+    amount: 3
+  - statType: 0
+    amount: -10

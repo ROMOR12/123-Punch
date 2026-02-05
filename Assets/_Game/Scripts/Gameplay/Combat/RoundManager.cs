@@ -77,6 +77,7 @@ public class RoundManager : MonoBehaviour
         yield return new WaitForSeconds(3f);
 
         // reiniciamos los combatientes para la siguiente ronda
+        SoundManager.PlayBackgroundMusic();
         playerCombat.ReiniciarParaRonda();
         enemyBot.ReiniciarParaRonda();
     }
@@ -86,6 +87,8 @@ public class RoundManager : MonoBehaviour
         if (ganoJugador)
         {
             if (pantallaVictoriaFinal != null) pantallaVictoriaFinal.SetActive(true);
+            SoundManager.StopMusic();
+            SoundManager.PlaySound(SoundType.Win);
             playerCombat.CelebrarVictoria();
         }
         else

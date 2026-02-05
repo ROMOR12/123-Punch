@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f6266be883c0fa14d8e995d92519cd8c, type: 3}
+  m_Name: Kebab Mixto
+  m_EditorClassIdentifier: Assembly-CSharp::Consumible
+  id: 4
+  itemBaseName: Kebab Mixto
+  description: "El alimento de los dioses y tu mejor amigo cuando sales de fiesta.
+    Te dejar\xE1 como nuevo. Eso s\xED, saluda de mi parte al v\xE1ter cuando lo
+    visites."
+  icon: {fileID: -6621263200934043547, guid: 4a92fc26f544304469572b1845ad2a85, type: 3}
+  isSkin: 0
+  rarity: 3
+  recuperacion:
+  - statType: 0
+    amount: 80

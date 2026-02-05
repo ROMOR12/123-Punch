@@ -1,5 +1,9 @@
 fileFormatVersion: 2
+<<<<<<<< HEAD:Assets/_Game/Data/Characters/Jimmi.asset.meta
+guid: e00bc021d45bfaf4089f384f9b502a74
+========
 guid: ba308df405508574392e3598393adce9
+>>>>>>>> origin/feature/sistema-de-combate:Assets/_Game/Art/Animations/EdleAnimation_MainBoxer.anim.meta
 NativeFormatImporter:
   externalObjects: {}
   mainObjectFileID: 7400000

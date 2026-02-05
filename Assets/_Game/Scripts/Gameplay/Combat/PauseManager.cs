@@ -1,3 +1,4 @@
+using Firebase.Auth;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -12,6 +13,7 @@ public class PauseManager : MonoBehaviour
 
     public void Pausar()
     {
+        SoundManager.PauseMusic();
         // activar el menu de pausa y desactivar el boton de pausa
         menuPausaUI.SetActive(true);
         pauseButom.SetActive(false);
@@ -20,6 +22,7 @@ public class PauseManager : MonoBehaviour
     }
     public void Reanudar()
     {
+        SoundManager.ResumeMusic();
         // desactivar el menu de pausa y activar el boton de pausa
         menuPausaUI.SetActive(false);
         pauseButom.SetActive(true);
@@ -28,17 +31,30 @@ public class PauseManager : MonoBehaviour
     }
     public void ReiniciarNivel()
     {
-        // reiniciar el nivel actual
         Time.timeScale = 1f;
         JuegoPausado = false;
 
-        // llamamos a la escena actual para reiniciarla
+        // Buscamos todos los objetos que tengan el combatController y los guardamos en un array
+        CombatController[] scriptsJugador = FindObjectsByType<CombatController>(FindObjectsSortMode.None);
+
+        // Recorremos el array para borrar todos los objetos
+        foreach (CombatController script in scriptsJugador)
+        {
+            // Borramos los objetos para que no vaya entre escenas
+            DestroyImmediate(script.gameObject);
+        }
+
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
     public void CerrarJuego()
     {
         Time.timeScale = 1f; // reanudar el tiempo del juego
         // Cerramos la aplicación, por ahora, aqui hay que llamar a SceneManager para ir al menu principal
-        Application.Quit();
+        if (FirebaseAuth.DefaultInstance != null)
+        {
+            FirebaseAuth.DefaultInstance.SignOut();
+
+            SceneManager.LoadScene("Assets/_Game/Scenes/Menu/LoginScene.unity");
+        }
     }
 }
