@@ -16,7 +16,7 @@ MonoBehaviour:
   itemBaseName: Puro Montecristo
   description: "Los puros que se met\xEDa tu abuelo en las bodas. Te suben la testosterona,
     pero di adi\xF3s a tus pulmones."
-  icon: {fileID: 0}
+  icon: {fileID: 2175135190510338555, guid: 2db4f3ad6d2c6124b8b4efece94a0e93, type: 3}
   isSkin: 0
   rarity: 2
   bonificaciones:

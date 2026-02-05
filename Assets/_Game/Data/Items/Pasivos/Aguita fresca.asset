@@ -16,8 +16,9 @@ MonoBehaviour:
   itemBaseName: Aguita fresca
   description: Si tienes sed y eres una persona sana, tienes que tomar aguita que
     es muy buena.
-  icon: {fileID: 0}
+  icon: {fileID: 1725135456857357540, guid: 8b69394552600fc4a9c9be773ff4a221, type: 3}
   isSkin: 0
+  rarity: 0
   bonificaciones:
   - statType: 1
     amount: 1
