@@ -16,7 +16,7 @@ MonoBehaviour:
   itemBaseName: "Bebida Isot\xF3nica"
   description: "Bebida consumida mayormente por crossfiteros. Te ayudar\xE1 a recuperarte
     de la paliza del adversario."
-  icon: {fileID: 0}
+  icon: {fileID: -6455289941207979036, guid: 02b6bd0d1eb9f314696930e763d63643, type: 3}
   isSkin: 0
   rarity: 1
   recuperacion:

@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 4a92fc26f544304469572b1845ad2a85
+guid: 3877f7f7ec043234ebd887c0ef43b74f
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -6621263200934043547
-    second: KebabMixto_Icon_0
+      213: -419025598415563076
+    second: ChicleRancio_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -113,13 +113,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: KebabMixto_Icon_0
+      name: ChicleRancio_0
       rect:
         serializedVersion: 2
-        x: 224
-        y: 99
-        width: 202
-        height: 452
+        x: 39
+        y: 103
+        width: 146
+        height: 106
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -128,8 +128,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 560e5ff133c8c14a0800000000000000
-      internalID: -6621263200934043547
+      spriteID: cb615a630725f2af0800000000000000
+      internalID: -419025598415563076
       vertices: []
       indices: 
       edges: []
@@ -148,7 +148,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      KebabMixto_Icon_0: -6621263200934043547
+      ChicleRancio_0: -419025598415563076
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

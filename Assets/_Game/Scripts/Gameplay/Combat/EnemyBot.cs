@@ -185,6 +185,7 @@ public class EnemyBot : MonoBehaviour
                 float baseDamage = enemyData.force * damageMultiplier;
                 int damageFinta = Mathf.RoundToInt(baseDamage * 3f);
                 playerCombat.ReceiveTrueDamage(damageFinta);
+                SoundManager.PlaySound(SoundType.Complaint);
             }
         }
         yield return new WaitForSeconds(0.5f);
@@ -213,6 +214,8 @@ public class EnemyBot : MonoBehaviour
             StopAllCoroutines();
             EnemyDead();
         }
+
+        SoundManager.PlaySound(SoundType.EnemyComplaint, 0.2f);
 
         return true;
     }

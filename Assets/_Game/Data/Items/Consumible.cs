@@ -10,8 +10,8 @@ public class Consumible : ItemBase
     {
         foreach (var efecto in recuperacion)
         {
-            //playerCombat.AplicarConsumible(efecto.statType, efecto.amount, true);
+            playerCombat.AplicarCambioEstadistica(efecto.statType, efecto.amount, true);
         }
-        Debug.Log($"Usado consumible: {itemBaseName}");
+        Debug.Log($"Usando objeto: {itemBaseName}");
     }
 }

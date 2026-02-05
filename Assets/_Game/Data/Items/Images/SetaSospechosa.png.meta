@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 4a92fc26f544304469572b1845ad2a85
+guid: f329fa983bbfc7e4a9a0ea4421ed585c
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -6621263200934043547
-    second: KebabMixto_Icon_0
+      213: 5322294753751271358
+    second: SetaSospechos_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -113,13 +113,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: KebabMixto_Icon_0
+      name: SetaSospechos_0
       rect:
         serializedVersion: 2
-        x: 224
-        y: 99
-        width: 202
-        height: 452
+        x: 5
+        y: 6
+        width: 90
+        height: 90
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -128,8 +128,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 560e5ff133c8c14a0800000000000000
-      internalID: -6621263200934043547
+      spriteID: eb7054b31e69cd940800000000000000
+      internalID: 5322294753751271358
       vertices: []
       indices: 
       edges: []
@@ -148,7 +148,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      KebabMixto_Icon_0: -6621263200934043547
+      SetaSospechos_0: 5322294753751271358
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

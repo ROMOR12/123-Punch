@@ -6,11 +6,12 @@ public class Pasivo : ItemBase
 {
     public List<StatModifier> bonificaciones;
 
-    public void Equipar(CharacterStats stats)
+    public void Equipar(CombatController stats)
     {
         foreach (var bono in bonificaciones)
         {
-            stats.AplicarModificador(bono.statType, bono.amount, false);
+            // 'false' significa que no es un consumible, es item pasivo
+            stats.AplicarCambioEstadistica(bono.statType, bono.amount, false);
         }
     }
 }

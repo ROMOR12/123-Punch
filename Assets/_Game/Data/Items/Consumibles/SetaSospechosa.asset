@@ -16,7 +16,7 @@ MonoBehaviour:
   itemBaseName: Seta Sospechosa
   description: "Una seta que parece salida de un juego de un fontanero que rescata
     princesas. Al consumirla, te sentir\xE1s invencible."
-  icon: {fileID: 0}
+  icon: {fileID: 5322294753751271358, guid: f329fa983bbfc7e4a9a0ea4421ed585c, type: 3}
   isSkin: 0
   rarity: 4
   recuperacion:

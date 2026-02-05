@@ -16,7 +16,7 @@ MonoBehaviour:
   itemBaseName: Preentreno
   description: "Si lo que quieres es rendir a tope, esto es perfecto. Eso s\xED,
     no te pases con la dosis o prep\xE1rate para las consecuencias."
-  icon: {fileID: 0}
+  icon: {fileID: -3035938925796340463, guid: 990d2b49b18e4724cb45d7c77af98170, type: 3}
   isSkin: 0
   rarity: 1
   recuperacion:

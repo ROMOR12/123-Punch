@@ -10,7 +10,12 @@ public enum SoundType
     GuardStrike,
     Win,
     Lose,
-    Consumable
+    Consumable,
+    EnemyComplaint,
+    Complaint,
+    BrokeGuard,
+    Dizzy,
+    Dodge
 }
 
 [RequireComponent(typeof(AudioSource)), ExecuteInEditMode]
@@ -132,6 +137,22 @@ public class SoundManager : MonoBehaviour
     {
         if (instance != null && instance.musicSource != null)
             instance.musicSource.Stop();
+    }
+
+    public static void ResumeMusic()
+    {
+        if (instance != null && instance.musicSource != null)
+        {
+            instance.musicSource.UnPause(); // Quita la pausa
+        }
+    }
+
+    public static void PauseMusic()
+    {
+        if (instance != null && instance.musicSource != null)
+        {
+            instance.musicSource.Pause();
+        }
     }
 
 #if UNITY_EDITOR
