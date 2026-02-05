@@ -10,13 +10,16 @@ public class SaltoIcono : MonoBehaviour
 
     void Start()
     {
+        // Guarda la posición original
         posicionInicial = transform.localPosition;
     }
 
     void Update()
     {
+        // Calcula el salto: tiempo, velocidad y fuerza
         float nuevoY = Mathf.Abs(Mathf.Sin(Time.time * velocidadSalto)) * fuerzaSalto;
 
+        // Simula el salto cambiando la posición actual por la orginial más la nueva
         transform.localPosition = posicionInicial + new Vector3(0, nuevoY, 0);
     }
 }

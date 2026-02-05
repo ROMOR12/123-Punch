@@ -26,6 +26,7 @@ public class MiniGameMana : MonoBehaviour
     private bool juegoActivo = true;
     private Vector3 posicionOriginalSopa;
 
+    // Lo primero que se ejecuta cuando se inicia el script
     private void Start()
     {
         tiempoRestante = tiempoLimite;
@@ -50,10 +51,11 @@ public class MiniGameMana : MonoBehaviour
         }
     }
 
+    // Por cada click suma uno al contador y llama a los metodos para actualizar la interfaz
     public void RegistrarClick()
     {
         if (!juegoActivo) return;
-       
+        
         clicksActuales++;
         clicksSopa++;
         ActualizarInterfaz();
@@ -62,13 +64,14 @@ public class MiniGameMana : MonoBehaviour
         StartCoroutine(EfectoSaltarSopa());
         particulasSopa.Play();
 
-
+        // Condición para finalizar el juego
         if (clicksActuales >= clicksObjetivo)
         {
             FinalizarJuego(true);
         }
     }
 
+    // Efecto de salto para el sprite de la sopa
     IEnumerator EfectoSaltarSopa()
     {
         RectTransform rt = imagenSopa.rectTransform;
@@ -79,6 +82,7 @@ public class MiniGameMana : MonoBehaviour
         rt.anchoredPosition = posicionOriginalSopa;
     }
 
+    // Actualiza la interfaz, los diferentes estados de la sopa
     public void ActualizarSopa()
     {
         if (estadosSopa.Length == 0) return;
@@ -87,12 +91,14 @@ public class MiniGameMana : MonoBehaviour
         imagenSopa.sprite = estadosSopa[indice];
     }
 
+    // Actualiza la interfaz en tiempo real, tiempo restante y contador de clicks
     public void ActualizarInterfaz()
     {
         clickText.text = "Clics: " + clicksActuales + " / " + clicksObjetivo;
         timerText.text = "Tiempo: " + tiempoRestante.ToString("F1") + "s";
     }
 
+    // Finaliza el juego y muestra un mensaje en funcion de si has ganado o perdido
     public void FinalizarJuego(bool ganado)
     {
         juegoActivo = false;
