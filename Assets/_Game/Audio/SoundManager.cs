@@ -18,6 +18,11 @@ public enum SoundType
     Dodge
 }
 
+public enum UiSoundType
+{
+    CLICK
+}
+
 [RequireComponent(typeof(AudioSource)), ExecuteInEditMode]
 public class SoundManager : MonoBehaviour
 {
@@ -25,8 +30,11 @@ public class SoundManager : MonoBehaviour
     [Range(0f, 1f)] public float musicVolume = 0.5f;
     [Range(0f, 1f)] public float sfxVolume = 1f;
 
-    [Header("Configuración")]
+    [Header("Configuración SFX(juego)")]
     [SerializeField] private SoundList[] soundList;
+
+    [Header("Configuracion Sonidos UI")]
+    [SerializeField] private SoundList[] uiSoundList;
 
     [Header("Música de Fondo")]
     [SerializeField] private AudioSource musicSource;
@@ -54,6 +62,7 @@ public class SoundManager : MonoBehaviour
     private void Start()
     {
         if (soundList == null) soundList = new SoundList[0];
+        if (uiSoundList == null) uiSoundList = new SoundList[0];
 
         AudioSource[] allSources = GetComponents<AudioSource>();
 
@@ -126,6 +135,28 @@ public class SoundManager : MonoBehaviour
         }
     }
 
+    public static void PlayUiSound(UiSoundType sound)
+    {
+        if (instance == null || instance.uiSoundList == null) return;
+
+        // Validación de índice
+        if ((int)sound < instance.uiSoundList.Length)
+        {
+            SoundList soundItem = instance.uiSoundList[(int)sound];
+            PlayClipFromItem(soundItem);
+        }
+    }
+
+    private static void PlayClipFromItem(SoundList item)
+    {
+        if (item.Sounds != null && item.Sounds.Length > 0)
+        {
+            AudioClip randomClip = item.Sounds[UnityEngine.Random.Range(0, item.Sounds.Length)];
+            if (instance.sfxSource != null && randomClip != null)
+                instance.sfxSource.PlayOneShot(randomClip, 1f);
+        }
+    }
+
     public static void PlayMusic(AudioClip musicClip)
     {
         if (instance == null || instance.musicSource == null) return;
@@ -158,18 +189,32 @@ public class SoundManager : MonoBehaviour
 #if UNITY_EDITOR
     private void OnEnable()
     {
-        string[] names = Enum.GetNames(typeof(SoundType));
-        if (soundList == null) soundList = new SoundList[0];
-        if (soundList.Length != names.Length) Array.Resize(ref soundList, names.Length);
-        for (int i = 0; i < soundList.Length; i++) soundList[i].name = names[i];
+        // 1. Actualizar lista de combate
+        SyncList(ref soundList, typeof(SoundType));
+
+        // 2. Actualizar lista de UI
+        SyncList(ref uiSoundList, typeof(UiSoundType));
+    }
+
+    // Función auxiliar para sincronizar listas con enums automáticamente
+    private void SyncList(ref SoundList[] list, Type enumType)
+    {
+        string[] names = Enum.GetNames(enumType);
+        if (list == null) list = new SoundList[0];
+
+        if (list.Length != names.Length)
+            Array.Resize(ref list, names.Length);
+
+        for (int i = 0; i < list.Length; i++)
+            list[i].name = names[i];
     }
 #endif
 }
 
 [Serializable]
-public struct SoundList
+public class SoundList
 {
     public AudioClip[] Sounds { get => sounds; }
-    [HideInInspector] public string name;
+    [HideInInspector]public string name;
     [SerializeField] private AudioClip[] sounds;
 }

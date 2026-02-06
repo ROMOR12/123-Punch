@@ -15496,6 +15496,7 @@ MonoBehaviour:
   mochilaConsumibles: []
   imagenBotonConsumible: {fileID: 398213106}
   FlechaConsumible: {fileID: 756709093}
+  pantallaResultados: {fileID: 0}
   enemyHealthBar: {fileID: 928405473}
   enemyHealthText: {fileID: 395867583}
 --- !u!4 &284555279
@@ -15657,6 +15658,10 @@ MonoBehaviour:
   - name: Dodge
     sounds:
     - {fileID: 8300000, guid: 75743e524964022469f902dcbce62ede, type: 3}
+  uiSoundList:
+  - name: CLICK
+    sounds:
+    - {fileID: 0}
   musicSource: {fileID: 284555280}
   BackgroundMusic: {fileID: 8300000, guid: 7805e87ae31d4e748acaa7645d7cb63a, type: 3}
 --- !u!82 &284555282

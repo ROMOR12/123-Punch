@@ -76,6 +76,12 @@ public class CombatController : MonoBehaviour
     public Image imagenBotonConsumible;
     public GameObject FlechaConsumible;
 
+    [Header("Estadísticas de Combate")]
+    public ResultScreenUI pantallaResultados;
+    private int contadorGolpes = 0;
+    private int contadorDañoTotal = 0;
+    private float tiempoInicioCombate;
+
     public Slider enemyHealthBar;
     public TMP_Text enemyHealthText;
 
@@ -90,9 +96,6 @@ public class CombatController : MonoBehaviour
 
     void Start()
     {
-        // -----------------------------------------------------------------------
-        // 1. INICIALIZACIÓN SEGURA DE LISTA (Corrección Inventario)
-        // -----------------------------------------------------------------------
         mochilaConsumibles = new List<Consumible>(); // Reiniciamos lista siempre
 
         if (playerData != null)
@@ -161,6 +164,15 @@ public class CombatController : MonoBehaviour
             enemyHealthBar.maxValue = enemyMax;
             enemyHealthBar.value = enemyMax;
             UpdateHealthText(enemyHealthText, enemyMax, enemyMax);
+        }
+
+        tiempoInicioCombate = Time.time;
+        contadorGolpes = 0;
+        contadorDañoTotal = 0;
+
+        if(pantallaResultados != null)
+        {
+            pantallaResultados.ventanaResultados.SetActive(false);
         }
 
         HandleStaminaRegen();
@@ -235,6 +247,9 @@ public class CombatController : MonoBehaviour
                     ShowDamagePopup(damageDealt, false);
                     if (enemyHealthBar != null)
                     {
+                        //va cogiendo el daño que le haces al enemigo
+                        RegistrarEstadistica(damageDealt);
+
                         enemyHealthBar.value -= damageDealt;
                         UpdateHealthText(enemyHealthText, enemyHealthBar.value, enemyHealthBar.maxValue);
                         PlayHitParticles();
@@ -271,6 +286,9 @@ public class CombatController : MonoBehaviour
 
                 if (golpeo)
                 {
+                    //va cogiendo el daño que le haces al enemigo
+                    RegistrarEstadistica(damageDealt);
+
                     enemyHealthBar.value -= damageDealt;
                     UpdateHealthText(enemyHealthText, enemyHealthBar.value, enemyHealthBar.maxValue);
                     PlayHitParticles();
@@ -806,7 +824,19 @@ public class CombatController : MonoBehaviour
         if (victory || isDead) return;
         victory = true;
         SoundManager.StopMusic();
-        
+
+        //Calcula cuánto ha durado la pelea(Ahora - Inicio)
+        float duracionCombate = Time.time - tiempoInicioCombate;
+
+        if (pantallaResultados != null)
+        {
+            // true = Ganaste
+            // contadorGolpes = Los que sumamos con RegistrarEstadistica
+            // duracionCombate = El tiempo calculado
+            // contadorDañoTotal = El daño acumulado
+            pantallaResultados.MostrarResultados(true, contadorGolpes, duracionCombate, contadorDañoTotal);
+        }
+
         if (roundManager != null) roundManager.RegistrarFinDeRonda(true);
     }
 
@@ -917,5 +947,12 @@ public class CombatController : MonoBehaviour
 
         // 5. IMPORTANTE: Actualizamos el dibujo para ver el nuevo objeto
         ActualizarInterfazObjeto();
+    }
+    
+    // cada vez que haces daño esto se va incrementando
+    void RegistrarEstadistica(int damage)
+    {
+        contadorGolpes++;
+        contadorDañoTotal += damage;
     }
 }
