@@ -38,8 +38,12 @@ public class MostrarPersonajes : MonoBehaviour
 
     private void ActualizarPersonaje()
     {
-        imagenPersonajeSeleccionado.sprite = gameManager.listaPersonajes[indicePersonajeSeleccionado].sprite !=null? gameManager.listaPersonajes[indicePersonajeSeleccionado].sprite : gameManager.imageDefault;
-        imagenSeleccionPersonaje.sprite = gameManager.listaPersonajes[indicePersonajeSeleccionado].sprite != null ? gameManager.listaPersonajes[indicePersonajeSeleccionado].sprite : gameManager.imageDefault;
+        // imagenPersonajeSeleccionado.sprite = gameManager.listaPersonajes[indicePersonajeSeleccionado].sprite !=null? gameManager.listaPersonajes[indicePersonajeSeleccionado].sprite : gameManager.imageDefault;
+        // imagenSeleccionPersonaje.sprite = gameManager.listaPersonajes[indicePersonajeSeleccionado].sprite != null ? gameManager.listaPersonajes[indicePersonajeSeleccionado].sprite : gameManager.imageDefault;
+
+        imagenSeleccionPersonaje.sprite = gameManager.listaPersonajes[indicePersonajeSeleccionado].sprite !=null? gameManager.listaPersonajes[indicePersonajeSeleccionado].sprite : gameManager.imageDefault;
+        imagenPersonajeSeleccionado.sprite = gameManager.listaPersonajes[indicePersonajeSeleccionado].sprite != null ? gameManager.listaPersonajes[indicePersonajeSeleccionado].sprite : gameManager.imageDefault;
+
 
         textoVida.text = gameManager.listaPersonajes[indicePersonajeSeleccionado].life.ToString();
         textoStam.text = gameManager.listaPersonajes[indicePersonajeSeleccionado].energy.ToString();
@@ -64,11 +68,4 @@ public class MostrarPersonajes : MonoBehaviour
             indicePersonajeSeleccionado++;
         ActualizarPersonaje();
     }
-
-  
-
-
-
-
-
 }

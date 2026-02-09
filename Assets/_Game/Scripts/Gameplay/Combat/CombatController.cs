@@ -918,4 +918,10 @@ public class CombatController : MonoBehaviour
         // 5. IMPORTANTE: Actualizamos el dibujo para ver el nuevo objeto
         ActualizarInterfazObjeto();
     }
+    // Funcion que se llama cuando CombatController se destruye
+    private void OnDisable()
+    {
+        // Mata todas las corutinas en proceso de este script
+        StopAllCoroutines();
+    }
 }

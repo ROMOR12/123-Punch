@@ -54,7 +54,7 @@ public class PauseManager : MonoBehaviour
         {
             FirebaseAuth.DefaultInstance.SignOut();
 
-            SceneManager.LoadScene("Assets/_Game/Scenes/Menu/LoginScene.unity");
+            SceneManager.LoadScene("Menu");
         }
     }
 }
