@@ -153,8 +153,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -148.74, y: -1552}
-  m_SizeDelta: {x: 1170.5305, y: 221.357}
+  m_AnchoredPosition: {x: -152.01, y: -834}
+  m_SizeDelta: {x: 434.2498, y: 89.8648}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &654214730
 MonoBehaviour:
@@ -203,8 +203,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 200
-  m_fontSizeBase: 200
+  m_fontSize: 100
+  m_fontSizeBase: 100
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -290,8 +290,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 434, y: -1323.5}
-  m_SizeDelta: {x: 495.3174, y: 678.4379}
+  m_AnchoredPosition: {x: 214, y: -732}
+  m_SizeDelta: {x: 349.8802, y: 350.9525}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &720619292
 MonoBehaviour:
@@ -313,7 +313,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: -7445666961110531637, guid: 036f18abbb8853944a7412c8113daf3c, type: 3}
+  m_Sprite: {fileID: -6615154495724791288, guid: 60e4e42b848da2645a8b26de8835832c, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -764,7 +764,7 @@ MonoBehaviour:
   m_ScaleFactor: 1
   m_ReferenceResolution: {x: 1920, y: 1080}
   m_ScreenMatchMode: 0
-  m_MatchWidthOrHeight: 0
+  m_MatchWidthOrHeight: 0.5
   m_PhysicalUnit: 3
   m_FallbackScreenDPI: 96
   m_DefaultSpriteDPI: 96
@@ -851,8 +851,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -0.000034332, y: -1769}
-  m_SizeDelta: {x: 1468.0117, y: 401.3058}
+  m_AnchoredPosition: {x: 0.0000028014, y: -940.68}
+  m_SizeDelta: {x: 738.2623, y: 210.9016}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1317492623
 MonoBehaviour:
@@ -938,7 +938,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0.25}
   m_AnchorMax: {x: 1, y: 0.75}
-  m_AnchoredPosition: {x: -5, y: 0}
+  m_AnchoredPosition: {x: -5.0000305, y: 0}
   m_SizeDelta: {x: -20, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &1599419103
@@ -986,7 +986,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CargaEscena
   barraDeProgreso: {fileID: 1317492623}
-  escenaCargando: 
+  escenaCargando: CombateDePrueba
   suavizarBarra: 0.5
 --- !u!1 &1935798469
 GameObject:
