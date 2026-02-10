@@ -22,13 +22,13 @@ public class ResultScreenUI : MonoBehaviour
         {
             tituloTexto.text = "¡VICTORIA!";
             tituloTexto.color = Color.green;
-            SoundManager.PlayUiSound(UiSoundType.CLICK); //cambiar
+            //SoundManager.PlayUiSound(UiSoundType.CLICK); //cambiar
         }
         else
         {
-            tituloTexto.text = "DERROTA...";
+            tituloTexto.text = "DERROTA :(";
             tituloTexto.color = Color.red;
-            SoundManager.PlayUiSound(UiSoundType.CLICK); //cambiar
+            //SoundManager.PlayUiSound(UiSoundType.CLICK); //cambiar
         }
 
         //Rellenar datos

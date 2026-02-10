@@ -78,9 +78,9 @@ public class CombatController : MonoBehaviour
 
     [Header("Estadísticas de Combate")]
     public ResultScreenUI pantallaResultados;
-    private int contadorGolpes = 0;
-    private int contadorDañoTotal = 0;
-    private float tiempoInicioCombate;
+    public int contadorGolpes = 0;
+    public int contadorDañoTotal = 0;
+    public float tiempoInicioCombate;
 
     public Slider enemyHealthBar;
     public TMP_Text enemyHealthText;
@@ -824,18 +824,6 @@ public class CombatController : MonoBehaviour
         if (victory || isDead) return;
         victory = true;
         SoundManager.StopMusic();
-
-        //Calcula cuánto ha durado la pelea(Ahora - Inicio)
-        float duracionCombate = Time.time - tiempoInicioCombate;
-
-        if (pantallaResultados != null)
-        {
-            // true = Ganaste
-            // contadorGolpes = Los que sumamos con RegistrarEstadistica
-            // duracionCombate = El tiempo calculado
-            // contadorDañoTotal = El daño acumulado
-            pantallaResultados.MostrarResultados(true, contadorGolpes, duracionCombate, contadorDañoTotal);
-        }
 
         if (roundManager != null) roundManager.RegistrarFinDeRonda(true);
     }
