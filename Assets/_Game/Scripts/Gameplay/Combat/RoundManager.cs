@@ -17,6 +17,10 @@ public class RoundManager : MonoBehaviour
     public GameObject pantallaVictoriaFinal;
     public GameObject pantallaDerrotaFinal;
 
+    [Header("Estadísticas Finales")]
+    public ResultScreenUI pantallaResultados;
+    private float tiempoInicioCombate;
+
     private int victoriasJugador = 0;
     private int victoriasEnemigo = 0;
     private int rondaActual = 0;
@@ -83,18 +87,48 @@ public class RoundManager : MonoBehaviour
     }
     void FinDelJuego(bool ganoJugador)
     {
+        if (enemyBot != null)
+        {
+            enemyBot.StopAllCoroutines(); // Detiene ataques en curso
+            enemyBot.enabled = false;     // Apaga su cerebro totalmente
+        }
+
+        //Calcula cuánto ha durado la pelea(Ahora - Inicio)
+        float duracionCombate = Time.time - tiempoInicioCombate;
+        SoundManager.StopMusic();
+
         // mostramos la pantalla de victoria o derrota segun corresponda
         if (ganoJugador)
         {
             if (pantallaVictoriaFinal != null) pantallaVictoriaFinal.SetActive(true);
-            SoundManager.StopMusic();
             SoundManager.PlaySound(SoundType.Win);
-            playerCombat.CelebrarVictoria();
+            if (playerCombat != null) playerCombat.CelebrarVictoria();
+
+            if (pantallaResultados != null)
+            {
+                // true = Ganaste
+                // contadorGolpes = Los que sumamos con RegistrarEstadistica
+                // duracionCombate = El tiempo calculado
+                // contadorDañoTotal = El daño acumulado
+                pantallaResultados.MostrarResultados(
+                    ganoJugador = true,
+                    playerCombat.contadorGolpes,
+                    duracionCombate,
+                    playerCombat.contadorDañoTotal
+                );
+            }
         }
         else
         {
-            if (pantallaDerrotaFinal != null) pantallaDerrotaFinal.SetActive(true);
-            // animacion de vicotiria del enemigo aun no hecha
+            if (pantallaResultados != null)
+            {
+                pantallaResultados.MostrarResultados(
+                    ganoJugador = false,
+                    playerCombat.contadorGolpes,
+                    duracionCombate,
+                    playerCombat.contadorDañoTotal
+                );
+            }
         }
     }
 }

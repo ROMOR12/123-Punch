@@ -16,7 +16,7 @@ MonoBehaviour:
   itemBaseName: Casco Acolchado
   description: Te noquean facil, prueba a ponerte un casco "Totalmente Legal" que
     no te pillen utilizandolo.
-  icon: {fileID: 0}
+  icon: {fileID: -7011001265641058505, guid: cbef65353acd6354baa132cb72c1cb62, type: 3}
   isSkin: 0
   rarity: 2
   bonificaciones:

@@ -17,7 +17,7 @@ MonoBehaviour:
   description: "Conocido por el palo de las carreras de relevos, este \"palo\" te
     dar\xE1 la resistencia y recuperaci\xF3n de un atleta, pero no se puede tener
     todo en la vida. Te vas a quedar con menos fuerza, por espabilao."
-  icon: {fileID: 0}
+  icon: {fileID: -8683350021535326678, guid: 2436bdb79909e2e478b84b8ab3c056fb, type: 3}
   isSkin: 0
   rarity: 1
   bonificaciones:

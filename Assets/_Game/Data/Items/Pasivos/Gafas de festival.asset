@@ -17,7 +17,7 @@ MonoBehaviour:
   description: "Estas gafas tienen m\xE1s calle que perro viejo; han vivido m\xE1s
     cosas de las que t\xFA vivir\xE1s en toda tu vida. Ser\xE1n tus mejores compa\xF1eras
     en la zona de camping de los festivales."
-  icon: {fileID: 0}
+  icon: {fileID: -6526156760604439040, guid: 8d309cc95709fff43957c3327bfba2e4, type: 3}
   isSkin: 0
   rarity: 2
   bonificaciones:

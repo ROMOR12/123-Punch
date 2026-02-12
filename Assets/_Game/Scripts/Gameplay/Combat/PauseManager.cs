@@ -13,6 +13,7 @@ public class PauseManager : MonoBehaviour
 
     public void Pausar()
     {
+        SoundManager.PlaySound(SoundType.StrongHit);
         SoundManager.PauseMusic();
         // activar el menu de pausa y desactivar el boton de pausa
         menuPausaUI.SetActive(true);
