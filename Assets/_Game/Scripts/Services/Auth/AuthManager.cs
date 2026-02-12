@@ -82,7 +82,7 @@ public class AuthManager : MonoBehaviour
         if (irAlJuego)
         {
             irAlJuego = false;
-            faderScript.CambiarEscena("Assets/_Game/Scenes/Combat/CombateDePrueba.unity");
+            faderScript.CambiarEscena("Menu");
         }
 
         if (recargarEscena)

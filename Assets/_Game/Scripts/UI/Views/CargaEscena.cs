@@ -7,21 +7,29 @@ using Unity.Mathematics;
 public class CargaEscena : MonoBehaviour
 {
     public Slider barraDeProgreso;
-    public string escenaCargando;
     [Range(0.1f, 2f)]
     public float suavizarBarra = 0.5f; // Controla lo rápido que se llena la barra de carga
+
+    public static string siguienteEscena;
+
+    public static void Cargar(string nombreEscena)
+    {
+        siguienteEscena = nombreEscena;
+        // Cargamos la escena de carga
+        SceneManager.LoadScene("LoadingScreen");
+    }
 
     void Start()
     {
         // Iniciamos la carga en segundo plano
-        StartCoroutine(CargarAsincronamente()); 
+        StartCoroutine(CargarAsincronamente(siguienteEscena));
     }
     void Update()
     {
         
     }
 
-    IEnumerator CargarAsincronamente()
+    IEnumerator CargarAsincronamente(string escenaCargando)
     {
         // Carga la siguiente escena en segundo plano
         AsyncOperation operacion = SceneManager.LoadSceneAsync(escenaCargando);
@@ -33,7 +41,7 @@ public class CargaEscena : MonoBehaviour
 
         float velocidadDeLlenado = 0.5f;
 
-        while (progresoVisual < 1f)
+        while (!operacion.isDone)
         {
             float progreso = Mathf.Clamp01(operacion.progress / 0.9f);
 

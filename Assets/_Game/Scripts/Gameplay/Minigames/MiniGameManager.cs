@@ -2,6 +2,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
+using UnityEngine.SceneManagement;
 
 public class MiniGameMana : MonoBehaviour
 {
@@ -106,11 +107,13 @@ public class MiniGameMana : MonoBehaviour
         {
             Debug.Log("Ganaste!");
             timerText.text = "¡CONSEGUIDO!";
+            SceneManager.LoadScene("Menu");
         }
         else
         {
             Debug.Log("Se acabó el tiempo...");
             timerText.text = "¡Tiempo Agotado!";
+            SceneManager.LoadScene("Menu");
         }
     }
 }

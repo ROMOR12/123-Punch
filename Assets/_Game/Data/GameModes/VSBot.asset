@@ -10,8 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 0d286d4811116714092929e27ca6e650, type: 3}
-  m_Name: Rey del ring
+  m_Name: VSBot
   m_EditorClassIdentifier: Assembly-CSharp::ModosDeJuego
-  ModoDeJuego: {fileID: 0}
-  Imagen: {fileID: 5957513934721392745, guid: 1e0e235b653c0734995994468157ec5b, type: 3}
-  Nombre: Rey del ring
+  Imagen: {fileID: 4851830652770728770, guid: b13eee81b2ef9bd4994ff213765376cd, type: 3}
+  Nombre: VSBot

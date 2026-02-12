@@ -18,7 +18,12 @@ public class Menu : MonoBehaviour
     {
         gameManager = GameManager.Instance;
 
-        index = PlayerPrefs.GetInt("ModoDeJuegoIndex");
+        index = PlayerPrefs.GetInt("ModoDeJuegoIndex", 0);
+
+        if (gameManager != null && index >= gameManager.modosDeJuego.Count)
+        {
+            index = 0;
+        }
 
         CambiarPantalla();
     }
@@ -57,21 +62,24 @@ public class Menu : MonoBehaviour
 
     public void IniciarModoDeJuego()
     {
+        var modoSeleccionado = gameManager.modosDeJuego[index];
+
+        string nombreDelModo = modoSeleccionado.Nombre;
+
         string escena = "";
-        switch(index)
+        switch (nombreDelModo)
         {
-            case 0:
+            case "Campaña":
                 escena = "CombateDePrueba";
-            break;
-            case 1:
+                break;
+
+            case "Buffet LIbre": 
+                escena = "EatingMinigame";
+                break;
+
+            case "Rey del ring":
                 escena = "CombateDePrueba";
-            break;
-            case 2:
-                escena = "CombateDePrueba";
-            break;  
-            default:
-                escena = "CombateDePrueba";
-            break;
+                break;
         }
         SceneManager.LoadScene(escena);
     }

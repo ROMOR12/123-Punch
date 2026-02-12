@@ -2,10 +2,12 @@ using NUnit.Framework;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using Firebase.Firestore;
+using Firebase.Extensions;
+using TMPro;
 
 public class GameManager : MonoBehaviour
 {
-
     public static GameManager Instance;
 
     public List<ModosDeJuego> modosDeJuego;

@@ -2079,7 +2079,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5721043863241724122, guid: 04d9d14814cb0a74bab8abe07e6fb589, type: 3}
       propertyPath: escenaDestino
-      value: LoginScene
+      value: Menu
       objectReference: {fileID: 0}
     - target: {fileID: 6482695613325680938, guid: 04d9d14814cb0a74bab8abe07e6fb589, type: 3}
       propertyPath: m_Pivot.x

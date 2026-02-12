@@ -12,6 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0d286d4811116714092929e27ca6e650, type: 3}
   m_Name: "Campa\xF1a"
   m_EditorClassIdentifier: Assembly-CSharp::ModosDeJuego
-  ModoDeJuego: {fileID: 0}
-  Imagen: {fileID: -7631899635669074067, guid: a7ddc055f6533a54dac3be47517d7577, type: 3}
+  Imagen: {fileID: 9216175685413837161, guid: 03bf94da947df034ca31e7d756cc468b, type: 3}
   Nombre: "Campa\xF1a"

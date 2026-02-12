@@ -17,6 +17,12 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/_Game/Scenes/Menu/LoginScene.unity
     guid: b457a562e298d9e41ade1bdd08ad0f77
+  - enabled: 1
+    path: Assets/_Game/Scenes/Minigames/EatingMinigame/EatingMinigame.unity
+    guid: aa047fd8abc30544d94ded82c1e0fd22
+  - enabled: 1
+    path: Assets/_Game/Scenes/Boot/LoadingScreen.unity
+    guid: a6745e03af27ea848a3834fb4b578f74
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
   m_UseUCBPForAssetBundles: 0

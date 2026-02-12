@@ -622,6 +622,11 @@ public class CombatController : MonoBehaviour
 
     IEnumerator RutinaEsquiva(int direccion)
     {
+        if (this == null || gameObject == null || playerSpriteRenderer == null)
+        {
+            yield break;
+        }
+
         isDodging = true;
         dodgeDirection = direccion;
 
