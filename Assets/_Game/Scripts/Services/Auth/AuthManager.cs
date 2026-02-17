@@ -82,7 +82,7 @@ public class AuthManager : MonoBehaviour
         if (irAlJuego)
         {
             irAlJuego = false;
-            faderScript.CambiarEscena("Menu");
+            CargaEscena.Cargar("Menu");
         }
 
         if (recargarEscena)

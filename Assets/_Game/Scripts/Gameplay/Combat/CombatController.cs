@@ -1,9 +1,10 @@
-﻿using UnityEngine;
-using UnityEngine.UI;
-using System.Collections;
-using TMPro;
-using UnityEngine.InputSystem;
+﻿using System.Collections;
 using System.Collections.Generic;
+using TMPro;
+using Unity.VisualScripting.Antlr3.Runtime.Misc;
+using UnityEngine;
+using UnityEngine.InputSystem;
+using UnityEngine.UI;
 
 public class CombatController : MonoBehaviour
 {
@@ -96,21 +97,21 @@ public class CombatController : MonoBehaviour
 
     void Start()
     {
-        mochilaConsumibles = new List<Consumible>(); // Reiniciamos lista siempre
+        mochilaConsumibles = new List<Consumible>();
 
         if (playerData != null)
         {
             // Cargar consumibles solo si existen
             if (playerData.objetosConsumibles != null)
             {
-                // Filtramos para no añadir huecos vacíos (nulls)
+                // Filtramos para no añadir objetos vacios
                 foreach (var item in playerData.objetosConsumibles)
                 {
                     if (item != null) mochilaConsumibles.Add(item);
                 }
             }
 
-            // Cargar Datos Básicos
+            // Cargamos los datos basicos
             maxLife = (float)playerData.life;
             maxEnergy = (float)playerData.energy;
             currentForce = (float)playerData.force;
@@ -126,11 +127,9 @@ public class CombatController : MonoBehaviour
             foreach (var pasivo in pasivosEquipados)
                 if (pasivo != null) pasivo.Equipar(this);
 
-            // Valores Iniciales
             currentLife = maxLife;
             currentEnergy = maxEnergy;
 
-            // Visuales
             if (playerSpriteRenderer != null && playerData.sprite != null)
                 playerSpriteRenderer.sprite = playerData.sprite;
 
@@ -139,8 +138,6 @@ public class CombatController : MonoBehaviour
 
             if (playerAnimator != null) playerAnimator.enabled = false;
 
-            // --- UI ---
-            // Solo actualizamos si las referencias existen. Si están "Missing", no hacemos nada para evitar errores.
             if (playerHealth != null)
             {
                 playerName.text = playerData.name;
@@ -177,7 +174,6 @@ public class CombatController : MonoBehaviour
 
         HandleStaminaRegen();
 
-        // 2. ACTUALIZAR INTERFAZ (Ahora es seguro llamarlo)
         ActualizarInterfazObjeto();
     }
 
@@ -643,35 +639,47 @@ public class CombatController : MonoBehaviour
         isDodging = true;
         dodgeDirection = direccion;
 
+        if (this == null || playerSpriteRenderer == null) yield break;
+
         float distancia = 1.5f;
         Vector3 destino = originalPosition + new Vector3(direccion * distancia, 0, 0);
 
         float timer = 0f;
         float duracionIda = 0.1f;
 
+        if (playerSpriteRenderer == null) yield break;
         Vector3 inicioReal = playerSpriteRenderer.transform.position;
 
         while (timer < duracionIda)
         {
+            if (this == null || playerSpriteRenderer == null) yield break;
+
             playerSpriteRenderer.transform.position = Vector3.Lerp(inicioReal, destino, timer / duracionIda);
             timer += Time.deltaTime;
             yield return null;
         }
-        playerSpriteRenderer.transform.position = destino;
+
+        if (playerSpriteRenderer != null)
+            playerSpriteRenderer.transform.position = destino;
 
         yield return new WaitForSeconds(0.4f);
+
+        if (this == null || playerSpriteRenderer == null) yield break;
 
         timer = 0f;
         float duracionVuelta = 0.1f;
 
         while (timer < duracionVuelta)
         {
+            if (this == null || playerSpriteRenderer == null) yield break;
+
             playerSpriteRenderer.transform.position = Vector3.Lerp(destino, originalPosition, timer / duracionVuelta);
             timer += Time.deltaTime;
             yield return null;
         }
 
-        playerSpriteRenderer.transform.position = originalPosition;
+        if (playerSpriteRenderer != null)
+            playerSpriteRenderer.transform.position = originalPosition;
 
         dodgeDirection = 0;
         isDodging = false;
@@ -819,6 +827,7 @@ public class CombatController : MonoBehaviour
         playerSpriteRenderer.transform.localScale = escalaOriginal;
     }
 
+    // metodo cuando ganas un combate
     public void Win()
     {
         if (victory || isDead) return;
@@ -828,23 +837,21 @@ public class CombatController : MonoBehaviour
         if (roundManager != null) roundManager.RegistrarFinDeRonda(true);
     }
 
-    // función es la que buscarás en el botón
+    // Metodo para usar items
     public void UsarConsumible(Consumible item)
     {
+        // si estas en algun mal estado no hace nada
         if (isDead || victory || isStunned || item == null) return;
 
+        // Si la lsita tiene el item
         if (mochilaConsumibles.Contains(item))
         {
+            // usamos el item
             item.Usar(this);
             SoundManager.PlaySound(SoundType.Consumable);
 
+            // quitamos el item
             mochilaConsumibles.Remove(item);
-
-            Debug.Log($"Objeto usado. Quedan: {mochilaConsumibles.Count}");
-        }
-        else
-        {
-            Debug.Log("¡No te quedan existencias de este objeto!");
         }
     }
 
@@ -893,47 +900,37 @@ public class CombatController : MonoBehaviour
 
         if (mochilaConsumibles.Count > 0)
         {
-            // 1. Cogemos el primer objeto de la fila
+            // Cogemos el primer item de la lista
             Consumible item = mochilaConsumibles[0];
 
-            // 2. Lo usamos
+            // Usamos el item
             item.Usar(this);
             SoundManager.PlaySound(SoundType.Consumable);
 
-            // 3. Lo borramos de la mochila (ya lo hemos gastado)
+            // Borramos el item de la lista
             mochilaConsumibles.RemoveAt(0);
 
-            Debug.Log($"Objeto usado. Quedan: {mochilaConsumibles.Count}");
-
-            // 4. Actualizamos el dibujo para mostrar el SIGUIENTE objeto de la lista
+            //Actualizamos la interfaz para mosntrar el siguiente item
             ActualizarInterfazObjeto();
-        }
-        else
-        {
-            Debug.Log("¡Mochila vacía!");
         }
     }
 
+    // Pasar el siguiente item
     public void SiguienteConsumible()
     {
-        // Si no hay objetos o solo hay 1, no tiene sentido cambiar
+        // Si la lista tiene 1 item o menos no dejamos cambiar
         if (mochilaConsumibles.Count <= 1) return;
 
-        // 1. Guardamos el objeto que está primero (el actual)
+        // Guardamos el primer objeto, osea el actual en una variable temporal
         Consumible objetoActual = mochilaConsumibles[0];
 
-        // 2. Lo borramos de la primera posición
+        // Borramos el item seleccionado
         mochilaConsumibles.RemoveAt(0);
 
-        // 3. Lo añadimos al final de la lista (a la cola)
+        // Añadimos el item anterioremnte guardado en la lista
         mochilaConsumibles.Add(objetoActual);
 
-        // 4. Feedback de sonido (opcional, si tienes un sonido de click/swap)
-        // SoundManager.PlaySound(SoundType.UI_Click); 
-
-        Debug.Log("Has pasado el objeto al fondo de la mochila.");
-
-        // 5. IMPORTANTE: Actualizamos el dibujo para ver el nuevo objeto
+        // Actualizamos la interfaz para que muestre visualmente el siguiente item
         ActualizarInterfazObjeto();
     }
     
@@ -942,5 +939,22 @@ public class CombatController : MonoBehaviour
     {
         contadorGolpes++;
         contadorDañoTotal += damage;
+    }
+
+    // Metodos de seguridad para que cuando se haya termiando el combate no quere nada residual
+    private void OnDisable()
+    {
+        DetenerCombate();
+    }
+
+    private void OnDestroy()
+    {
+        DetenerCombate();
+    }
+    public void DetenerCombate()
+    {
+        StopAllCoroutines();
+
+        this.enabled = false;
     }
 }

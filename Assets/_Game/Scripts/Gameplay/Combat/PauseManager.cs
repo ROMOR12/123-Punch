@@ -50,12 +50,16 @@ public class PauseManager : MonoBehaviour
     public void CerrarJuego()
     {
         Time.timeScale = 1f; // reanudar el tiempo del juego
-        // Cerramos la aplicación, por ahora, aqui hay que llamar a SceneManager para ir al menu principal
-        if (FirebaseAuth.DefaultInstance != null)
-        {
-            FirebaseAuth.DefaultInstance.SignOut();
 
-            SceneManager.LoadScene("Menu");
+        // Buscamos todos los objetos que tengan el combatController y los guardamos en un array
+        CombatController[] scriptsJugador = FindObjectsByType<CombatController>(FindObjectsSortMode.None);
+
+        // Recorremos el array para borrar todos los objetos
+        foreach (CombatController script in scriptsJugador)
+        {
+            // Borramos los objetos para que no vaya entre escenas
+            DestroyImmediate(script.gameObject);
         }
+            SceneManager.LoadScene("Menu");
     }
 }

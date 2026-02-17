@@ -77,10 +77,10 @@ public class Menu : MonoBehaviour
                 escena = "EatingMinigame";
                 break;
 
-            case "Rey del ring":
+            case "VSBot":
                 escena = "CombateDePrueba";
                 break;
         }
-        SceneManager.LoadScene(escena);
+        CargaEscena.Cargar(escena);
     }
 }

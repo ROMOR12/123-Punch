@@ -8,6 +8,8 @@ using TMPro;
 
 public class GameManager : MonoBehaviour
 {
+    public int numCajas = 0;
+
     public static GameManager Instance;
 
     public List<ModosDeJuego> modosDeJuego;

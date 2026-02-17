@@ -116,6 +116,9 @@ public class RoundManager : MonoBehaviour
                     duracionCombate,
                     playerCombat.contadorDañoTotal
                 );
+
+                GameManager.Instance.numCajas++;
+
             }
         }
         else
