@@ -157,7 +157,9 @@ public class Script_Simon : MonoBehaviour
     public Button[] botonesObjetos;
     public GameObject acierto;
     public GameObject error;
-    public TextMeshProUGUI textoEstado; // Para poner "¡GANASTE!" o "PERDISTE"
+    public TextMeshProUGUI textoEstado;
+    public GameObject resultScreen;
+    public TextMeshProUGUI title;
 
     [Header("Configuración del Desafío")]
     public int metaObjetos = 6; // Ganas al llegar a 6
@@ -166,22 +168,43 @@ public class Script_Simon : MonoBehaviour
     private int pasoActual = 0;
     private bool puedePresionar = false;
     private bool juegoActivo = false;
+    
 
     void Start()
     {
         if (acierto) acierto.SetActive(false);
         if (error) error.SetActive(false);
 
-        IniciarNuevoDesafio();
+        StartCoroutine(IniciarNuevoDesafio());
     }
 
-    public void IniciarNuevoDesafio()
+    IEnumerator IniciarNuevoDesafio()
     {
         secuenciaJuego.Clear();
         pasoActual = 0;
+
         if (textoEstado) textoEstado.text = "Presta atención";
 
+        // ESTA ES LA MAGIA: yield return pausa ESTE bloque de código
+        yield return new WaitForSeconds(2.0f);
+
+        if (textoEstado) textoEstado.text = "Pulsa en el orden que brillen!";
+        yield return new WaitForSeconds(2.0f);
+
+        if (textoEstado) textoEstado.text = "3";
+        yield return new WaitForSeconds(1.0f);
+
+        if (textoEstado) textoEstado.text = "2";
+        yield return new WaitForSeconds(1.0f);
+
+        if (textoEstado) textoEstado.text = "1";
+        yield return new WaitForSeconds(1.0f);
+
+        if (textoEstado) textoEstado.text = "YA!";
+
         juegoActivo = true;
+
+        // Empezamos la ronda
         StartCoroutine(SiguienteRonda());
     }
 
@@ -244,6 +267,10 @@ public class Script_Simon : MonoBehaviour
         if (textoEstado) textoEstado.text = "¡DESAFÍO COMPLETADO!";
         StartCoroutine(MostrarFeedback(true));
         Debug.Log("El jugador ha ganado el minijuego.");
+
+        StartCoroutine(esperarSegundos(2.0f));
+        title.text = "HAS GANADO!!";
+        resultScreen.SetActive(true);
     }
 
     void PerderPartida()
@@ -256,8 +283,17 @@ public class Script_Simon : MonoBehaviour
         StartCoroutine(MostrarFeedback(false)); // X Roja
 
         #if UNITY_ANDROID || UNITY_IOS
-        Handheld.Vibrate(); 
+            Handheld.Vibrate();
         #endif
+
+        StartCoroutine(esperarSegundos(2.0f));
+        title.text = "HAS PERDIDO :(";
+        resultScreen.SetActive(true);
+    }
+
+    IEnumerator esperarSegundos(float segundos)
+    {
+        yield return new WaitForSeconds(segundos);
     }
 
     IEnumerator MostrarFeedback(bool esAcierto)
@@ -275,7 +311,12 @@ public class Script_Simon : MonoBehaviour
     {
         Transform t = botonesObjetos[indice].transform;
         t.localScale = new Vector3(1.2f, 1.2f, 1.2f);
-        yield return new WaitForSeconds(0.15f);
+        yield return new WaitForSeconds(0.55f);
         t.localScale = Vector3.one;
+    }
+
+    public void btn_salir()
+    {
+        CargaEscena.Cargar("Menu");
     }
 }

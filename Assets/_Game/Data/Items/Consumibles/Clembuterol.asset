@@ -21,6 +21,6 @@ MonoBehaviour:
   rarity: 4
   recuperacion:
   - statType: 2
-    amount: 3
+    amount: 1
   - statType: 3
     amount: 1

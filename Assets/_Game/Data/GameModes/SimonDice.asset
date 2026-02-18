@@ -9,13 +9,8 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8302c81d1a41f7148b1f518f525c7a83, type: 3}
-  m_Name: Jimmi
-  m_EditorClassIdentifier: Assembly-CSharp::BaseCharacter
-  id: 2
-  entityName: Jimmi
-  sprite: {fileID: 0}
-  life: 130
-  energy: 75
-  force: 6
-  recovery: 7
+  m_Script: {fileID: 11500000, guid: 0d286d4811116714092929e27ca6e650, type: 3}
+  m_Name: SimonDice
+  m_EditorClassIdentifier: Assembly-CSharp::ModosDeJuego
+  Imagen: {fileID: 1609333322643979652, guid: 6b045a7d9ea9768499f2c774ffcbee1e, type: 3}
+  Nombre: Simon dice

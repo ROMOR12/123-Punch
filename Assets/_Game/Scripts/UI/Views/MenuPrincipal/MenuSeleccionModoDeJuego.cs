@@ -78,7 +78,11 @@ public class Menu : MonoBehaviour
                 break;
 
             case "VSBot":
-                escena = "CombateDePrueba";
+                escena = "VSbotLvl1";
+                break;
+
+            case "Simon dice":
+                escena = "SimonMain";
                 break;
         }
         CargaEscena.Cargar(escena);

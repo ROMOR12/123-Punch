@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8302c81d1a41f7148b1f518f525c7a83, type: 3}
+  m_Name: Miguel
+  m_EditorClassIdentifier: Assembly-CSharp::BaseCharacter
+  id: 0
+  entityName: Miguel
+  sprite: {fileID: -7445666961110531637, guid: 036f18abbb8853944a7412c8113daf3c, type: 3}
+  life: 200
+  energy: 75
+  force: 3
+  recovery: 3
+  AttackSprite: {fileID: 3487720746330776779, guid: cc21707e04eceae4691e183bfe74b5e8, type: 3}
+  DefetSprite: {fileID: 6400653092105859203, guid: e97bfe69dbf330941b7caed68510a64b, type: 3}
+  HardAttackSprite: {fileID: 0}
+  objetosPasivos: []
+  objetosConsumibles:
+  - {fileID: 11400000, guid: f5f21042f594594449d5da50c43f8bca, type: 2}

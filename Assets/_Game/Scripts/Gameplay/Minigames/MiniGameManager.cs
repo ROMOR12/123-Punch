@@ -3,6 +3,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
 using UnityEngine.SceneManagement;
+using System.Threading.Tasks;
 
 public class MiniGameMana : MonoBehaviour
 {
@@ -13,6 +14,8 @@ public class MiniGameMana : MonoBehaviour
     [Header("Referencia UI")]
     public TextMeshProUGUI timerText;
     public TextMeshProUGUI clickText;
+    public GameObject resultPanel;
+    public TextMeshProUGUI resultTitle;
 
     [Header("Efecto Sopa")]
     public Image imagenSopa;
@@ -100,20 +103,31 @@ public class MiniGameMana : MonoBehaviour
     }
 
     // Finaliza el juego y muestra un mensaje en funcion de si has ganado o perdido
-    public void FinalizarJuego(bool ganado)
+    public async void FinalizarJuego(bool ganado)
     {
         juegoActivo = false;
         if (ganado)
         {
             Debug.Log("Ganaste!");
             timerText.text = "¡CONSEGUIDO!";
-            SceneManager.LoadScene("Menu");
+            resultTitle.text = "VICTORIA!";
+            await Task.Delay(1000);
+            resultPanel.SetActive(true);
+            StopAllCoroutines();
         }
         else
         {
             Debug.Log("Se acabó el tiempo...");
             timerText.text = "¡Tiempo Agotado!";
-            SceneManager.LoadScene("Menu");
+            resultTitle.text = "Perdiste :(";
+            await Task.Delay(1000);
+            resultPanel.SetActive(true);
+            StopAllCoroutines();
         }
+    }
+
+    public void btn_Salir()
+    {
+        CargaEscena.Cargar("Menu");
     }
 }

@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8302c81d1a41f7148b1f518f525c7a83, type: 3}
+  m_Name: Ava
+  m_EditorClassIdentifier: Assembly-CSharp::BaseCharacter
+  id: 2
+  entityName: Ava
+  sprite: {fileID: 4343058161091591757, guid: ec32a92e9e65d65478f04ed56ceca294, type: 3}
+  life: 50
+  energy: 75
+  force: 4
+  recovery: 1
+  AttackSprite: {fileID: 8817345781369337194, guid: 6549bea63d59f5a40990ee28cdd9ff63, type: 3}
+  DefetSprite: {fileID: 5013548172919777442, guid: ee64b3b99c83d0e45af12ade0cc87f74, type: 3}
+  HardAttackSprite: {fileID: -8073270538152798276, guid: 0af4adc1db244fd4ebabdfee49202ce2, type: 3}
+  objetosPasivos:
+  - {fileID: 11400000, guid: c19012ed6bd31204d99750a7596ede0b, type: 2}
+  objetosConsumibles: []

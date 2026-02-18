@@ -14,8 +14,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::EnemyBase
   id: 4
   entityName: Jason
-  sprite: {fileID: 0}
+  sprite: {fileID: 8930337702770694029, guid: 6e2b96781f470a2498daaf676a91c5ad, type: 3}
   life: 100
   energy: 100
   force: 5
   recovery: 4
+  AttackSprite: {fileID: -407107467246649158, guid: 8d4b166294d601c49803f9be95b6ca0c, type: 3}
+  HardAttackSprite: {fileID: 6014769090582402552, guid: ba84db691adad0648b17ad7fbfcc19d1, type: 3}

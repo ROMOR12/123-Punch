@@ -29,6 +29,12 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/_Game/Scenes/Minigames/LootBoxScene.unity
     guid: a7767a3fa74b75b42bea664791b179c3
+  - enabled: 1
+    path: Assets/_Game/Scenes/Minigames/SimonMinigame/SimonMain.unity
+    guid: abc2d2fe3ae1e754f8d55a7d51299557
+  - enabled: 1
+    path: Assets/_Game/Scenes/Combat/Bots/VSbotLvl1.unity
+    guid: 26a33fe98240e4b4a82679d08b6c5b47
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
   m_UseUCBPForAssetBundles: 0

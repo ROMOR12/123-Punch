@@ -12,10 +12,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8302c81d1a41f7148b1f518f525c7a83, type: 3}
   m_Name: Mike
   m_EditorClassIdentifier: Assembly-CSharp::BaseCharacter
-  id: 1
+  id: 3
   entityName: Mike
-  sprite: {fileID: 0}
-  life: 100
-  energy: 100
-  force: 5
-  recovery: 4
+  sprite: {fileID: 5589048612561963925, guid: 9de6838428bcba347a754871e1c35c47, type: 3}
+  life: 250
+  energy: 75
+  force: 1
+  recovery: 5
+  AttackSprite: {fileID: -591249788409296306, guid: bb18d6e021395584dba8ca1bfba95d20, type: 3}
+  DefetSprite: {fileID: 3892640101322388268, guid: f7396c5642068c64297148089b9283f7, type: 3}
+  HardAttackSprite: {fileID: -7115463060516863584, guid: a03b3867ccada024293c66689cc48041, type: 3}
+  objetosPasivos:
+  - {fileID: 11400000, guid: 5aad2f875a8e08745a27e6acfb7d92c0, type: 2}
+  objetosConsumibles: []
