@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using System.Collections;
 
+// Script para la transicion de fade de algunas escenas
 public class SceneFader : MonoBehaviour
 {
     [Header("Referencias")]

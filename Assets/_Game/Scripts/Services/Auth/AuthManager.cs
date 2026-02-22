@@ -39,7 +39,7 @@ public class AuthManager : MonoBehaviour
     private bool irAlJuego = false;
     private bool recargarEscena = false;
 
-    // REGEX PATTERNS
+    // Regex para el correoy la contraseña
     private const string MatchEmailPattern =
         @"^(([\w-]+\.)+[\w-]+|([a-zA-Z]{1}|[\w-]{2,}))@((([0-1]?[0-9]{1,2}|25[0-5]|2[0-4][0-9])\.([0-1]?[0-9]{1,2}|25[0-5]|2[0-4][0-9])\.([0-1]?[0-9]{1,2}|25[0-5]|2[0-4][0-9])\.([0-1]?[0-9]{1,2}|25[0-5]|2[0-4][0-9])){1}|([a-zA-Z]+[\w-]+\.)+[a-zA-Z]{2,4})$";
     private const string MatchPasswordPattern = @"^(?=.*[a-zA-Z])(?=.*\d).{6,}$";
@@ -54,6 +54,7 @@ public class AuthManager : MonoBehaviour
         CerrarTodosPaneles();
         panelLoginUI.SetActive(true);
 
+        // si tiene la sesion iniciada
         if (auth.CurrentUser != null)
         {
             auth.CurrentUser.ReloadAsync().ContinueWith(task =>
@@ -64,6 +65,7 @@ public class AuthManager : MonoBehaviour
                     return;
                 }
 
+                // Si ya inicio sesion anteriormente
                 FirebaseUser user = auth.CurrentUser;
                 if (user.IsEmailVerified || user.IsAnonymous)
                 {
@@ -100,8 +102,6 @@ public class AuthManager : MonoBehaviour
             }
         }
     }
-
-    // --- VALIDACIONES ---
     bool EsEmailValido(string email)
     {
         if (string.IsNullOrEmpty(email)) return false;
@@ -164,6 +164,7 @@ public class AuthManager : MonoBehaviour
         StartCoroutine(ChequearEmailCorrutina()); 
     }
 
+    //Corrutina para comprobar si el correo esta verificado
     IEnumerator ChequearEmailCorrutina()
     {
         feedbackText.text = "Comprobando...";
@@ -174,6 +175,7 @@ public class AuthManager : MonoBehaviour
             var task = user.ReloadAsync();
             yield return new WaitUntil(() => task.IsCompleted);
 
+            // Si esta verificado
             if (user.IsEmailVerified)
             {
                 feedbackText.text = "¡Verificado!";
@@ -199,12 +201,13 @@ public class AuthManager : MonoBehaviour
         IrALogin();
     }
 
-    // --- LOGIN ---
     public void LoginConEmail()
     {
+        // Datos
         string email = emailLoginInput.text;
         string pass = passLoginInput.text;
 
+        // validaciones
         if (string.IsNullOrEmpty(email) || string.IsNullOrEmpty(pass))
         {
             feedbackText.text = "Rellena correo y contraseña";
@@ -219,6 +222,7 @@ public class AuthManager : MonoBehaviour
 
         feedbackText.text = "Verificando...";
 
+        // Intentamos iniciar sesion 
         auth.SignInWithEmailAndPasswordAsync(email, pass).ContinueWithOnMainThread(task =>
         {
             if (task.IsCanceled || task.IsFaulted)
@@ -229,6 +233,7 @@ public class AuthManager : MonoBehaviour
             }
 
             FirebaseUser user = task.Result.User;
+            // Verifiamos si el usuario tiene el correo verificado
             if (user.IsEmailVerified) irAlJuego = true;
             else recargarEscena = true;
         });
@@ -237,18 +242,19 @@ public class AuthManager : MonoBehaviour
     public void LoginInvitado()
     {
         feedbackText.text = "Entrando como invitado...";
+        // Entramos como usuario anonimo
         auth.SignInAnonymouslyAsync().ContinueWith(task => { if (!task.IsFaulted) irAlJuego = true; });
     }
 
-    // --- REGISTRO ---
     public async void Registrarse()
     {
+        // datos
         string usuario = usernameRegisterInput.text;
         string email = emailRegisterInput.text;
         string pass = passRegisterInput.text;
         string passConf = passRegisterConfirmInput.text;
 
-        // --- VALIDACIONES ---
+        // unas cuantas validaciones
         if (string.IsNullOrEmpty(usuario) || string.IsNullOrEmpty(email) || string.IsNullOrEmpty(pass))
         {
             feedbackText.text = "Rellena todos los campos";
@@ -283,14 +289,17 @@ public class AuthManager : MonoBehaviour
 
         try
         {
+            // Intentamos registrar el usuario en el servicio de autentificación
             AuthResult result = await auth.CreateUserWithEmailAndPasswordAsync(email, pass);
+            // Recogemos el usuario para la base de datos
             FirebaseUser newUser = result.User;
 
+            // Intentamos insertar el usuario en la base de datos
             bool resultado = await DatabaseManager.shared.CrearUsuarioNuevo(newUser.UserId, usuario, email);
 
+            // Mandamos el correo de veerificacino
             await newUser.SendEmailVerificationAsync();
 
-            Debug.Log("Usuario creado y guardado en BD.");
             recargarEscena = true;
         }
         catch (System.AggregateException e)
@@ -303,7 +312,6 @@ public class AuthManager : MonoBehaviour
         }
     }
 
-    // --- OLVIDO ---
     public void EnviarCorreoRecuperacion()
     {
         string email = emailOlvidoInput.text;
@@ -321,6 +329,8 @@ public class AuthManager : MonoBehaviour
         }
 
         feedbackText.text = "Enviando...";
+
+        // Enviamos el correo de recuperacion de la contraseña
         auth.SendPasswordResetEmailAsync(email).ContinueWithOnMainThread(task =>
         {
             if (task.IsFaulted || task.IsCanceled)
@@ -333,7 +343,6 @@ public class AuthManager : MonoBehaviour
         });
     }
 
-    // --- ERRORES ---
     string ObtenerMensajeError(System.AggregateException exception)
     {
         if (exception == null) return "Error desconocido.";
@@ -349,6 +358,7 @@ public class AuthManager : MonoBehaviour
             }
         }
 
+        // Errores posibles
         if (firebaseEx != null)
         {
             var codigoError = (AuthError)firebaseEx.ErrorCode;

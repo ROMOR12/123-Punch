@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System;
 
+// Este scrpt ya no hace nada, no lo borro por si en un futuro sirve, pero no creo
 public class UnityMainThreadDispatcher : MonoBehaviour
 {
     private static readonly Queue<Action> _executionQueue = new Queue<Action>();

@@ -70,7 +70,7 @@ public class Menu : MonoBehaviour
         switch (nombreDelModo)
         {
             case "Campaña":
-                escena = "CombateDePrueba";
+                escena = "CombateHistoria1";
                 break;
 
             case "Buffet LIbre": 

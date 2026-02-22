@@ -162,7 +162,7 @@ public class Script_Simon : MonoBehaviour
     public TextMeshProUGUI title;
 
     [Header("Configuración del Desafío")]
-    public int metaObjetos = 6; // Ganas al llegar a 6
+    public int metaObjetos = 6;
 
     private List<int> secuenciaJuego = new List<int>();
     private int pasoActual = 0;
@@ -185,7 +185,6 @@ public class Script_Simon : MonoBehaviour
 
         if (textoEstado) textoEstado.text = "Presta atención";
 
-        // ESTA ES LA MAGIA: yield return pausa ESTE bloque de código
         yield return new WaitForSeconds(2.0f);
 
         if (textoEstado) textoEstado.text = "Pulsa en el orden que brillen!";
@@ -213,7 +212,6 @@ public class Script_Simon : MonoBehaviour
         puedePresionar = false;
         pasoActual = 0;
 
-        // Añadimos un paso más
         secuenciaJuego.Add(Random.Range(0, botonesObjetos.Length));
 
         yield return new WaitForSeconds(0.8f);
@@ -234,14 +232,11 @@ public class Script_Simon : MonoBehaviour
 
         if (id == secuenciaJuego[pasoActual])
         {
-            // ACIERTO INDIVIDUAL
             StartCoroutine(AnimarYBrillar(id));
             pasoActual++;
 
-            // SI COMPLETA LA SECUENCIA DE ESTA RONDA
             if (pasoActual >= secuenciaJuego.Count)
             {
-                // ¿HA LLEGADO A LA META?
                 if (secuenciaJuego.Count >= metaObjetos)
                 {
                     GanarPartida();
@@ -255,7 +250,6 @@ public class Script_Simon : MonoBehaviour
         }
         else
         {
-            // ERROR: MUERTE SÚBITA
             PerderPartida();
         }
     }
@@ -268,7 +262,6 @@ public class Script_Simon : MonoBehaviour
         StartCoroutine(MostrarFeedback(true));
         Debug.Log("El jugador ha ganado el minijuego.");
 
-        StartCoroutine(esperarSegundos(2.0f));
         title.text = "HAS GANADO!!";
         resultScreen.SetActive(true);
     }
@@ -277,23 +270,17 @@ public class Script_Simon : MonoBehaviour
     {
         juegoActivo = false;
         puedePresionar = false;
-        StopAllCoroutines(); // Detenemos cualquier brillo pendiente
+        StopAllCoroutines();
 
         if (textoEstado) textoEstado.text = "¡ERROR! INTÉNTALO DE NUEVO";
-        StartCoroutine(MostrarFeedback(false)); // X Roja
+        StartCoroutine(MostrarFeedback(false));
 
         #if UNITY_ANDROID || UNITY_IOS
             Handheld.Vibrate();
         #endif
 
-        StartCoroutine(esperarSegundos(2.0f));
         title.text = "HAS PERDIDO :(";
         resultScreen.SetActive(true);
-    }
-
-    IEnumerator esperarSegundos(float segundos)
-    {
-        yield return new WaitForSeconds(segundos);
     }
 
     IEnumerator MostrarFeedback(bool esAcierto)

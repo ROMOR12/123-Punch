@@ -49,7 +49,6 @@ public class RoundManager : MonoBehaviour
         // si gano el enemigo, ponemos el sprite del enemigo en el circulo de la ronda actual
         else
         {
-            Debug.Log("gano el bot");
             circulosRonda[rondaActual].sprite = spriteEnemigo;
             victoriasEnemigo++;
         }
@@ -89,11 +88,11 @@ public class RoundManager : MonoBehaviour
     {
         if (enemyBot != null)
         {
-            enemyBot.StopAllCoroutines(); // Detiene ataques en curso
-            enemyBot.enabled = false;     // Apaga su cerebro totalmente
+            enemyBot.StopAllCoroutines();
+            enemyBot.enabled = false;
         }
 
-        //Calcula cuánto ha durado la pelea(Ahora - Inicio)
+        // Calcula cuánto ha durado la pelea
         float duracionCombate = Time.time - tiempoInicioCombate;
         SoundManager.StopMusic();
 
@@ -106,10 +105,6 @@ public class RoundManager : MonoBehaviour
 
             if (pantallaResultados != null)
             {
-                // true = Ganaste
-                // contadorGolpes = Los que sumamos con RegistrarEstadistica
-                // duracionCombate = El tiempo calculado
-                // contadorDañoTotal = El daño acumulado
                 pantallaResultados.MostrarResultados(
                     ganoJugador = true,
                     playerCombat.contadorGolpes,

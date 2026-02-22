@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: fbb94ed4b38d96a49b4d9508b428933b
+guid: 5fc7f15c669485049ba66ce591ace048
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -3002074962046832105
-    second: calle_fondo_0
+      213: 6382231379027506871
+    second: calle_fondo 1_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -113,7 +113,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: calle_fondo_0
+      name: calle_fondo 1_0
       rect:
         serializedVersion: 2
         x: 0
@@ -128,8 +128,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 712ba1a4abc7656d0800000000000000
-      internalID: -3002074962046832105
+      spriteID: 7b6394def9d329850800000000000000
+      internalID: 6382231379027506871
       vertices: []
       indices: 
       edges: []
@@ -148,7 +148,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      calle_fondo_0: -3002074962046832105
+      calle_fondo 1_0: 6382231379027506871
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

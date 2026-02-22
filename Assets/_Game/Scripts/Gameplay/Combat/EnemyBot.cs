@@ -128,7 +128,6 @@ public class EnemyBot : MonoBehaviour
             // logica de cansancio
             if (countSpecialAttacks >= 2)
             {
-                Debug.Log("¡El enemigo está agotado!");
                 spriteRenderer.color = Color.grey;
                 yield return new WaitForSeconds(1f);
                 countSpecialAttacks = 0;
@@ -158,8 +157,6 @@ public class EnemyBot : MonoBehaviour
 
         Vector3 originalPos = transform.position;
         transform.position = originalPos + new Vector3(ladoAtaque * 1.5f, 0, 0);
-
-        Debug.Log($"¡FINTA CIAN! Viene por la {(ladoAtaque == -1 ? "IZQUIERDA" : "DERECHA")}");
 
         // espera tiempo de reacción
         yield return new WaitForSeconds(1f);
@@ -192,11 +189,11 @@ public class EnemyBot : MonoBehaviour
         isFinte = false;
     }
 
+    // El bot recive daño
     public bool TakeDamage(int damage)
     {
         if (isFinte)
         {
-            Debug.Log("¡MISS! El enemigo esquivó.");
             return false;
         }
 
@@ -291,12 +288,14 @@ public class EnemyBot : MonoBehaviour
         }
     }
 
+    // ejecuta la rutina de castigo
     public void CastigarJugador()
     {
         if (currentAttackRoutine != null) StopCoroutine(currentAttackRoutine);
         currentAttackRoutine = StartCoroutine(RutinaCastigo());
     }
 
+    // Rutina de cuando el jugador queda aturdido
     IEnumerator RutinaCastigo()
     {
         yield return new WaitForSeconds(1f);
@@ -330,6 +329,7 @@ public class EnemyBot : MonoBehaviour
         transform.position = originalPos;
     }
 
+    // Rutina visula para cuando el bot recibe daño
     private IEnumerator FlashEffect()
     {
         spriteRenderer.color = hitColor;
@@ -337,6 +337,7 @@ public class EnemyBot : MonoBehaviour
         spriteRenderer.color = originalColor;
     }
 
+    // Reinicimos los atributos del enemigo cuando se reincia una ronda
     public void ReiniciarParaRonda()
     {
         StopAllCoroutines();

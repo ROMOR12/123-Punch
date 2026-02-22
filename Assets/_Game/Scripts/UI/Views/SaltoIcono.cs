@@ -16,7 +16,7 @@ public class SaltoIcono : MonoBehaviour
 
     void Update()
     {
-        // Calcula el salto: tiempo, velocidad y fuerza
+        // Calcula el salto
         float nuevoY = Mathf.Abs(Mathf.Sin(Time.time * velocidadSalto)) * fuerzaSalto;
 
         // Simula el salto cambiando la posición actual por la orginial más la nueva

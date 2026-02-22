@@ -210,7 +210,6 @@ public class CombatController : MonoBehaviour
                 if (playerHealth != null) playerHealth.value = currentLife;
                 UpdateHealthText(playerHealthText, currentLife, maxLife);
 
-                Debug.Log($"Vida REAL interna: {currentLife} / {maxLife}");
                 break;
         }
         UpdateUI();
@@ -222,16 +221,22 @@ public class CombatController : MonoBehaviour
         if (playerHealth != null) playerHealth.value = currentLife;
     }
 
+    // Atacar
     public void PerformAttack()
     {
+        // si se cumplen estas condiciones no hacemos nada
         if (victory || isDefending || isStunned || isDead || isHardAttack) return;
 
+        // Si tenemos energia suficiente
         if (currentEnergy >= ATTACK_COST)
         {
+            // gastamos la energia
             GastarEnergia(ATTACK_COST);
             SoundManager.PlaySound(SoundType.HIT);
+            // Calculamos daño
             int damageDealt = Mathf.RoundToInt(currentForce * playerDamageMultiplier);
 
+            // animacion
             StartCoroutine(ShowAttackVisuals());
 
             if (currentEnemy != null)
@@ -246,6 +251,7 @@ public class CombatController : MonoBehaviour
                         //va cogiendo el daño que le haces al enemigo
                         RegistrarEstadistica(damageDealt);
 
+                        // restamos vida al enemigo
                         enemyHealthBar.value -= damageDealt;
                         UpdateHealthText(enemyHealthText, enemyHealthBar.value, enemyHealthBar.maxValue);
                         PlayHitParticles();
@@ -253,12 +259,9 @@ public class CombatController : MonoBehaviour
                 }
             }
         }
-        else
-        {
-            Debug.Log("¡Sin energía!");
-        }
     }
 
+    // Golpe fuerte
     public void HardAttack()
     {
         if (victory || isDefending || isStunned || isDead) return;
@@ -291,12 +294,9 @@ public class CombatController : MonoBehaviour
                 }
             }
         }
-        else
-        {
-            Debug.Log("¡Sin energía para ataque fuerte!");
-        }
     }
 
+    // gastar enegia
     private void GastarEnergia(float cantidad)
     {
         currentEnergy -= cantidad;
@@ -320,6 +320,7 @@ public class CombatController : MonoBehaviour
         UpdateUI();
     }
 
+    // Defensa
     private void HandleDefense()
     {
         if (isStunned) return;
@@ -346,6 +347,7 @@ public class CombatController : MonoBehaviour
         }
     }
 
+    // Recivir daño
     public void ReceiveDamage(int damageAmount)
     {
         if (isDead) return;
@@ -356,6 +358,7 @@ public class CombatController : MonoBehaviour
         {
             if (!isStunned)
             {
+                // Recogemos el porcentaje de defensa
                 float porcentajeBloqueo = defenseSlider.value;
 
                 float factorDeDaño = 1.0f - porcentajeBloqueo;
@@ -365,7 +368,6 @@ public class CombatController : MonoBehaviour
 
                 GastarEnergia(gastoEnergia);
 
-                Debug.Log($"Bloqueo: {porcentajeBloqueo * 100}% | Daño: {danioFinal} | Estamina gastada: {gastoEnergia}");
                 SoundManager.PlaySound(SoundType.GuardStrike, 0.1f);
             }
         }
@@ -392,18 +394,17 @@ public class CombatController : MonoBehaviour
 
         if (currentLife <= 0)
         {
-            Debug.Log("¡K.O.!");
             StartCoroutine(AnimacionMuerte());
         }
     }
 
+    // Recibir daño de ataque fuerte
     public void ReceiveUnstoppableDamage(int damageAmount)
     {
         if (isDead || victory) return;
 
         if (defenseSlider.value > 0.95f)
         {
-            Debug.Log("¡PERFECT PARRY!");
 
             StartCoroutine(EfectoParryExitoso());
             SoundManager.PlaySound(SoundType.GuardStrike, 0.1f);
@@ -416,7 +417,6 @@ public class CombatController : MonoBehaviour
             return;
         }
 
-        Debug.Log("¡El ataque rompió tu defensa!");
         currentLife -= damageAmount;
 
         float porcentajeBloqueo = defenseSlider.value;
@@ -445,16 +445,15 @@ public class CombatController : MonoBehaviour
 
         if (currentLife <= 0)
         {
-            Debug.Log("¡K.O.!");
             StartCoroutine(AnimacionMuerte());
         }
     }
 
+    // Recibir daño verdadero
     public void ReceiveTrueDamage(int damageAmount)
     {
         if (isDead || victory) return;
 
-        Debug.Log("¡GOLPE DE FINTA! No se puede bloquear.");
 
         currentLife -= damageAmount;
         if (defenseSlider != null)
@@ -479,6 +478,7 @@ public class CombatController : MonoBehaviour
         }
     }
 
+    // actualizar teto de vida
     void UpdateHealthText(TMP_Text label, float current, float max)
     {
         if (label != null)
@@ -487,6 +487,7 @@ public class CombatController : MonoBehaviour
         }
     }
 
+    // regeneracion de energia
     private void HandleStaminaRegen()
     {
         if (!isStunned && playerData != null && currentEnergy < maxEnergy)
@@ -508,6 +509,7 @@ public class CombatController : MonoBehaviour
         }
     }
 
+    // Color de energia baja
     private void HandleStaminaColor()
     {
         if (staminaFillImage == null || playerData == null) return;
@@ -524,6 +526,7 @@ public class CombatController : MonoBehaviour
         }
     }
 
+    // Animacion de puntos de daño
     void ShowDamagePopup(int damage, bool isCritical)
     {
         if (damagePopupPrefab != null && currentEnemy != null)
@@ -540,6 +543,7 @@ public class CombatController : MonoBehaviour
         }
     }
 
+    // Particulas de golpes
     void PlayHitParticles()
     {
         if (hitParticles != null && currentEnemy != null)
@@ -549,6 +553,7 @@ public class CombatController : MonoBehaviour
         }
     }
 
+    // Efecto de cuando el jugador recibe daño
     IEnumerator EfectoDañoJugador()
     {
         if (playerSpriteRenderer == null) yield break;
@@ -579,6 +584,7 @@ public class CombatController : MonoBehaviour
             playerSpriteRenderer.color = Color.white;
     }
 
+    // Deteccion del deslice para esquivar
     private void DetectarInputSwipe()
     {
         if (isDead || victory || isStunned) return;
@@ -611,6 +617,7 @@ public class CombatController : MonoBehaviour
         }
     }
 
+    // Procesamos el deslice
     private void ProcesarSwipe()
     {
         Vector2 swipeDelta = endTouchPosition - startTouchPosition;
@@ -634,6 +641,7 @@ public class CombatController : MonoBehaviour
         }
     }
 
+    // Corutina para esquivar
     IEnumerator RutinaEsquiva(int direccion)
     {
         isDodging = true;
@@ -685,6 +693,7 @@ public class CombatController : MonoBehaviour
         isDodging = false;
     }
 
+    // Reinicia las datos por cada ronda
     public void ReiniciarParaRonda()
     {
         isDead = false;
@@ -718,6 +727,7 @@ public class CombatController : MonoBehaviour
         }
     }
 
+
     public void CelebrarVictoria()
     {
         if (victoriaConfeti != null)
@@ -733,6 +743,7 @@ public class CombatController : MonoBehaviour
         }
     }
 
+    // Animacion de muerte del jugador
     IEnumerator AnimacionMuerte()
     {
         isDead = true;
@@ -756,7 +767,6 @@ public class CombatController : MonoBehaviour
         }
 
         transformDeLaFoto.rotation = rotacionFinal;
-        Debug.Log("Animación de muerte terminada.");
 
         if (roundManager != null)
         {
@@ -764,6 +774,7 @@ public class CombatController : MonoBehaviour
         }
     }
 
+    // Rutina para entrar en el estado de aturdido
     IEnumerator EnterStunState()
     {
         isStunned = true;
@@ -792,6 +803,7 @@ public class CombatController : MonoBehaviour
         isStunned = false;
     }
 
+    // Rutina para cambiar el srpite de atacar
     IEnumerator ShowAttackVisuals()
     {
         if (playerSpriteRenderer != null && playerData.AttackSprite != null && isHardAttack == false)
@@ -813,6 +825,7 @@ public class CombatController : MonoBehaviour
         }
     }
 
+    // Efecto de cuando bloqueamos un ataque fuerte
     IEnumerator EfectoParryExitoso()
     {
         Color colorOriginal = Color.white;

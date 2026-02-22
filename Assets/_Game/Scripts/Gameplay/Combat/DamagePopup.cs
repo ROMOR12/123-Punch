@@ -12,6 +12,7 @@ public class DamagePopup : MonoBehaviour
 
     private const float DISAPPEAR_TIMER_MAX = 2f;
 
+    // Muestra el daño que le hacemos al enemigo
     public void Setup(int damageAmount, bool isCritical)
     {
         if (textMesh == null) textMesh = GetComponent<TextMeshPro>();
@@ -31,33 +32,27 @@ public class DamagePopup : MonoBehaviour
         textColor = textMesh.color;
         disappearTimer = DISAPPEAR_TIMER_MAX;
 
-        // --- LA MAGIA DE LA GRAVEDAD ---
-        // 1. Velocidad Horizontal (X): Aleatoria izquierda o derecha (-3 a 3)
-        // 2. Velocidad Vertical (Y): Salto fuerte hacia arriba (12)
         velocity = new Vector3(Random.Range(-3f, 3f), 12f, 0);
     }
 
     void Update()
     {
-        // 1. Aplicar movimiento
         transform.position += velocity * Time.deltaTime;
 
-        // 2. Aplicar Gravedad
         velocity.y -= gravity * Time.deltaTime;
 
-        // 3. Temporizador de desaparición
         disappearTimer -= Time.deltaTime;
 
-        // 4. Efecto de Escala y Desvanecido
+        // Efecto de Escala y Desvanecido
         if (disappearTimer > DISAPPEAR_TIMER_MAX * 0.5f)
         {
-            // Primera mitad: Crece un poco
+            // Crece un poco
             float increaseScaleAmount = 1f;
             transform.localScale += Vector3.one * increaseScaleAmount * Time.deltaTime;
         }
         else
         {
-            // Segunda mitad: Se encoge y desaparece
+            // Se encoge y desaparece
             float decreaseScaleAmount = 1f;
             transform.localScale -= Vector3.one * decreaseScaleAmount * Time.deltaTime;
 
