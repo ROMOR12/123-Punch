@@ -5,6 +5,9 @@ using UnityEngine;
 public class PersonajeDatos
 {
     [FirestoreProperty]
+    public double schemaVersion { get; set; }
+
+    [FirestoreProperty]
     public string id { get; set; }
 
     [FirestoreProperty]
@@ -21,4 +24,9 @@ public class PersonajeDatos
 
     [FirestoreProperty]
     public int recovery { get; set; }
+
+    public override string ToString()
+    {
+        return name;
+    }
 }

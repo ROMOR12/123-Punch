@@ -29,7 +29,7 @@ public class DatabaseManager : MonoBehaviour
     }
 
     // Metodo para crear un nuevo usuario en la base de datos
-    public async Task<bool> CrearUsuarioNuevo(string userId, string nombre, string email)
+    public async Task<bool> NuevoUsuario(string userId, string nombre, string email)
     {
         DocumentReference docRef = db.Collection("usuarios").Document(userId);
 
@@ -45,18 +45,40 @@ public class DatabaseManager : MonoBehaviour
             is_admin = false,
             xp = 0,
             id_world = 1,
-            id_level = 1,
-            referenciaObjetos = new List<ReferenciaObjeto>()
-            { new ReferenciaObjeto(){id_Objeto = "",cantidad = 1}},
-            refereniaPersonajes = new List<string>()
-            {""}
-
+            id_level = 1
         };
 
         // Guardamos los datos del jugador en la base de datos en la nube
         await docRef.SetAsync(usuarioNuevo, SetOptions.MergeAll);
 
+        //TODO Crear un personaje predeterminado para todos los usuarios
+        await MandarPersonaje(userId,new PersonajeDatos());
+        //TODO Crear un objeto predeterminado para todos los usuarios
+        await MandarObjeto(userId,new ReferenciaObjeto());
+
         return true;
        
     }
+
+    public async Task<bool> MandarPersonaje(string userId,PersonajeDatos personajeNuevo)
+    {
+        DocumentReference docRef = db.Collection("usuarios").Document(userId).Collection("personajes").Document(personajeNuevo.name);
+
+        await docRef.SetAsync(personajeNuevo, SetOptions.MergeAll);
+
+        return true;
+
+    }
+
+    public async Task<bool> MandarObjeto(string userId, ReferenciaObjeto referenciaObjeto)
+    {
+        DocumentReference docRef = db.Collection("usuarios").Document(userId).Collection("objetos").Document(referenciaObjeto.name);
+
+        await docRef.SetAsync(referenciaObjeto, SetOptions.MergeAll);
+
+        return true;
+
+    }
+
+
 }

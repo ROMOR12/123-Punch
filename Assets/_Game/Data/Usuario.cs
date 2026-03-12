@@ -6,6 +6,8 @@ using System.Collections.Generic;
 public class Usuario
 {
     [FirestoreProperty]
+    public double schemaVersion { get; set; }
+    [FirestoreProperty]
     public string id { get; set; }
     [FirestoreProperty]
     public string username { get; set; }
@@ -37,16 +39,10 @@ public class Usuario
     [FirestoreProperty]
     public int id_level { get; set; }
 
-    [FirestoreProperty]
-    public List<ReferenciaObjeto> referenciaObjetos { get; set; }
-
-    [FirestoreProperty]
-    public List<string> refereniaPersonajes { get; set; }
-
     
 
     public override string ToString()
     {
-        return base.ToString();
+        return username;
     }
 }
