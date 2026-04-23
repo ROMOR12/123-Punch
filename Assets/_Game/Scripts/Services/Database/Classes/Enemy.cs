@@ -2,8 +2,9 @@ using Firebase.Firestore;
 using UnityEngine;
 
 [FirestoreData]
-public class PersonajeDatos
+public class Enemy 
 {
+
     [FirestoreProperty]
     public double schemaVersion { get; set; }
 

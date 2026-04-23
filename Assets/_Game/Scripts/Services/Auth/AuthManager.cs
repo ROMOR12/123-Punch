@@ -294,8 +294,10 @@ public class AuthManager : MonoBehaviour
             // Recogemos el usuario para la base de datos
             FirebaseUser newUser = result.User;
 
+
             // Intentamos insertar el usuario en la base de datos
-            bool resultado = await DatabaseManager.shared.NuevoUsuario(newUser.UserId, usuario, email);
+            UsuarioService usuarioService = new UsuarioService();
+            bool resultado = await usuarioService.NuevoUsuario(newUser.UserId, usuario, email);
 
             // Mandamos el correo de veerificacino
             await newUser.SendEmailVerificationAsync();
