@@ -15922,7 +15922,7 @@ GameObject:
   - component: {fileID: 284555281}
   - component: {fileID: 284555280}
   m_Layer: 0
-  m_Name: GameManager
+  m_Name: CombatController
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -15976,15 +15976,13 @@ MonoBehaviour:
   staminaFillImage: {fileID: 446838746}
   normalStaminaColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
   lowStaminaColor: {r: 1, g: 0, b: 0, a: 1}
-  mochilaConsumibles: []
-  imagenBotonConsumible: {fileID: 398213106}
-  FlechaConsumible: {fileID: 756709093}
   pantallaResultados: {fileID: 594022308}
   contadorGolpes: 0
   "contadorDa\xF1oTotal": 0
   tiempoInicioCombate: 0
   enemyHealthBar: {fileID: 928405473}
   enemyHealthText: {fileID: 395867583}
+  inventory: {fileID: 0}
 --- !u!4 &284555279
 Transform:
   m_ObjectHideFlags: 0
@@ -19250,6 +19248,53 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: -230.00003}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!1 &1261420828
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1261420829}
+  - component: {fileID: 1261420830}
+  m_Layer: 0
+  m_Name: GameLoader
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1261420829
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1261420828}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.97524, y: -2.45772, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1261420830
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1261420828}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 16aa1cee2a26858488e2501d846a1849, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::GameLoader
+  playerCombat: {fileID: 284555278}
+  enemyBot: {fileID: 1810799658}
+  idEnemigo: Enemy1
 --- !u!1 &1336152749
 GameObject:
   m_ObjectHideFlags: 0
@@ -27889,3 +27934,4 @@ SceneRoots:
   - {fileID: 694613181}
   - {fileID: 1878034722}
   - {fileID: 1650755933}
+  - {fileID: 1261420829}

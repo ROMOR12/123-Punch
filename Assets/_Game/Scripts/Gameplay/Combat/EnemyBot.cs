@@ -1,5 +1,6 @@
-﻿using UnityEngine;
-using System.Collections;
+﻿using System.Collections;
+using UnityEngine;
+using static UnityEngine.EventSystems.EventTrigger;
 
 public class EnemyBot : MonoBehaviour
 {
@@ -24,6 +25,11 @@ public class EnemyBot : MonoBehaviour
     public Sprite iconoAtaqueFuerte;
     public Sprite iconoFinta;
 
+    private float maxLife;
+    private float currentForce;
+    private float currentEnergy;
+    private float currentRecovery;
+    private string enemyName;
 
     private Color originalColor;
     private float currentLife;
@@ -37,9 +43,17 @@ public class EnemyBot : MonoBehaviour
     {
         if (enemyData != null)
         {
-            currentLife = enemyData.life;
-            name = enemyData.name;
+            // Cargamos los datos por defecto desde el ScriptableObject
+            maxLife = enemyData.life;
+            currentForce = enemyData.force;
+            currentEnergy = enemyData.energy;
+            currentRecovery = enemyData.recovery;
+            enemyName = enemyData.name;
+
+            currentLife = maxLife;
+            name = enemyName;
             startPosition = transform.position;
+
             if (spriteRenderer != null)
             {
                 spriteRenderer.sprite = enemyData.sprite;
@@ -48,26 +62,22 @@ public class EnemyBot : MonoBehaviour
             currentAttackRoutine = StartCoroutine(EnemyAttackLoop());
         }
     }
+
     IEnumerator EnemyAttackLoop()
     {
         while (currentLife > 0)
         {
-            // espera aleatoria antes del siguiente ataque
             float waitTime = Random.Range(minWaitTime, maxWaitTime);
             yield return new WaitForSeconds(waitTime);
 
-            // caulculados la posibilidad del siguiente ataque
             int dice = Random.Range(0, 100);
 
-            // 30% de probabilidad de que el ataque sea una finta
             if (dice < 30)
             {
                 yield return StartCoroutine(RealizarFinta());
             }
-            // 30% de probabilidad de que el ataque sea imparable
             else if (dice < 60)
             {
-                // si ya ha hecho 2 ataques fuertes, hace uno normal
                 if (countSpecialAttacks >= 2)
                 {
                     countSpecialAttacks = 0;
@@ -78,7 +88,6 @@ public class EnemyBot : MonoBehaviour
                     yield return StartCoroutine(RealizarAtaqueInparable(1f, 1.5f));
                 }
             }
-            // 40% de probabilidad de que el ataque sea normal
             else
             {
                 countSpecialAttacks = 0;
@@ -90,19 +99,15 @@ public class EnemyBot : MonoBehaviour
     IEnumerator RealizarAtaque(float tiempoAviso, float criticalMultiplier)
     {
         if (spriteRenderer != null) spriteRenderer.color = Color.yellow;
-
         StartCoroutine(MostrarAlerta(iconoAtaqueNormal, Color.white, tiempoAviso));
-
         yield return new WaitForSeconds(tiempoAviso);
-
 
         if (spriteRenderer != null) spriteRenderer.color = originalColor;
         StartCoroutine(ShowEnemyAttackVisuals(false));
 
-
         if (playerCombat != null && enemyData != null)
         {
-            float baseDamage = enemyData.force * damageMultiplier;
+            float baseDamage = currentForce * damageMultiplier;
             int finalDamage = Mathf.RoundToInt(baseDamage * criticalMultiplier);
             playerCombat.ReceiveDamage(finalDamage);
         }
@@ -111,21 +116,14 @@ public class EnemyBot : MonoBehaviour
 
     IEnumerator RealizarAtaqueInparable(float tiempoAviso, float criticalMultiplier)
     {
-        // aviso visual
         if (spriteRenderer != null) spriteRenderer.color = Color.magenta;
-
-        // mostrar alerta
         StartCoroutine(MostrarAlerta(iconoAtaqueFuerte, Color.white, 0.7f));
-
-        // espera tiempo de reacción
         yield return new WaitForSeconds(tiempoAviso);
-
 
         if (spriteRenderer != null) spriteRenderer.color = originalColor;
 
         if (playerCombat != null && enemyData != null)
         {
-            // logica de cansancio
             if (countSpecialAttacks >= 2)
             {
                 spriteRenderer.color = Color.grey;
@@ -135,9 +133,9 @@ public class EnemyBot : MonoBehaviour
                 yield break;
             }
 
-            StartCoroutine(ShowEnemyAttackVisuals(true)); // sprite de ataque fuerte
+            StartCoroutine(ShowEnemyAttackVisuals(true));
 
-            float baseDamage = enemyData.force * damageMultiplier;
+            float baseDamage = currentForce * damageMultiplier;
             int finalDamage = Mathf.RoundToInt(baseDamage * criticalMultiplier);
             playerCombat.ReceiveUnstoppableDamage(finalDamage);
         }
@@ -150,18 +148,14 @@ public class EnemyBot : MonoBehaviour
         int ladoAtaque = (Random.Range(0, 2) == 0) ? -1 : 1;
         isFinte = true;
 
-        // aviso visual
         if (spriteRenderer != null) spriteRenderer.color = Color.cyan;
-
         StartCoroutine(MostrarAlerta(iconoFinta, Color.white, 0.7f));
 
         Vector3 originalPos = transform.position;
         transform.position = originalPos + new Vector3(ladoAtaque * 1.5f, 0, 0);
 
-        // espera tiempo de reacción
         yield return new WaitForSeconds(1f);
 
-        // golpe
         transform.position = originalPos;
         if (spriteRenderer != null) spriteRenderer.color = originalColor;
 
@@ -173,13 +167,9 @@ public class EnemyBot : MonoBehaviour
                 esquivaExitosa = true;
             }
 
-            if (esquivaExitosa)
+            if (!esquivaExitosa)
             {
-                // no pasa nada
-            }
-            else
-            {
-                float baseDamage = enemyData.force * damageMultiplier;
+                float baseDamage = currentForce * damageMultiplier;
                 int damageFinta = Mathf.RoundToInt(baseDamage * 3f);
                 playerCombat.ReceiveTrueDamage(damageFinta);
                 SoundManager.PlaySound(SoundType.Complaint);
@@ -189,13 +179,9 @@ public class EnemyBot : MonoBehaviour
         isFinte = false;
     }
 
-    // El bot recive daño
     public bool TakeDamage(int damage)
     {
-        if (isFinte)
-        {
-            return false;
-        }
+        if (isFinte) return false;
 
         currentLife -= damage;
 
@@ -213,7 +199,6 @@ public class EnemyBot : MonoBehaviour
         }
 
         SoundManager.PlaySound(SoundType.EnemyComplaint, 0.2f);
-
         return true;
     }
 
@@ -223,84 +208,59 @@ public class EnemyBot : MonoBehaviour
         {
             if (esAtaqueFuerte)
             {
-                // Si es fuerte, ponemos el sprite fuerte
-                if (enemyData.HardAttackSprite != null)
-                    spriteRenderer.sprite = enemyData.HardAttackSprite;
+                if (enemyData.HardAttackSprite != null) spriteRenderer.sprite = enemyData.HardAttackSprite;
             }
             else
             {
-                // Si NO es fuerte, ponemos el normal
-                if (enemyData.AttackSprite != null)
-                    spriteRenderer.sprite = enemyData.AttackSprite;
+                if (enemyData.AttackSprite != null) spriteRenderer.sprite = enemyData.AttackSprite;
             }
         }
 
-        yield return new WaitForSeconds(0.2f); // tiempo que se ve el golpe
+        yield return new WaitForSeconds(0.2f);
 
-        // volvemos a la pose normal
-        if (spriteRenderer != null)
-        {
-            spriteRenderer.sprite = enemyData.sprite;
-        }
+        if (spriteRenderer != null) spriteRenderer.sprite = enemyData.sprite;
     }
 
     IEnumerator MostrarAlerta(Sprite nuevoSprite, Color colorAviso, float duracion)
     {
         if (AlertIcon != null && alertaSpriteRenderer != null)
         {
-            // configurar Sprite y activar
             if (nuevoSprite != null) alertaSpriteRenderer.sprite = nuevoSprite;
             AlertIcon.SetActive(true);
-
-            // animacion de pop 
             AlertIcon.transform.localScale = Vector3.one * 1.5f;
 
-            // bucle del parpadeo
             float tiempoPasado = 0f;
             float velocidadParpadeo = 5f;
 
             while (tiempoPasado < duracion)
             {
-                // calculamos la transpariencia usando el metodo pingpong
-                // pingpong hace que el valor vaya de 0 a 1 y de 1 a 0 repetidamente
                 float alpha = Mathf.PingPong(Time.time * velocidadParpadeo, 1f);
-
-                // trapear el alpha entre 0.4 y 1 para que no desaparezca del todo
                 alpha = Mathf.Clamp(alpha, 0.4f, 1f);
 
-                // asignamos el color con la nueva alpha
                 Color colorFinal = colorAviso;
-                colorFinal.a = alpha; // Solo cambiamos la transparencia 
-
+                colorFinal.a = alpha;
                 alertaSpriteRenderer.color = colorFinal;
 
                 tiempoPasado += Time.deltaTime;
-                yield return null; // esperamos al siguiente frame
+                yield return null;
             }
 
-            // apagamos el icono 
             AlertIcon.SetActive(false);
-
-            // restauramos el color con opacidad al 100% por si acaso para la proxima
             Color restaurar = colorAviso;
             restaurar.a = 1f;
             alertaSpriteRenderer.color = restaurar;
         }
     }
 
-    // ejecuta la rutina de castigo
     public void CastigarJugador()
     {
         if (currentAttackRoutine != null) StopCoroutine(currentAttackRoutine);
         currentAttackRoutine = StartCoroutine(RutinaCastigo());
     }
 
-    // Rutina de cuando el jugador queda aturdido
     IEnumerator RutinaCastigo()
     {
         yield return new WaitForSeconds(1f);
-
-        // ataque Rapido y Daño Doble
         yield return StartCoroutine(RealizarAtaque(0.4f, 2f));
         yield return new WaitForSeconds(1.5f);
         currentAttackRoutine = StartCoroutine(EnemyAttackLoop());
@@ -308,28 +268,20 @@ public class EnemyBot : MonoBehaviour
 
     private IEnumerator ShakeEffect()
     {
-        // guardamos la posicion original para no perderla
         Vector3 originalPos = transform.position;
         float elapsed = 0.0f;
 
         while (elapsed < shakeDuration)
         {
-            // calculamos una posición aleatoria muy cerca de la original
             float x = Random.Range(-1f, 1f) * shakeAmount;
             float y = Random.Range(-1f, 1f) * shakeAmount;
-
-            // movemos al enemigo
             transform.position = originalPos + new Vector3(x, y, 0);
-
             elapsed += Time.deltaTime;
-            yield return null; // Esperamos al siguiente frame
+            yield return null;
         }
-
-        // devolvemos a la posición original
         transform.position = originalPos;
     }
 
-    // Rutina visula para cuando el bot recibe daño
     private IEnumerator FlashEffect()
     {
         spriteRenderer.color = hitColor;
@@ -337,12 +289,11 @@ public class EnemyBot : MonoBehaviour
         spriteRenderer.color = originalColor;
     }
 
-    // Reinicimos los atributos del enemigo cuando se reincia una ronda
     public void ReiniciarParaRonda()
     {
         StopAllCoroutines();
-         
-        currentLife = enemyData.life; 
+
+        currentLife = maxLife;
 
         transform.position = startPosition;
 
@@ -356,7 +307,7 @@ public class EnemyBot : MonoBehaviour
         StopAllCoroutines();
         numDeath++;
 
-        if (numDeath == 2) 
+        if (numDeath == 2)
         {
             if (deathEffectPrefab != null)
             {
@@ -364,17 +315,24 @@ public class EnemyBot : MonoBehaviour
                 Destroy(explosion, 2f);
             }
 
-            if (spriteRenderer != null)
-            {
-                spriteRenderer.color = new Color(0f, 0f, 0f, 0f);
-            }
+            if (spriteRenderer != null) spriteRenderer.color = new Color(0f, 0f, 0f, 0f);
         }
 
         if (spriteRenderer != null && numDeath != 2) spriteRenderer.color = Color.gray;
 
-        if (playerCombat != null)
-        {
-            playerCombat.Win();
-        }
+        if (playerCombat != null) playerCombat.Win();
+    }
+
+    public void SobrescribirStatsDeFirebase(int nuevaVida, int nuevaEnergia, int nuevaFuerza, int nuevaRecuperacion, string nuevoNombre)
+    {
+        maxLife = nuevaVida;
+        currentLife = maxLife;
+        currentForce = nuevaFuerza;
+        currentEnergy = nuevaEnergia;
+        currentRecovery = nuevaRecuperacion;
+        enemyName = nuevoNombre;
+        name = enemyName;
+
+        Debug.Log($"¡Stats del enemigo {nuevoNombre} actualizadas desde Firebase!");
     }
 }
