@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8302c81d1a41f7148b1f518f525c7a83, type: 3}
   m_Name: Miguel
   m_EditorClassIdentifier: Assembly-CSharp::BaseCharacter
-  id: 0
+  id: personaje_miguel
   entityName: Miguel
   sprite: {fileID: -7445666961110531637, guid: 036f18abbb8853944a7412c8113daf3c, type: 3}
   life: 200

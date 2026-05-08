@@ -15838,7 +15838,7 @@ GameObject:
   - component: {fileID: 284555281}
   - component: {fileID: 284555280}
   m_Layer: 0
-  m_Name: GameManager
+  m_Name: CombatController
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -15892,15 +15892,13 @@ MonoBehaviour:
   staminaFillImage: {fileID: 446838746}
   normalStaminaColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
   lowStaminaColor: {r: 1, g: 0, b: 0, a: 1}
-  mochilaConsumibles: []
-  imagenBotonConsumible: {fileID: 398213106}
-  FlechaConsumible: {fileID: 756709093}
   pantallaResultados: {fileID: 594022308}
   contadorGolpes: 0
   "contadorDa\xF1oTotal": 0
   tiempoInicioCombate: 0
   enemyHealthBar: {fileID: 928405473}
   enemyHealthText: {fileID: 395867583}
+  inventory: {fileID: 325898937}
 --- !u!4 &284555279
 Transform:
   m_ObjectHideFlags: 0
@@ -16163,6 +16161,52 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!1 &325898935
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 325898936}
+  - component: {fileID: 325898937}
+  m_Layer: 0
+  m_Name: CombatInventoryController
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &325898936
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 325898935}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 82.93773, y: 238.08821, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &325898937
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 325898935}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f8d5fc8f4644b5744b0eb7add63d12b3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CombatInventory
+  imagenBotonConsumible: {fileID: 398213106}
+  flechaConsumible: {fileID: 756709093}
 --- !u!1 &395867581
 GameObject:
   m_ObjectHideFlags: 0
@@ -16382,8 +16426,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 284555278}
-        m_TargetAssemblyTypeName: CombatController, Assembly-CSharp
+      - m_Target: {fileID: 325898937}
+        m_TargetAssemblyTypeName: CombatInventory, Assembly-CSharp
         m_MethodName: UsarPrimerConsumible
         m_Mode: 1
         m_Arguments:
@@ -16733,6 +16777,53 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 446838744}
   m_CullTransparentMesh: 1
+--- !u!1 &450672744
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 450672745}
+  - component: {fileID: 450672746}
+  m_Layer: 0
+  m_Name: GameLoader
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &450672745
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 450672744}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -2.00485, y: -3.97439, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &450672746
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 450672744}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 16aa1cee2a26858488e2501d846a1849, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::GameLoader
+  playerCombat: {fileID: 284555278}
+  enemyBot: {fileID: 1810799658}
+  idEnemigo: bot_1
 --- !u!1 &462762814
 GameObject:
   m_ObjectHideFlags: 0
@@ -17872,8 +17963,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 284555278}
-        m_TargetAssemblyTypeName: CombatController, Assembly-CSharp
+      - m_Target: {fileID: 325898937}
+        m_TargetAssemblyTypeName: CombatInventory, Assembly-CSharp
         m_MethodName: SiguienteConsumible
         m_Mode: 1
         m_Arguments:
@@ -27804,3 +27895,5 @@ SceneRoots:
   - {fileID: 694613181}
   - {fileID: 1878034722}
   - {fileID: 1650755933}
+  - {fileID: 325898936}
+  - {fileID: 450672745}

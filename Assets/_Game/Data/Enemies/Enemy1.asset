@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b78ec7da10b5b5d4abc0b4bc5289282c, type: 3}
   m_Name: Enemy1
   m_EditorClassIdentifier: Assembly-CSharp::EnemyBase
-  id: 1
+  id: bot_1
   entityName: Enemy1
   sprite: {fileID: -7965226298060125710, guid: 92cf728d758608443bc44f8c8c20385a, type: 3}
   life: 75

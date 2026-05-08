@@ -8,8 +8,8 @@ public class GameLoader : MonoBehaviour
     public CombatController playerCombat;
     public EnemyBot enemyBot;
 
-    [Header("Configuración del Enemigo")]
-    [Tooltip("El ID del enemigo en Firebase si no se carga dinámicamente")]
+    [Header("Configuraciï¿½n del Enemigo")]
+    [Tooltip("El ID del enemigo en Firebase si no se carga dinï¿½micamente")]
     public string idEnemigo = "bot_facil";
 
     async void Start()
@@ -17,14 +17,14 @@ public class GameLoader : MonoBehaviour
         // Verificamos que existan las instancias necesarias
         if (GameManager.Instance == null)
         {
-            Debug.LogError("No se encontró el GameManager en la escena.");
+            Debug.LogError("No se encontrï¿½ el GameManager en la escena.");
             return;
         }
 
-        // Obtenemos el ID del personaje seleccionado en el menú
+        // Obtenemos el ID del personaje seleccionado en el menï¿½
         string idPersonaje = GameManager.Instance.idPersonajeSeleccionado;
 
-        // Si entramos directo a la escena sin pasar por el menú, usamos uno por defecto
+        // Si entramos directo a la escena sin pasar por el menï¿½, usamos uno por defecto
         if (string.IsNullOrEmpty(idPersonaje))
         {
             Debug.LogWarning("No hay personaje seleccionado. Usando 'ava' por defecto.");
@@ -51,7 +51,7 @@ public class GameLoader : MonoBehaviour
         PersonajeService pjService = new PersonajeService();
         EnemyService enemyService = new EnemyService();
 
-        // Lanzamos ambas descargas en paralelo para que el juego cargue más rápido
+        // Lanzamos ambas descargas en paralelo para que el juego cargue mï¿½s rï¿½pido
         var tareaPJ = pjService.ObtenerPersonaje(idPersonaje);
         var tareaEnemigo = enemyService.ObtenerEnemigo(idEnemigo);
 
@@ -76,29 +76,6 @@ public class GameLoader : MonoBehaviour
             enemyBot.SobrescribirStatsDeFirebase(e.life, e.energy, e.force, e.recovery, e.name);
             playerCombat.ActualizarUIEnemigo(e.life, e.name);
             Debug.Log($"Stats del enemigo {e.name} inyectados correctamente.");
-        }
-
-        // Cargar el objeto Pasivo
-        playerCombat.pasivosEquipados.Clear(); // Limpiamos la lista actual
-        Pasivo objetoPasivo = GameManager.Instance.GetPasivoPorID(GameManager.Instance.pasivoEquipadoID);
-        if (objetoPasivo != null)
-        {
-            playerCombat.pasivosEquipados.Add(objetoPasivo);
-            Debug.Log($"Pasivo equipado: {objetoPasivo.name}");
-        }
-
-        // Cargar los objetos Activos
-        List<Consumible> activosParaPelea = new List<Consumible>();
-        foreach (string id in GameManager.Instance.activosEquipadosIDs)
-        {
-            Consumible c = GameManager.Instance.GetActivoPorID(id);
-            if (c != null) activosParaPelea.Add(c);
-        }
-
-        // Inicializar la mochila de consumibles en el combate
-        if (playerCombat.inventory != null)
-        {
-            playerCombat.inventory.Inicializar(playerCombat, activosParaPelea);
         }
     }
 }

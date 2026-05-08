@@ -2,7 +2,7 @@ using Firebase.Firestore;
 using System.Threading.Tasks;
 using UnityEngine;
 
-public class WorldService : MonoBehaviour
+public class WorldService
 {
     public async Task<World?> ObtenerMundo(string nombreMundo)
     {
@@ -23,8 +23,9 @@ public class WorldService : MonoBehaviour
                 return null;
             }    
         }
-        catch
+        catch (System.Exception e)
         {
+            Debug.LogError($"Error en la base de datos: {e.Message}");
             return null;
         }
     }
