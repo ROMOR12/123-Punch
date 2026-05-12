@@ -12,21 +12,22 @@ public class MostrarPersonajes : MonoBehaviour
     [SerializeField] private Image imagenSeleccionPersonaje;
     [SerializeField] private TextMeshProUGUI textoVida, textoStam, textoDanyo, textoRecuperacion, textoNombrePersonaje;
 
-    [Header("UI del BotÛn Seleccionar")]
+    [Header("UI del Bot√≥n Seleccionar")]
     [SerializeField] private Button botonSeleccionar;
     [SerializeField] private TextMeshProUGUI textoBotonSeleccionar;
-    [SerializeField] private Color colorSeleccionado = new Color(0.5f, 0.5f, 0.5f); // Color m·s oscuro
+    [SerializeField] private Color colorSeleccionado = new Color(0.5f, 0.5f, 0.5f); // Color m√°s oscuro
     private Color colorOriginalBoton;
 
     private int indicePersonajeSeleccionado = 0;
     private Dictionary<string, Personaje> cachePersonajes = new Dictionary<string, Personaje>();
+    private Dictionary<string, bool> cacheEstadoDesbloqueo = new Dictionary<string, bool>();
 
     void Start()
     {
         gameManager = GameManager.Instance;
         if (botonSeleccionar != null) colorOriginalBoton = botonSeleccionar.image.color;
 
-        // AquÌ el GameManager ya habr· leÌdo de PlayerPrefs autom·ticamente
+        // Aqu√≠ el GameManager ya habr√° le√≠do de PlayerPrefs autom√°ticamente
         string idGuardado = gameManager.idPersonajeSeleccionado;
 
         int indice = gameManager.listaPersonajes.FindIndex(p => p.id == idGuardado);
@@ -42,41 +43,89 @@ public class MostrarPersonajes : MonoBehaviour
     {
         var personajeLocal = gameManager.listaPersonajes[indicePersonajeSeleccionado];
 
-        // Actualizar im·genes
+        // Actualizar im√°genes
         imagenSeleccionPersonaje.sprite = personajeLocal.sprite != null ? personajeLocal.sprite : gameManager.imageDefault;
         imagenPersonajeSeleccionado.sprite = personajeLocal.sprite != null ? personajeLocal.sprite : gameManager.imageDefault;
 
         string idPersonaje = personajeLocal.id;
 
-        // --- L”GICA DEL BOT”N ---
-        // Comprobamos si este personaje es el que ya est· guardado en el GameManager
-        if (gameManager.idPersonajeSeleccionado == idPersonaje)
-        {
-            ConfigurarBotonComoSeleccionado(true);
-        }
-        else
-        {
-            ConfigurarBotonComoSeleccionado(false);
-        }
+        ConfigurarBotonComoBloqueado();
+        
+        Personaje datosAMostrar = null;
+        bool estaDesbloqueado = false;
 
-        // Carga de stats (CachÈ + Firebase)
-        if (cachePersonajes.ContainsKey(idPersonaje))
+        if (cachePersonajes.ContainsKey(idPersonaje) && cacheEstadoDesbloqueo.ContainsKey(idPersonaje))
         {
-            MostrarDatosEnPantalla(cachePersonajes[idPersonaje]);
+            datosAMostrar = cachePersonajes[idPersonaje];
+            estaDesbloqueado = cacheEstadoDesbloqueo[idPersonaje];
         }
         else
         {
             SetTextosCargando();
-            PersonajeService pjService = new PersonajeService();
-            Personaje datosNube = await pjService.ObtenerPersonaje(idPersonaje);
+            
+            UsuarioService uService = new UsuarioService();
+            PersonajeService pjServiceGlobal = new PersonajeService();
+            Personaje datosUsuario = null;
 
-            if (datosNube != null)
+            // Verificamos si hay usuario activo (controla invitados y errores de sesi√≥n)
+            if (SessionManager.shared != null && SessionManager.shared.currentUser != null)
             {
-                cachePersonajes[idPersonaje] = datosNube;
-                if (gameManager.listaPersonajes[indicePersonajeSeleccionado].id == idPersonaje)
-                {
-                    MostrarDatosEnPantalla(datosNube);
-                }
+                string idUsuario = SessionManager.shared.currentUser.id;
+                datosUsuario = await uService.ObtenerPersonajeDeUsuario(idUsuario, idPersonaje);
+            }
+
+            if (datosUsuario != null)
+            {
+                // El usuario lo tiene desbloqueado
+                datosAMostrar = datosUsuario;
+                estaDesbloqueado = true;
+            }
+            else
+            {
+                // No lo tiene, es invitado o error. Buscamos las stats base globales.
+                Personaje datosBase = await pjServiceGlobal.ObtenerPersonaje(idPersonaje);
+                datosAMostrar = datosBase;
+                estaDesbloqueado = false;
+            }
+
+            if (datosAMostrar != null)
+            {
+                cachePersonajes[idPersonaje] = datosAMostrar;
+                cacheEstadoDesbloqueo[idPersonaje] = estaDesbloqueado;
+            }
+        }
+
+        if (datosAMostrar != null && gameManager.listaPersonajes[indicePersonajeSeleccionado].id == idPersonaje)
+        {
+            MostrarDatosEnPantalla(datosAMostrar);
+
+            if (idPersonaje.Equals("personaje_james", System.StringComparison.OrdinalIgnoreCase))
+            {
+                estaDesbloqueado = true;
+            }
+
+            if (estaDesbloqueado)
+            {
+                imagenSeleccionPersonaje.color = Color.white;
+                imagenPersonajeSeleccionado.color = Color.white;
+            }
+            else
+            {
+                imagenSeleccionPersonaje.color = new Color(0.0f, 0.0f, 0.0f, 1f); 
+                imagenPersonajeSeleccionado.color = new Color(0.0f, 0.0f, 0.0f, 1f);
+            }
+
+            if (!estaDesbloqueado)
+            {
+                ConfigurarBotonComoBloqueado();
+            }
+            else if (gameManager.idPersonajeSeleccionado == idPersonaje)
+            {
+                ConfigurarBotonComoSeleccionado(true);
+            }
+            else
+            {
+                ConfigurarBotonComoSeleccionado(false);
             }
         }
     }
@@ -86,10 +135,31 @@ public class MostrarPersonajes : MonoBehaviour
         string idElegido = gameManager.listaPersonajes[indicePersonajeSeleccionado].id;
         gameManager.idPersonajeSeleccionado = idElegido;
 
-        // Cambiamos el aspecto visual del botÛn inmediatamente
+        // Cambiamos el aspecto visual del bot√≥n inmediatamente
         ConfigurarBotonComoSeleccionado(true);
 
         Debug.Log($"Personaje {idElegido} seleccionado y guardado.");
+    }
+
+    private bool EsPersonajeDesbloqueado(string idPersonaje)
+    {
+        // TODO: Comprobar en la base de datos si se han cumplido las condiciones.
+        // De momento, solo "James" est√° desbloqueado por defecto.
+        if (idPersonaje.Equals("personaje_james", System.StringComparison.OrdinalIgnoreCase))
+        {
+            return true;
+        }
+
+        return false;
+    }
+
+    private void ConfigurarBotonComoBloqueado()
+    {
+        if (botonSeleccionar == null || textoBotonSeleccionar == null) return;
+
+        textoBotonSeleccionar.text = "Bloqueado";
+        botonSeleccionar.image.color = colorSeleccionado; // Reutilizamos el color oscuro
+        botonSeleccionar.interactable = false;
     }
 
     private void ConfigurarBotonComoSeleccionado(bool esSeleccionado)

@@ -97,6 +97,23 @@ public class UsuarioService
 
     }
 
+    // subcoleccion de personajes del usuario
+    public async Task<Personaje> ObtenerPersonajeDeUsuario(string userId, string nombrePersonaje)
+    {
+        try
+        {
+            FirebaseFirestore _context = DatabaseManager.shared.db;
+            DocumentSnapshot snapshot = await _context.Collection("usuarios").Document(userId).Collection("personajes").Document(nombrePersonaje).GetSnapshotAsync();
+
+            if (snapshot.Exists)
+            {
+                return snapshot.ConvertTo<Personaje>();
+            }
+            return null;
+        }
+        catch { return null; }
+    }
+
     public async Task<bool> ActualizarObjeto(string userId, Objeto objeto)
     {
         try 

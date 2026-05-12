@@ -4,26 +4,26 @@ using UnityEngine;
 
 public class PersonajeService
 {
-    // Método para obtener los datos de un personaje desde Firebase
+    // Mï¿½todo para obtener los datos de un personaje desde Firebase
     public async Task<Personaje> ObtenerPersonaje(string personajeId)
     {
         try
         {
-            // Verificamos que la base de datos esté inicializada
+            // Verificamos que la base de datos estï¿½ inicializada
             if (DatabaseManager.shared == null || DatabaseManager.shared.db == null)
             {
-                Debug.LogError("Error: DatabaseManager no está inicializado.");
+                Debug.LogError("Error: DatabaseManager no estï¿½ inicializado.");
                 return null;
             }
 
             FirebaseFirestore db = DatabaseManager.shared.db;
 
-            // Buscamos en la colección "personajes" el documento con el ID específico
+            // Buscamos en la colecciï¿½n "personajes" el documento con el ID especï¿½fico
             DocumentSnapshot snap = await db.Collection("personajes").Document(personajeId).GetSnapshotAsync();
 
             if (snap.Exists)
             {
-                // Si existe, Firebase convierte mágicamente el documento a nuestra clase Personaje
+                // Si existe, Firebase convierte mï¿½gicamente el documento a nuestra clase Personaje
                 return snap.ConvertTo<Personaje>();
             }
             else

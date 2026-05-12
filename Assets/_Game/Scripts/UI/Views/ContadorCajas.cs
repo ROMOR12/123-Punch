@@ -13,6 +13,9 @@ public class ContadorCajas : MonoBehaviour
 
     void Update()
     {
-        textoCajas.text = GameManager.Instance.numCajas.ToString();
+        if (textoCajas != null && GameManager.Instance != null)
+        {
+            textoCajas.text = GameManager.Instance.numCajas.ToString();
+        }
     }
 }

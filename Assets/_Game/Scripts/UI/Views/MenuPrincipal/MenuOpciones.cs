@@ -30,4 +30,23 @@ public class MenuOpciones : MonoBehaviour
         SoundManager.PlaySound(SoundType.Consumable);
         Application.Quit();
     }
+    public void CerrarSesion()
+    {
+        SoundManager.PlaySound(SoundType.Consumable);
+        
+        // Cerramos sesión en Firebase
+        if (Firebase.Auth.FirebaseAuth.DefaultInstance != null)
+        {
+            Firebase.Auth.FirebaseAuth.DefaultInstance.SignOut();
+        }
+
+        // Limpiamos los datos del jugador de la memoria
+        if (SessionManager.shared != null)
+        {
+            SessionManager.shared.LimpiarSesion();
+        }
+
+        // Cargamos la escena de Login (usando tu script CargaEscena)
+        CargaEscena.Cargar("LoginScene");
+    }
 }
