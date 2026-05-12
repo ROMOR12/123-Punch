@@ -28,16 +28,28 @@ public class Usuario
     public int premium_coin { get; set; }
 
     [FirestoreProperty]
+    public int lootboxes { get; set; }
+
+    [FirestoreProperty]
+    public List<string> inventario { get; set; } = new List<string>();
+
+    [FirestoreProperty]
+    public List<string> objetos_equipados { get; set; } = new List<string> { "", "" };
+
+    [FirestoreProperty]
+    public string pasivo_equipado { get; set; } = "";
+
+    [FirestoreProperty]
     public bool is_admin { get; set; }
 
     [FirestoreProperty]
     public int xp { get; set; }
 
     [FirestoreProperty]
-    public int id_world { get; set; }
+    public string id_world { get; set; }
 
     [FirestoreProperty]
-    public int id_level { get; set; }
+    public string id_level { get; set; }
 
     
 

@@ -54,28 +54,20 @@ public class AuthManager : MonoBehaviour
         CerrarTodosPaneles();
         panelLoginUI.SetActive(true);
 
-        // si tiene la sesion iniciada
-        if (auth.CurrentUser != null)
+        // Si ya inicio sesion anteriormente
+        FirebaseUser user = auth.CurrentUser;
+        if (user.IsEmailVerified)
         {
-            auth.CurrentUser.ReloadAsync().ContinueWith(task =>
-            {
-                if (task.IsFaulted || task.IsCanceled)
-                {
-                    auth.SignOut();
-                    return;
-                }
-
-                // Si ya inicio sesion anteriormente
-                FirebaseUser user = auth.CurrentUser;
-                if (user.IsEmailVerified || user.IsAnonymous)
-                {
-                    irAlJuego = true;
-                }
-                else
-                {
-                    recargarEscena = true;
-                }
-            });
+            // Cargar datos de forma asíncrona antes de ir al juego
+            CargarDatosSesion(user.UserId);
+        }
+        else if (user.IsAnonymous)
+        {
+            irAlJuego = true; // Si es invitado, va directo
+        }
+        else
+        {
+            recargarEscena = true;
         }
     }
 
@@ -186,6 +178,24 @@ public class AuthManager : MonoBehaviour
         }
     }
 
+    private async void CargarDatosSesion(string userId)
+    {
+        UsuarioService usuarioService = new UsuarioService();
+        Usuario datosUsuario = await usuarioService.ObtenerUsuario(userId);
+
+        if (datosUsuario != null)
+        {
+            SessionManager.shared.currentUser = datosUsuario;
+            irAlJuego = true;
+        }
+        else
+        {
+            auth.SignOut(); // Si por algún motivo no existe en DB, lo deslogueamos
+            CerrarTodosPaneles();
+            panelLoginUI.SetActive(true);
+        }
+    }
+
     public void Boton_ReenviarCorreo()
     {
         if (auth.CurrentUser != null)
@@ -201,13 +211,11 @@ public class AuthManager : MonoBehaviour
         IrALogin();
     }
 
-    public void LoginConEmail()
+    public async void LoginConEmail()
     {
-        // Datos
         string email = emailLoginInput.text;
         string pass = passLoginInput.text;
 
-        // validaciones
         if (string.IsNullOrEmpty(email) || string.IsNullOrEmpty(pass))
         {
             feedbackText.text = "Rellena correo y contraseña";
@@ -222,21 +230,40 @@ public class AuthManager : MonoBehaviour
 
         feedbackText.text = "Verificando...";
 
-        // Intentamos iniciar sesion 
-        auth.SignInWithEmailAndPasswordAsync(email, pass).ContinueWithOnMainThread(task =>
+        try
         {
-            if (task.IsCanceled || task.IsFaulted)
-            {
-                string errorMsg = ObtenerMensajeError(task.Exception);
-                feedbackText.text = errorMsg;
-                return;
-            }
+            // Iniciamos sesión en Firebase Auth
+            AuthResult result = await auth.SignInWithEmailAndPasswordAsync(email, pass);
+            FirebaseUser user = result.User;
 
-            FirebaseUser user = task.Result.User;
-            // Verifiamos si el usuario tiene el correo verificado
-            if (user.IsEmailVerified) irAlJuego = true;
-            else recargarEscena = true;
-        });
+            if (user.IsEmailVerified)
+            {
+                feedbackText.text = "Cargando datos del jugador...";
+
+                // Descargamos los datos desde Firestore
+                UsuarioService usuarioService = new UsuarioService();
+                Usuario datosUsuario = await usuarioService.ObtenerUsuario(user.UserId);
+
+                if (datosUsuario != null)
+                {
+                    // Guardamos los datos en la sesión
+                    SessionManager.shared.currentUser = datosUsuario;
+                    irAlJuego = true;
+                }
+                else
+                {
+                    feedbackText.text = "Error: No se encontraron datos del usuario.";
+                }
+            }
+            else
+            {
+                recargarEscena = true;
+            }
+        }
+        catch (System.AggregateException e)
+        {
+            feedbackText.text = ObtenerMensajeError(e);
+        }
     }
 
     public void LoginInvitado()

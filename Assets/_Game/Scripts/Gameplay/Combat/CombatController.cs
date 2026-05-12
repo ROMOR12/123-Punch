@@ -5,6 +5,8 @@ using Unity.VisualScripting.Antlr3.Runtime.Misc;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
+using Firebase.Functions;
+using System.Threading.Tasks;
 
 public class CombatController : MonoBehaviour
 {
@@ -72,11 +74,6 @@ public class CombatController : MonoBehaviour
     public Color normalStaminaColor = Color.yellow;
     public Color lowStaminaColor = Color.red;
 
-    [Header("Inventario en combate")]
-    public List<Consumible> mochilaConsumibles = new List<Consumible>();
-    public Image imagenBotonConsumible;
-    public GameObject FlechaConsumible;
-
     [Header("Estadísticas de Combate")]
     public ResultScreenUI pantallaResultados;
     public int contadorGolpes = 0;
@@ -95,21 +92,23 @@ public class CombatController : MonoBehaviour
     private bool isHardAttack = false;
     private bool victory = false;
 
+    public CombatInventory inventory;
+
+    private FirebaseFunctions functions;
+
     void Start()
     {
-        mochilaConsumibles = new List<Consumible>();
+        functions = FirebaseFunctions.DefaultInstance;
+
+        if (inventory != null)
+        {
+            Debug.Log("¡Inventario enlazado correctamente! Cargando consumibles...");
+            List<Consumible> items = (playerData != null) ? playerData.objetosConsumibles : null;
+            inventory.Inicializar(this, items);
+        }
 
         if (playerData != null)
         {
-            // Cargar consumibles solo si existen
-            if (playerData.objetosConsumibles != null)
-            {
-                // Filtramos para no añadir objetos vacios
-                foreach (var item in playerData.objetosConsumibles)
-                {
-                    if (item != null) mochilaConsumibles.Add(item);
-                }
-            }
 
             // Cargamos los datos basicos
             maxLife = (float)playerData.life;
@@ -174,7 +173,6 @@ public class CombatController : MonoBehaviour
 
         HandleStaminaRegen();
 
-        ActualizarInterfazObjeto();
     }
 
     void Update()
@@ -850,103 +848,6 @@ public class CombatController : MonoBehaviour
         if (roundManager != null) roundManager.RegistrarFinDeRonda(true);
     }
 
-    // Metodo para usar items
-    public void UsarConsumible(Consumible item)
-    {
-        // si estas en algun mal estado no hace nada
-        if (isDead || victory || isStunned || item == null) return;
-
-        // Si la lsita tiene el item
-        if (mochilaConsumibles.Contains(item))
-        {
-            // usamos el item
-            item.Usar(this);
-            SoundManager.PlaySound(SoundType.Consumable);
-
-            // quitamos el item
-            mochilaConsumibles.Remove(item);
-        }
-    }
-
-    //Boton dinamico
-    void ActualizarInterfazObjeto()
-    {
-        // Comprobar que el consumible tenga icono
-        if (imagenBotonConsumible == null) return;
-
-        // Comprobamos si hay objetos
-        if (mochilaConsumibles != null && mochilaConsumibles.Count > 0)
-        {
-            // Cogemos el primero
-            Consumible primerItem = mochilaConsumibles[0];
-
-            //  Comprobamos que el item no sea null antes de pedir su icono
-            if (primerItem != null && primerItem.icon != null)
-            {
-                imagenBotonConsumible.sprite = primerItem.icon;
-                imagenBotonConsumible.enabled = true;
-            }
-            else
-            {
-                // Si el item está vacío, ocultamos la imagen
-                imagenBotonConsumible.enabled = false;
-            }
-        }
-        else
-        {
-            // Si la mochila está vacía, ocultamos la imagen
-            imagenBotonConsumible.enabled = false;
-        }
-
-        // Flecha
-        if (FlechaConsumible != null)
-        {
-            // Solo activar si hay más de 1 item y la lista no es nula
-            bool activarFlecha = (mochilaConsumibles != null && mochilaConsumibles.Count > 1);
-            FlechaConsumible.SetActive(activarFlecha);
-        }
-    }
-
-    public void UsarPrimerConsumible()
-    {
-        if (isDead || victory || isStunned) return;
-
-        if (mochilaConsumibles.Count > 0)
-        {
-            // Cogemos el primer item de la lista
-            Consumible item = mochilaConsumibles[0];
-
-            // Usamos el item
-            item.Usar(this);
-            SoundManager.PlaySound(SoundType.Consumable);
-
-            // Borramos el item de la lista
-            mochilaConsumibles.RemoveAt(0);
-
-            //Actualizamos la interfaz para mosntrar el siguiente item
-            ActualizarInterfazObjeto();
-        }
-    }
-
-    // Pasar el siguiente item
-    public void SiguienteConsumible()
-    {
-        // Si la lista tiene 1 item o menos no dejamos cambiar
-        if (mochilaConsumibles.Count <= 1) return;
-
-        // Guardamos el primer objeto, osea el actual en una variable temporal
-        Consumible objetoActual = mochilaConsumibles[0];
-
-        // Borramos el item seleccionado
-        mochilaConsumibles.RemoveAt(0);
-
-        // Añadimos el item anterioremnte guardado en la lista
-        mochilaConsumibles.Add(objetoActual);
-
-        // Actualizamos la interfaz para que muestre visualmente el siguiente item
-        ActualizarInterfazObjeto();
-    }
-    
     // cada vez que haces daño esto se va incrementando
     void RegistrarEstadistica(int damage)
     {
@@ -969,5 +870,73 @@ public class CombatController : MonoBehaviour
         StopAllCoroutines();
 
         this.enabled = false;
+    }
+    public bool IsUnableToAct()
+    {
+        return isDead || victory || isStunned;
+    }
+
+    public void SobrescribirStatsDeFirebase(int nuevaVida, int nuevaEnergia, int nuevaFuerza, int nuevaRecuperacion)
+    {
+        // Sobrescribimos los valores locales
+        maxLife = nuevaVida;
+        maxEnergy = nuevaEnergia;
+        currentForce = nuevaFuerza;
+        currentRecovery = nuevaRecuperacion;
+
+        // Rellenamos la vida y energía al máximo
+        currentLife = maxLife;
+        currentEnergy = maxEnergy;
+
+        // Actualizamos las barras de la interfaz
+        if (playerHealth != null)
+        {
+            playerHealth.maxValue = maxLife;
+            playerHealth.value = currentLife;
+            UpdateHealthText(playerHealthText, currentLife, maxLife);
+        }
+
+        if (staminaBar != null)
+        {
+            staminaBar.maxValue = maxEnergy;
+            staminaBar.value = currentEnergy;
+        }
+
+        Debug.Log("¡Stats del jugador actualizadas desde Firebase!");
+    }
+    public void ActualizarUIEnemigo(int vidaMax, string nombreEnemigo)
+    {
+        if (enemyHealthBar != null)
+        {
+            enemyHealthBar.maxValue = vidaMax;
+            enemyHealthBar.value = vidaMax;
+            UpdateHealthText(enemyHealthText, vidaMax, vidaMax);
+        }
+
+        if (EnemyName != null)
+        {
+            EnemyName.text = nombreEnemigo;
+        }
+    }
+
+    // Añade esto al final de CombatController.cs
+    public void CambiarVisualesPersonaje(BaseCharacter nuevosVisuales)
+    {
+        // Actualizamos la referencia al ScriptableObject
+        playerData = nuevosVisuales;
+
+        // Cambiamos el Sprite en pantalla
+        if (playerSpriteRenderer != null && playerData.sprite != null)
+        {
+            playerSpriteRenderer.sprite = playerData.sprite;
+        }
+
+        // Cambiamos el nombre en la barra de vida
+        if (playerName != null)
+        {
+            playerName.text = playerData.entityName;
+        }
+
+        Debug.Log($"¡Visuales cambiados a: {playerData.entityName}!");
     }
 }

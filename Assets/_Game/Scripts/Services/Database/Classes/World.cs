@@ -3,7 +3,7 @@ using UnityEngine;
 
 
 [FirestoreData]
-public class World : MonoBehaviour
+public class World
 {
     [FirestoreProperty]
     public double schemaVersion { get; set; }

@@ -4,10 +4,6 @@ using UnityEngine;
 
 public class UsuarioService
 {
-
-
-    
-
     public async Task<bool> NuevoUsuario(string userId, string nombre, string email)
     {
         try{
@@ -26,10 +22,11 @@ public class UsuarioService
                 last_log = Timestamp.GetCurrentTimestamp(),
                 free_coin = 100,
                 premium_coin = 0,
+                lootboxes = 0,
                 is_admin = false,
                 xp = 0,
-                id_world = 1,
-                id_level = 1
+                id_world = "1",
+                id_level = "1"
             };
 
             // Guardamos los datos del jugador en la base de datos en la nube
@@ -114,6 +111,42 @@ public class UsuarioService
         }
         catch { return false; }
 
+    }
+
+    public async Task<Usuario> ObtenerObjetosUsuario(string userId)
+    {
+        try
+        {
+            FirebaseFirestore _context = DatabaseManager.shared.db;
+            DocumentReference docRef = _context.Collection("usuarios").Document(userId);
+            DocumentSnapshot snapshot = await docRef.GetSnapshotAsync();
+
+            if (snapshot.Exists)
+            {
+                // Convertimos el documento al modelo Usuario
+                Usuario user = snapshot.ConvertTo<Usuario>();
+
+                // Sincronizamos con el GameManager usando los nombres exactos de tus clases
+                if (GameManager.Instance != null)
+                {
+                    GameManager.Instance.inventarioIDs = user.inventario;
+                    GameManager.Instance.pasivoEquipadoID = user.pasivo_equipado;
+                    GameManager.Instance.activosEquipadosIDs = user.objetos_equipados;
+                }
+
+                return user;
+            }
+            else
+            {
+                Debug.LogWarning($"El usuario con ID {userId} no existe en la base de datos.");
+                return null;
+            }
+        }
+        catch (System.Exception e)
+        {
+            Debug.LogError($"Error al obtener objetos del usuario: {e.Message}");
+            return null;
+        }
     }
 
 }
