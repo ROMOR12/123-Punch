@@ -19,6 +19,11 @@ public class AchievementUI : MonoBehaviour
         // Invoke("RefreshUI", 0.5f); // wait for manager to initialize
     }
 
+    private void OnEnable()
+    {
+        RefreshUI();
+    }
+
     public void SetFilter(int typeIndex)
     {
         // 0 = All, 1 = Combat, 2 = Characters, 3 = Minigames
@@ -56,9 +61,11 @@ public class AchievementUI : MonoBehaviour
             activeItems.Add(go);
 
             // Populate data
-            // Assuming you create a script AchievementItemUI on the prefab:
-            // AchievementItemUI ui = go.GetComponent<AchievementItemUI>();
-            // ui.Setup(def, data);
+            AchievementItemUI ui = go.GetComponent<AchievementItemUI>();
+            if (ui != null)
+            {
+                ui.Setup(def, data);
+            }
         }
     }
 }

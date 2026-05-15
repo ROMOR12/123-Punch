@@ -1,4 +1,4 @@
-﻿using Firebase;
+using Firebase;
 using Firebase.Auth;
 using System.Collections;
 using System.Threading.Tasks;
@@ -35,7 +35,19 @@ public class AuthManager : MonoBehaviour
     [Header("--- FADE ---")]
     public SceneFader faderScript;
 
-    private FirebaseAuth auth;
+    private FirebaseAuth _auth;
+    private FirebaseAuth auth
+    {
+        get
+        {
+            if (_auth == null)
+            {
+                _auth = FirebaseAuth.DefaultInstance;
+            }
+            return _auth;
+        }
+    }
+
     private bool irAlJuego = false;
     private bool recargarEscena = false;
 
@@ -46,7 +58,7 @@ public class AuthManager : MonoBehaviour
 
     void Awake()
     {
-        auth = FirebaseAuth.DefaultInstance;
+        _auth = FirebaseAuth.DefaultInstance;
     }
 
     void Start()
@@ -341,7 +353,7 @@ public class AuthManager : MonoBehaviour
         }
     }
 
-    public void EnviarCorreoRecuperacion()
+    public async void EnviarCorreoRecuperacion()
     {
         string email = emailOlvidoInput.text;
 
@@ -357,19 +369,32 @@ public class AuthManager : MonoBehaviour
             return;
         }
 
+        if (auth == null)
+        {
+            feedbackText.text = "Error: Firebase Auth no está inicializado.";
+            return;
+        }
+
         feedbackText.text = "Enviando...";
 
-        // Enviamos el correo de recuperacion de la contraseña
-        auth.SendPasswordResetEmailAsync(email).ContinueWithOnMainThread(task =>
+        try
         {
-            if (task.IsFaulted || task.IsCanceled)
-            {
-                string errorMsg = ObtenerMensajeError(task.Exception);
-                feedbackText.text = errorMsg;
-                return;
-            }
+            // Enviamos el correo de recuperacion de la contraseña
+            await auth.SendPasswordResetEmailAsync(email);
             feedbackText.text = "¡Correo enviado! Revisa tu bandeja.";
-        });
+        }
+        catch (System.Exception e)
+        {
+            System.AggregateException aggregate = e as System.AggregateException;
+            if (aggregate != null)
+            {
+                feedbackText.text = ObtenerMensajeError(aggregate);
+            }
+            else
+            {
+                feedbackText.text = "Error: " + e.Message;
+            }
+        }
     }
 
     string ObtenerMensajeError(System.AggregateException exception)
