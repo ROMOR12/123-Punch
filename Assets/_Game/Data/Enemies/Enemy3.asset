@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b78ec7da10b5b5d4abc0b4bc5289282c, type: 3}
+  m_Name: Enemy3
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyBase
+  id: bot_3
+  entityName: Enemy3
+  sprite: {fileID: 7910907821279028519, guid: e77e36b956ffbd34fade68ffcc8b0963, type: 3}
+  life: 100
+  energy: 90
+  force: 4
+  recovery: 3
+  AttackSprite: {fileID: 2010479692162521847, guid: e53f303b1c1b34c48b8971478bda0927, type: 3}
+  HardAttackSprite: {fileID: 8179809826436770918, guid: dcc613ab388063540b65a101e41b555d, type: 3}
