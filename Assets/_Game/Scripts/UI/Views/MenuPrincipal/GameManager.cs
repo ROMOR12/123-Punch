@@ -20,12 +20,15 @@ public class GameManager : MonoBehaviour
 
     public List<BaseCharacter> listaPersonajes;
 
+    public GameObject popUp;
+
     private void Awake()
     {
         if (GameManager.Instance == null)
         {
             GameManager.Instance = this;
             DontDestroyOnLoad(this.gameObject);
+            popUp.SetActive(false);
         }
         else 
         {
