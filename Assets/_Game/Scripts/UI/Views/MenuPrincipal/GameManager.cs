@@ -20,6 +20,8 @@ public class GameManager : MonoBehaviour
 
     public List<BaseCharacter> listaPersonajes;
 
+    public GameObject popUp;
+
     // --- NUEVO: SISTEMA DE INVENTARIO Y EQUIPAMIENTO ---
     [Header("Inventario y Equipamiento (Firebase)")]
     public List<string> inventarioIDs = new List<string>();
@@ -27,9 +29,9 @@ public class GameManager : MonoBehaviour
     public List<string> activosEquipadosIDs = new List<string> { "", "" };
 
     [Header("Bases de Datos Maestras (ScriptableObjects)")]
-    [Tooltip("Arrastra aquí todos los ScriptableObjects de objetos Pasivos")]
+    [Tooltip("Arrastra aquï¿½ todos los ScriptableObjects de objetos Pasivos")]
     public List<Pasivo> todosLosPasivos;
-    [Tooltip("Arrastra aquí todos los ScriptableObjects de objetos Consumibles")]
+    [Tooltip("Arrastra aquï¿½ todos los ScriptableObjects de objetos Consumibles")]
     public List<Consumible> todosLosActivos;
     // --------------------------------------------------
 
@@ -53,6 +55,7 @@ public class GameManager : MonoBehaviour
             PlayerPrefs.Save();
         }
     }
+    
 
     private void Awake()
     {
@@ -60,6 +63,7 @@ public class GameManager : MonoBehaviour
         {
             GameManager.Instance = this;
             DontDestroyOnLoad(this.gameObject);
+            popUp.SetActive(false);
         }
         else
         {
@@ -67,7 +71,7 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    // Métodos de utilidad opcionales para buscar objetos rápidamente
+    // Mï¿½todos de utilidad opcionales para buscar objetos rï¿½pidamente
     public Pasivo GetPasivoPorID(string id) => todosLosPasivos.Find(p => p.id == id);
     public Consumible GetActivoPorID(string id) => todosLosActivos.Find(a => a.id == id);
 }
