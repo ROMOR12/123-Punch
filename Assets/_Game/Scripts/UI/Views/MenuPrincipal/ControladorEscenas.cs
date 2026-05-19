@@ -4,11 +4,8 @@ public class ControladorEscenas : MonoBehaviour
 {
     public void IrAEscenaCajas()
     {
-        if(GameManager.Instance.numCajas >= 1)
-        {
-            GameManager.Instance.numCajas--;
-            CargaEscena.Cargar("LootBoxScene");
-        }
+        // Dejamos que el LootBoxManager dentro de la escena gestione las cantidades y compras
+        CargaEscena.Cargar("LootBoxScene");
     }
 
     public void SalirDelJuego()

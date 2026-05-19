@@ -110,9 +110,7 @@ public class GameLoader : MonoBehaviour
                 playerCombat.pasivosEquipados.Add(pasivo);
                 pasivo.Equipar(playerCombat); // Aplica los efectos base
                 Debug.Log($"Pasivo equipado: {pasivo.itemBaseName}");
-                
-                // Consumir el pasivo automáticamente al entrar en combate
-                ConsumirPasivoDeFirebase(idPasivo);
+                // Los pasivos son permanentes, no se consumen al entrar en combate
             }
         }
 
@@ -136,37 +134,4 @@ public class GameLoader : MonoBehaviour
             Debug.Log($"Consumibles inicializados: {consumiblesParaCombate.Count}");
         }
     }
-
-    private async void ConsumirPasivoDeFirebase(string itemID)
-    {
-        if (SessionManager.shared != null && SessionManager.shared.currentUser != null)
-        {
-            Usuario user = SessionManager.shared.currentUser;
-            
-            // 1. Borrar de la lista del inventario
-            if (user.inventario != null && user.inventario.Contains(itemID))
-            {
-                user.inventario.Remove(itemID);
-                if (GameManager.Instance != null && GameManager.Instance.inventarioIDs != null && GameManager.Instance.inventarioIDs != user.inventario)
-                {
-                    GameManager.Instance.inventarioIDs.Remove(itemID);
-                }
-            }
-
-            // 2. Si ya no te quedan copias de este pasivo, desequiparlo para la próxima vez
-            if (user.inventario == null || !user.inventario.Contains(itemID))
-            {
-                user.pasivo_equipado = "";
-                if (GameManager.Instance != null)
-                {
-                    GameManager.Instance.pasivoEquipadoID = "";
-                }
-            }
-
-            // 3. Guardar cambios en la nube
-            UsuarioService usuarioService = new UsuarioService();
-            await usuarioService.ActualizarUsuario(user);
-            Debug.Log($"Pasivo {itemID} consumido al iniciar combate y actualizado en Firebase.");
-        }
-    }
-}
+}

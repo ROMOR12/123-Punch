@@ -61,6 +61,8 @@ public class PanelInventarioUI : MonoBehaviour
         Dictionary<string, int> conteoItems = new Dictionary<string, int>();
         foreach (string itemID in GameManager.Instance.inventarioIDs)
         {
+            if (string.IsNullOrEmpty(itemID)) continue; // Ignorar IDs vacíos o nulos
+
             if (conteoItems.ContainsKey(itemID))
             {
                 conteoItems[itemID]++;

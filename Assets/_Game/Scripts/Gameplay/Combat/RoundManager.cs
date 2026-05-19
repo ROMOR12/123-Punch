@@ -120,6 +120,8 @@ public class RoundManager : MonoBehaviour
                 );
 
                 GameManager.Instance.numCajas++;
+                if (SessionManager.shared != null && SessionManager.shared.currentUser != null)
+                    SessionManager.shared.currentUser.lootboxes = GameManager.Instance.numCajas;
 
             }
         }

@@ -50,6 +50,11 @@ public class UsuarioService
                 if (snapshot.Exists)
                 {
                     Usuario usuario = snapshot.ConvertTo<Usuario>();
+                    
+                    // Sincronizar numCajas con el valor real de Firebase
+                    if (GameManager.Instance != null)
+                        GameManager.Instance.numCajas = usuario.lootboxes;
+                    
                     return usuario;
                 }
                 else
@@ -149,6 +154,7 @@ public class UsuarioService
                     GameManager.Instance.inventarioIDs = user.inventario;
                     GameManager.Instance.pasivoEquipadoID = user.pasivo_equipado;
                     GameManager.Instance.activosEquipadosIDs = user.objetos_equipados;
+                    GameManager.Instance.numCajas = user.lootboxes; // Sincronizar cajas con Firebase
                 }
 
                 return user;
