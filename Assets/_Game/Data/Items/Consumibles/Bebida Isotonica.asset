@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f6266be883c0fa14d8e995d92519cd8c, type: 3}
   m_Name: Bebida Isotonica
   m_EditorClassIdentifier: Assembly-CSharp::Consumible
-  id: activo_isotonica
+  id: item_activo_isotonica
   itemBaseName: "Bebida Isot\xF3nica"
   description: "Bebida consumida mayormente por crossfiteros. Te ayudar\xE1 a recuperarte
     de la paliza del adversario."

@@ -75,7 +75,7 @@ public class UsuarioService
             return true;
             
         }
-        catch { return false; }
+        catch (System.Exception e) { Debug.LogError("Error ActualizarUsuario: " + e); return false; }
 
     }
 
@@ -88,12 +88,12 @@ public class UsuarioService
           
             FirebaseFirestore _context = DatabaseManager.shared.db;
 
-            DocumentReference docRef = _context.Collection("usuarios").Document(userId).Collection("personajes").Document(personajeNuevo.name);
+            DocumentReference docRef = _context.Collection("usuarios").Document(userId).Collection("personajes").Document(personajeNuevo.id);
 
             await docRef.SetAsync(personajeNuevo, SetOptions.MergeAll);
 
             return true;
-        }catch { return false; }
+        }catch (System.Exception e) { Debug.LogError("Error ActualizarPersonaje: " + e); return false; }
 
     }
 

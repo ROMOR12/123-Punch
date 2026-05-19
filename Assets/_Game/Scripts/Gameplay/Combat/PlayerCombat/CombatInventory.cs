@@ -10,7 +10,7 @@ public class CombatInventory : MonoBehaviour
 
     [Header("Datos de Inventario")]
     private List<Consumible> mochilaConsumibles = new List<Consumible>();
-    private CombatController playerCombat; // Para decirle a quién aplicar el efecto
+    private CombatController playerCombat;
 
     public void Inicializar(CombatController player, List<Consumible> itemsIniciales)
     {
@@ -29,7 +29,6 @@ public class CombatInventory : MonoBehaviour
 
     public void UsarPrimerConsumible()
     {
-        // Validación de estado: Si el jugador no puede actuar, no usar el item.
         if (playerCombat.IsUnableToAct()) return;
 
         if (mochilaConsumibles.Count > 0)
@@ -40,6 +39,48 @@ public class CombatInventory : MonoBehaviour
 
             mochilaConsumibles.RemoveAt(0);
             ActualizarInterfazObjeto();
+
+            ConsumirObjetoDeFirebase(item.id);
+        }
+    }
+
+    private async void ConsumirObjetoDeFirebase(string itemID)
+    {
+        if (SessionManager.shared != null && SessionManager.shared.currentUser != null)
+        {
+            Usuario user = SessionManager.shared.currentUser;
+            
+            if (user.inventario != null && user.inventario.Contains(itemID))
+            {
+                user.inventario.Remove(itemID);
+                if (GameManager.Instance != null && GameManager.Instance.inventarioIDs != null && GameManager.Instance.inventarioIDs != user.inventario)
+                {
+                    GameManager.Instance.inventarioIDs.Remove(itemID);
+                }
+            }
+
+            if (user.inventario == null || !user.inventario.Contains(itemID))
+            {
+                if (user.objetos_equipados != null)
+                {
+                    for (int i = 0; i < user.objetos_equipados.Count; i++)
+                    {
+                        if (user.objetos_equipados[i] == itemID)
+                        {
+                            user.objetos_equipados[i] = "";
+                            if (GameManager.Instance != null && GameManager.Instance.activosEquipadosIDs != null)
+                            {
+                                GameManager.Instance.activosEquipadosIDs[i] = "";
+                            }
+                            break;
+                        }
+                    }
+                }
+            }
+
+            UsuarioService usuarioService = new UsuarioService();
+            await usuarioService.ActualizarUsuario(user);
+            Debug.Log($"Objeto {itemID} consumido y actualizado en Firebase.");
         }
     }
 
