@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f6266be883c0fa14d8e995d92519cd8c, type: 3}
   m_Name: Chicle rancio
   m_EditorClassIdentifier: Assembly-CSharp::Consumible
-  id: 2
+  id: item_chicle_rancio
   itemBaseName: Chicle Rancio
   description: "Este chicle, que tiene aspecto de haberse ca\xEDdo al suelo, parece
     haber adquirido efectos curativos."

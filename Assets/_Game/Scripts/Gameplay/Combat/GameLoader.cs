@@ -49,20 +49,36 @@ public class GameLoader : MonoBehaviour
 
         // INICIALIZAR SERVICIOS Y DESCARGAR STATS
         PersonajeService pjService = new PersonajeService();
+        UsuarioService uService = new UsuarioService();
         EnemyService enemyService = new EnemyService();
 
-        // Lanzamos ambas descargas en paralelo para que el juego cargue m�s r�pido
-        var tareaPJ = pjService.ObtenerPersonaje(idPersonaje);
+        // Tarea del enemigo
         var tareaEnemigo = enemyService.ObtenerEnemigo(idEnemigo);
 
-        await Task.WhenAll(tareaPJ, tareaEnemigo);
+        // Tarea del jugador (buscamos primero en su BD personal)
+        Personaje personajeJugador = null;
+        if (SessionManager.shared != null && SessionManager.shared.currentUser != null)
+        {
+            string idUsuario = SessionManager.shared.currentUser.id;
+            personajeJugador = await uService.ObtenerPersonajeDeUsuario(idUsuario, idPersonaje);
+        }
+
+        // Si no tiene el personaje guardado en su perfil, bajamos las stats base globales
+        if (personajeJugador == null)
+        {
+            personajeJugador = await pjService.ObtenerPersonaje(idPersonaje);
+        }
+
+        await tareaEnemigo;
 
         // APLICAR DATOS AL JUGADOR
-        if (tareaPJ.Result != null)
+        if (personajeJugador != null)
         {
-            Personaje p = tareaPJ.Result;
+            Personaje p = personajeJugador;
             playerCombat.SobrescribirStatsDeFirebase(p.life, p.energy, p.force, p.recovery);
             Debug.Log($"Stats de {p.name} (Nube) inyectados correctamente.");
+
+            CargarInventarioEnCombate();
         }
         else
         {
@@ -76,6 +92,81 @@ public class GameLoader : MonoBehaviour
             enemyBot.SobrescribirStatsDeFirebase(e.life, e.energy, e.force, e.recovery, e.name);
             playerCombat.ActualizarUIEnemigo(e.life, e.name);
             Debug.Log($"Stats del enemigo {e.name} inyectados correctamente.");
+        }
+    }
+
+    private void CargarInventarioEnCombate()
+    {
+        if (GameManager.Instance == null) return;
+
+        // 1. Cargar Pasivo
+        string idPasivo = GameManager.Instance.pasivoEquipadoID;
+        if (!string.IsNullOrEmpty(idPasivo))
+        {
+            Pasivo pasivo = GameManager.Instance.GetPasivoPorID(idPasivo);
+            if (pasivo != null)
+            {
+                if (playerCombat.pasivosEquipados == null) playerCombat.pasivosEquipados = new List<Pasivo>();
+                playerCombat.pasivosEquipados.Add(pasivo);
+                pasivo.Equipar(playerCombat); // Aplica los efectos base
+                Debug.Log($"Pasivo equipado: {pasivo.itemBaseName}");
+                
+                // Consumir el pasivo automáticamente al entrar en combate
+                ConsumirPasivoDeFirebase(idPasivo);
+            }
+        }
+
+        // 2. Cargar Consumibles (Activos)
+        List<Consumible> consumiblesParaCombate = new List<Consumible>();
+        if (GameManager.Instance.activosEquipadosIDs != null)
+        {
+            foreach (string idActivo in GameManager.Instance.activosEquipadosIDs)
+            {
+                if (!string.IsNullOrEmpty(idActivo))
+                {
+                    Consumible activo = GameManager.Instance.GetActivoPorID(idActivo);
+                    if (activo != null) consumiblesParaCombate.Add(activo);
+                }
+            }
+        }
+
+        if (playerCombat.inventory != null)
+        {
+            playerCombat.inventory.Inicializar(playerCombat, consumiblesParaCombate);
+            Debug.Log($"Consumibles inicializados: {consumiblesParaCombate.Count}");
+        }
+    }
+
+    private async void ConsumirPasivoDeFirebase(string itemID)
+    {
+        if (SessionManager.shared != null && SessionManager.shared.currentUser != null)
+        {
+            Usuario user = SessionManager.shared.currentUser;
+            
+            // 1. Borrar de la lista del inventario
+            if (user.inventario != null && user.inventario.Contains(itemID))
+            {
+                user.inventario.Remove(itemID);
+                if (GameManager.Instance != null && GameManager.Instance.inventarioIDs != null && GameManager.Instance.inventarioIDs != user.inventario)
+                {
+                    GameManager.Instance.inventarioIDs.Remove(itemID);
+                }
+            }
+
+            // 2. Si ya no te quedan copias de este pasivo, desequiparlo para la próxima vez
+            if (user.inventario == null || !user.inventario.Contains(itemID))
+            {
+                user.pasivo_equipado = "";
+                if (GameManager.Instance != null)
+                {
+                    GameManager.Instance.pasivoEquipadoID = "";
+                }
+            }
+
+            // 3. Guardar cambios en la nube
+            UsuarioService usuarioService = new UsuarioService();
+            await usuarioService.ActualizarUsuario(user);
+            Debug.Log($"Pasivo {itemID} consumido al iniciar combate y actualizado en Firebase.");
         }
     }
 }

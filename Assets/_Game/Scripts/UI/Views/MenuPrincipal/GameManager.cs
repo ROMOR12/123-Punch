@@ -8,6 +8,10 @@ using TMPro;
 
 public class GameManager : MonoBehaviour
 {
+    [Header("Datos de la Sesión (Firebase)")]
+    public Usuario usuarioActual; // Guardará tus monedas, xp, etc.
+    public Personaje personajeActual; // Guardará las stats y los niveles de mejora
+
     public int numCajas = 0;
 
     public static GameManager Instance;
