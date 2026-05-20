@@ -19,6 +19,7 @@ MonoBehaviour:
   icon: {fileID: -7011001265641058505, guid: cbef65353acd6354baa132cb72c1cb62, type: 3}
   isSkin: 0
   rarity: 2
+  precio: 0
   bonificaciones:
   - statType: 0
     amount: 30
