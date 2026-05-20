@@ -235,7 +235,7 @@ public class CombatController : MonoBehaviour
             int damageDealt = Mathf.RoundToInt(currentForce * playerDamageMultiplier);
 
             // animacion
-            StartCoroutine(ShowAttackVisuals());
+            StartCoroutine(ShowAttackVisuals()); GameEvents.TriggerPunchThrown(1);
 
             if (currentEnemy != null)
             {
@@ -275,7 +275,7 @@ public class CombatController : MonoBehaviour
             ShowDamagePopup(damageDealt, false);
 
             isHardAttack = true;
-            StartCoroutine(ShowAttackVisuals());
+            StartCoroutine(ShowAttackVisuals()); GameEvents.TriggerPunchThrown(1);
 
             if (currentEnemy != null)
             {

@@ -1,4 +1,4 @@
-using Firebase;
+﻿using Firebase;
 using Firebase.Auth;
 using System.Collections;
 using System.Threading.Tasks;
@@ -73,14 +73,7 @@ public class AuthManager : MonoBehaviour
             // Cargar datos de forma asíncrona antes de ir al juego
             CargarDatosSesion(user.UserId);
         }
-        else if (user != null && user.IsAnonymous)
-        {
-            irAlJuego = true; // Si es invitado, va directo
-        }
-        else
-        {
-            recargarEscena = true;
-        }
+        else if (user != null && user.IsAnonymous) { irAlJuego = true; } else { if (user != null) { recargarEscena = true; } }
     }
 
     void Update()
@@ -100,10 +93,7 @@ public class AuthManager : MonoBehaviour
                 panelVerificacionUI.SetActive(true);
                 if (feedbackText) feedbackText.text = "Verifica tu correo para continuar.";
             }
-            else
-            {
-                SceneManager.LoadScene(SceneManager.GetActiveScene().name);
-            }
+            else if (auth.CurrentUser != null) { SceneManager.LoadScene(SceneManager.GetActiveScene().name); }
         }
     }
     bool EsEmailValido(string email)
@@ -197,7 +187,7 @@ public class AuthManager : MonoBehaviour
 
         if (datosUsuario != null)
         {
-            SessionManager.shared.currentUser = datosUsuario;
+            SessionManager.shared.currentUser = datosUsuario; if (AchievementManager.Instance != null) { AchievementManager.Instance.LoadAchievementsData(); }
             irAlJuego = true;
         }
         else
@@ -259,7 +249,7 @@ public class AuthManager : MonoBehaviour
                 if (datosUsuario != null)
                 {
                     // Guardamos los datos en la sesión
-                    SessionManager.shared.currentUser = datosUsuario;
+                    SessionManager.shared.currentUser = datosUsuario; if (AchievementManager.Instance != null) { AchievementManager.Instance.LoadAchievementsData(); }
                     irAlJuego = true;
                 }
                 else

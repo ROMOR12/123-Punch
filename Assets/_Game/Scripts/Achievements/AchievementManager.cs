@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using System.Threading.Tasks;
 using System;
@@ -31,28 +31,45 @@ public class AchievementManager : MonoBehaviour
     private void OnEnable()
     {
         // Subscribe to game events
-        GameEvents.OnFightWon += () => AddProgress(AchievementType.Wins, 1);
-        GameEvents.OnFightLost += () => AddProgress(AchievementType.FightsLost, 1);
-        GameEvents.OnKO += () => AddProgress(AchievementType.KO, 1);
-        GameEvents.OnCharacterUnlocked += () => AddProgress(AchievementType.CharactersUnlocked, 1);
-        GameEvents.OnMinigamePlayed += () => AddProgress(AchievementType.MinigamesPlayed, 1);
-        GameEvents.OnPunchThrown += (amount) => AddProgress(AchievementType.PunchesThrown, amount);
-        GameEvents.OnCombo += (combo) => AddProgress(AchievementType.Combo, combo); // Combos are checked if combo > target
-        GameEvents.OnDailyLogin += () => AddProgress(AchievementType.DailyLogins, 1);
+        GameEvents.OnFightWon += HandleFightWon;
+        GameEvents.OnFightLost += HandleFightLost;
+        GameEvents.OnKO += HandleKO;
+        GameEvents.OnCharacterUnlocked += HandleCharacterUnlocked;
+        GameEvents.OnMinigamePlayed += HandleMinigamePlayed;
+        GameEvents.OnPunchThrown += HandlePunchThrown;
+        GameEvents.OnCombo += HandleCombo;
+        GameEvents.OnDailyLogin += HandleDailyLogin;
     }
 
     private void OnDisable()
     {
         // Unsubscribe from game events
-        GameEvents.OnFightWon -= () => AddProgress(AchievementType.Wins, 1);
-        GameEvents.OnFightLost -= () => AddProgress(AchievementType.FightsLost, 1);
-        GameEvents.OnKO -= () => AddProgress(AchievementType.KO, 1);
-        GameEvents.OnCharacterUnlocked -= () => AddProgress(AchievementType.CharactersUnlocked, 1);
-        GameEvents.OnMinigamePlayed -= () => AddProgress(AchievementType.MinigamesPlayed, 1);
-        GameEvents.OnPunchThrown -= (amount) => AddProgress(AchievementType.PunchesThrown, amount);
-        GameEvents.OnCombo -= (combo) => AddProgress(AchievementType.Combo, combo);
-        GameEvents.OnDailyLogin -= () => AddProgress(AchievementType.DailyLogins, 1);
+        GameEvents.OnFightWon -= HandleFightWon;
+        GameEvents.OnFightLost -= HandleFightLost;
+        GameEvents.OnKO -= HandleKO;
+        GameEvents.OnCharacterUnlocked -= HandleCharacterUnlocked;
+        GameEvents.OnMinigamePlayed -= HandleMinigamePlayed;
+        GameEvents.OnPunchThrown -= HandlePunchThrown;
+        GameEvents.OnCombo -= HandleCombo;
+        GameEvents.OnDailyLogin -= HandleDailyLogin;
     }
+
+    private void HandleFightWon()
+    {
+        AddProgress(AchievementType.Wins, 1);
+        AddProgress(AchievementType.TotalFights, 1);
+    }
+    private void HandleFightLost()
+    {
+        AddProgress(AchievementType.FightsLost, 1);
+        AddProgress(AchievementType.TotalFights, 1);
+    }
+    private void HandleKO() => AddProgress(AchievementType.KO, 1);
+    private void HandleCharacterUnlocked() => AddProgress(AchievementType.CharactersUnlocked, 1);
+    private void HandleMinigamePlayed() => AddProgress(AchievementType.MinigamesPlayed, 1);
+    private void HandlePunchThrown(int amount) => AddProgress(AchievementType.PunchesThrown, amount);
+    private void HandleCombo(int combo) => AddProgress(AchievementType.Combo, combo);
+    private void HandleDailyLogin() => AddProgress(AchievementType.DailyLogins, 1);
 
     private void Start()
     {
@@ -61,37 +78,60 @@ public class AchievementManager : MonoBehaviour
 
     public async void LoadAchievementsData()
     {
-        userAchievements.Clear();
+        // Keep a reference to the active user to ensure we don't apply data for a user who logged out during the await
+        string currentLoadingUserId = SessionManager.shared != null && SessionManager.shared.currentUser != null 
+            ? SessionManager.shared.currentUser.id 
+            : null;
 
-        // Check if there's a logged-in user
-        if (SessionManager.shared != null && SessionManager.shared.currentUser != null)
+        Dictionary<string, AchievementData> loadedAchievements = new Dictionary<string, AchievementData>();
+
+        if (!string.IsNullOrEmpty(currentLoadingUserId))
         {
-            string userId = SessionManager.shared.currentUser.id;
             AchievementService aService = new AchievementService();
+            List<AchievementData> logsFirebase = await aService.ObtenerLogrosUsuario(currentLoadingUserId);
             
-            List<AchievementData> logsFirebase = await aService.ObtenerLogrosUsuario(userId);
-            
+            // Check if the user is still the same after the async call
+            string activeUserId = SessionManager.shared != null && SessionManager.shared.currentUser != null 
+                ? SessionManager.shared.currentUser.id 
+                : null;
+                
+            if (activeUserId != currentLoadingUserId)
+            {
+                Debug.LogWarning("User changed or logged out while loading achievements. Aborting load.");
+                return;
+            }
+
             foreach (var data in logsFirebase)
             {
-                userAchievements[data.id] = data;
+                if (data != null)
+                {
+                    loadedAchievements[data.id] = data;
+                }
             }
         }
         else
         {
             Debug.Log("Guest mode or no user logged in. Using local temporary achievements.");
-            // Guest mode logic - local temp storage only, initialized empty
         }
 
         // Fill missing achievements with default data
         foreach (var def in allAchievements)
         {
-            if (!userAchievements.ContainsKey(def.id))
+            if (def != null && !loadedAchievements.ContainsKey(def.id))
             {
-                userAchievements[def.id] = new AchievementData(def.id);
+                loadedAchievements[def.id] = new AchievementData(def.id);
             }
         }
 
+        // Swap reference atomically
+        userAchievements = loadedAchievements;
         isInitialized = true;
+
+        if (!string.IsNullOrEmpty(currentLoadingUserId))
+        {
+            // Trigger daily login when achievements are loaded for the user
+            GameEvents.TriggerDailyLogin();
+        }
     }
 
     private void AddProgress(AchievementType type, int amount)
@@ -102,8 +142,13 @@ public class AchievementManager : MonoBehaviour
 
         foreach (var def in allAchievements)
         {
-            if (def.type == type)
+            if (def != null && def.type == type)
             {
+                if (!userAchievements.ContainsKey(def.id))
+                {
+                    userAchievements[def.id] = new AchievementData(def.id);
+                }
+
                 AchievementData data = userAchievements[def.id];
 
                 if (!data.unlocked)
@@ -142,6 +187,11 @@ public class AchievementManager : MonoBehaviour
 
     private void UnlockAchievement(AchievementDefinition def)
     {
+        if (!userAchievements.ContainsKey(def.id))
+        {
+            userAchievements[def.id] = new AchievementData(def.id);
+        }
+
         AchievementData data = userAchievements[def.id];
         
         if (data.unlocked) return; // Prevent double unlock

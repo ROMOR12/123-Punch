@@ -8,7 +8,6 @@ public class AchievementUI : MonoBehaviour
     [Header("UI References")]
     public Transform achievementListContainer; // Asegúrate de que este sea el objeto 'Content' del Scroll View
     public GameObject achievementPrefab; // El prefab que modificamos con el anclaje Stretch Horizontal
-    public TextMeshProUGUI filterText;
 
     private List<GameObject> activeItems = new List<GameObject>();
     private AchievementType? currentFilter = null;

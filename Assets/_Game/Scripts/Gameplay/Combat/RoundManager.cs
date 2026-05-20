@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
 using TMPro;
@@ -126,8 +126,11 @@ public class RoundManager : MonoBehaviour
 
             }
         }
-        else
+                else
         {
+            if (pantallaDerrotaFinal != null) pantallaDerrotaFinal.SetActive(true);
+            GameEvents.TriggerFightLost();
+
             if (pantallaResultados != null)
             {
                 pantallaResultados.MostrarResultados(
