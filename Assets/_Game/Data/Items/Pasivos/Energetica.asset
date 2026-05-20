@@ -18,9 +18,10 @@ MonoBehaviour:
     despierto."
   icon: {fileID: -8950503755687733834, guid: 3504360424ba5b94a935a6ff1f21d1e6, type: 3}
   isSkin: 0
-  rarity: 1
+  rarity: 4
+  precio: 100
   bonificaciones:
   - statType: 1
-    amount: 30
+    amount: 10
   - statType: 0
-    amount: 500
+    amount: 200

@@ -14,11 +14,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Pasivo
   id: item_pasivo_aguita_fresca_pasivo
   itemBaseName: Aguita fresca
-  description: Si tienes sed y eres una persona sana, tienes que tomar aguita que
+  description: 'Si tienes sed y eres una persona sana, tienes que tomar aguita que
     es muy buena.
+
+    +1 Energia
+
+    +1 Recuperacion'
   icon: {fileID: 1725135456857357540, guid: 8b69394552600fc4a9c9be773ff4a221, type: 3}
   isSkin: 0
   rarity: 0
+  precio: 100
   bonificaciones:
   - statType: 1
     amount: 1

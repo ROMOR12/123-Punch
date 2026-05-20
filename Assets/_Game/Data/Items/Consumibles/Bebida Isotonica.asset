@@ -15,10 +15,11 @@ MonoBehaviour:
   id: item_activo_isotonica
   itemBaseName: "Bebida Isot\xF3nica"
   description: "Bebida consumida mayormente por crossfiteros. Te ayudar\xE1 a recuperarte
-    de la paliza del adversario."
+    de la paliza del adversario.\nCura 40 de salud."
   icon: {fileID: -6455289941207979036, guid: 02b6bd0d1eb9f314696930e763d63643, type: 3}
   isSkin: 0
   rarity: 1
+  precio: 100
   recuperacion:
   - statType: 0
     amount: 40

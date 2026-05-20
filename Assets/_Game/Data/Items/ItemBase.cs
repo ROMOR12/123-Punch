@@ -1,18 +1,21 @@
-using UnityEngine;
+ï»¿using UnityEngine;
 
 // Clase base para cualquier objeto del juego. Define la estructura general.
 public class ItemBase : ScriptableObject
 {
-    public string id;                 // Identificador único
+    public string id;                 // Identificador Ãºnico
     public string itemBaseName;    // Nombre visible en el juego
 
     [Header("Item Stats")]
     [TextArea(2, 5)]
-    public string description;     // Descripción
+    public string description;     // DescripciÃ³n
 
     public Sprite icon;            // Icono del inventario
     public bool isSkin;            // Define si el objeto es una skin
 
     [Header("Rareza")]
     public ItemRarity rarity;      // Nivel de rareza
+
+    [Header("Tienda")]
+    public int precio = 100;       // Precio en monedas del juego
 }
