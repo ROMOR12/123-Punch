@@ -8,6 +8,10 @@ using TMPro;
 
 public class GameManager : MonoBehaviour
 {
+    [Header("Datos de la Sesión (Firebase)")]
+    public Usuario usuarioActual; // Guardará tus monedas, xp, etc.
+    public Personaje personajeActual; // Guardará las stats y los niveles de mejora
+
     public int numCajas = 0;
 
     public static GameManager Instance;
@@ -20,7 +24,39 @@ public class GameManager : MonoBehaviour
 
     public List<BaseCharacter> listaPersonajes;
 
-    public GameObject popUp;
+    // --- NUEVO: SISTEMA DE INVENTARIO Y EQUIPAMIENTO ---
+    [Header("Inventario y Equipamiento (Firebase)")]
+    public List<string> inventarioIDs = new List<string>();
+    public string pasivoEquipadoID = "";
+    public List<string> activosEquipadosIDs = new List<string> { "", "" };
+
+    [Header("Bases de Datos Maestras (ScriptableObjects)")]
+    [Tooltip("Arrastra aquí todos los ScriptableObjects de objetos Pasivos")]
+    public List<Pasivo> todosLosPasivos;
+    [Tooltip("Arrastra aquí todos los ScriptableObjects de objetos Consumibles")]
+    public List<Consumible> todosLosActivos;
+    // --------------------------------------------------
+
+    [Header("Progreso Actual")]
+    private string _idPersonajeSeleccionado;
+
+    public string idPersonajeSeleccionado
+    {
+        get
+        {
+            if (string.IsNullOrEmpty(_idPersonajeSeleccionado))
+            {
+                _idPersonajeSeleccionado = PlayerPrefs.GetString("PersonajeEquipado", "personaje_ava");
+            }
+            return _idPersonajeSeleccionado;
+        }
+        set
+        {
+            _idPersonajeSeleccionado = value;
+            PlayerPrefs.SetString("PersonajeEquipado", value);
+            PlayerPrefs.Save();
+        }
+    }
 
     private void Awake()
     {
@@ -28,11 +64,14 @@ public class GameManager : MonoBehaviour
         {
             GameManager.Instance = this;
             DontDestroyOnLoad(this.gameObject);
-            popUp.SetActive(false);
         }
-        else 
+        else
         {
             Destroy(gameObject);
         }
     }
+
+    // Métodos de utilidad opcionales para buscar objetos rápidamente
+    public Pasivo GetPasivoPorID(string id) => todosLosPasivos.Find(p => p.id == id);
+    public Consumible GetActivoPorID(string id) => todosLosActivos.Find(a => a.id == id);
 }

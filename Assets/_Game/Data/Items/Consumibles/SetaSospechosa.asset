@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f6266be883c0fa14d8e995d92519cd8c, type: 3}
   m_Name: SetaSospechosa
   m_EditorClassIdentifier: Assembly-CSharp::Consumible
-  id: 12
+  id: item_seta_sospechosa
   itemBaseName: Seta Sospechosa
   description: "Una seta que parece salida de un juego de un fontanero que rescata
     princesas. Al consumirla, te sentir\xE1s invencible."

@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f6266be883c0fa14d8e995d92519cd8c, type: 3}
   m_Name: Preentreno
   m_EditorClassIdentifier: Assembly-CSharp::Consumible
-  id: 11
+  id: item_preentreno
   itemBaseName: Preentreno
   description: "Si lo que quieres es rendir a tope, esto es perfecto. Eso s\xED,
     no te pases con la dosis o prep\xE1rate para las consecuencias."

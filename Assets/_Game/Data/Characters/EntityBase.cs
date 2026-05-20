@@ -4,7 +4,7 @@ using UnityEngine;
 public class EntityBase : ScriptableObject
 {
     // Identificación visual y de sistema
-    public int id;
+    public string id;
     public string entityName;
     public Sprite sprite;
 

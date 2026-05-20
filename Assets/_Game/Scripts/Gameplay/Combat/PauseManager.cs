@@ -60,6 +60,6 @@ public class PauseManager : MonoBehaviour
             // Borramos los objetos para que no vaya entre escenas
             DestroyImmediate(script.gameObject);
         }
-            SceneManager.LoadScene("Menu");
+        CargaEscena.Cargar("Menu");
     }
 }

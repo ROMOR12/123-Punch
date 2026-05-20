@@ -2,6 +2,8 @@ using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
 using TMPro;
+using Firebase.Functions;
+using System.Threading.Tasks;
 
 public class RoundManager : MonoBehaviour
 {
@@ -25,8 +27,11 @@ public class RoundManager : MonoBehaviour
     private int victoriasEnemigo = 0;
     private int rondaActual = 0;
 
+    private FirebaseFunctions functions;
+
     void Start()
     {
+        functions = FirebaseFunctions.DefaultInstance;
         // inicializamos los circulos que vamos a usar para mostrar las rondas
         foreach (var img in circulosRonda)
         {
@@ -103,6 +108,8 @@ public class RoundManager : MonoBehaviour
             SoundManager.PlaySound(SoundType.Win);
             if (playerCombat != null) playerCombat.CelebrarVictoria();
 
+            _ = ReclamarRecompensaServidor();
+
             if (pantallaResultados != null)
             {
                 pantallaResultados.MostrarResultados(
@@ -113,6 +120,8 @@ public class RoundManager : MonoBehaviour
                 );
 
                 GameManager.Instance.numCajas++;
+                if (SessionManager.shared != null && SessionManager.shared.currentUser != null)
+                    SessionManager.shared.currentUser.lootboxes = GameManager.Instance.numCajas;
 
             }
         }
@@ -127,6 +136,30 @@ public class RoundManager : MonoBehaviour
                     playerCombat.contadorDañoTotal
                 );
             }
+        }
+    }
+    private async Task ReclamarRecompensaServidor()
+    {
+        try
+        {
+            Debug.Log("Pidiendo recompensa al servidor...");
+
+            // Llamamos a la función con el nombre exacto que le pusimos en Node.js
+            HttpsCallableReference callable = functions.GetHttpsCallable("recompensarCombate");
+            HttpsCallableResult result = await callable.CallAsync();
+
+            Debug.Log("¡Recompensa validada! El servidor ha sumado 100 monedas a la BD.");
+
+            // Actualizamos la memoria local para que la UI o la tienda lo sepan inmediatamente
+            if (SessionManager.shared != null && SessionManager.shared.currentUser != null)
+            {
+                SessionManager.shared.currentUser.free_coin += 100;
+                Debug.Log($"Monedas totales en memoria: {SessionManager.shared.currentUser.free_coin}");
+            }
+        }
+        catch (System.Exception e)
+        {
+            Debug.LogError($"Error en el servidor al reclamar recompensa: {e.Message}");
         }
     }
 }

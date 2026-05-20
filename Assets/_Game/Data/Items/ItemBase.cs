@@ -3,7 +3,7 @@ using UnityEngine;
 // Clase base para cualquier objeto del juego. Define la estructura general.
 public class ItemBase : ScriptableObject
 {
-    public int id;                 // Identificador único
+    public string id;                 // Identificador único
     public string itemBaseName;    // Nombre visible en el juego
 
     [Header("Item Stats")]

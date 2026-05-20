@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f6266be883c0fa14d8e995d92519cd8c, type: 3}
   m_Name: Kebab Mixto
   m_EditorClassIdentifier: Assembly-CSharp::Consumible
-  id: 4
+  id: item_kebab_mixto
   itemBaseName: Kebab Mixto
   description: "El alimento de los dioses y tu mejor amigo cuando sales de fiesta.
     Te dejar\xE1 como nuevo. Eso s\xED, saluda de mi parte al v\xE1ter cuando lo

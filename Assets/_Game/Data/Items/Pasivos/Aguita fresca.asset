@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ffd65b5f767f0614ca9692572c2b6345, type: 3}
   m_Name: Aguita fresca
   m_EditorClassIdentifier: Assembly-CSharp::Pasivo
-  id: 6
+  id: item_pasivo_aguita_fresca_pasivo
   itemBaseName: Aguita fresca
   description: Si tienes sed y eres una persona sana, tienes que tomar aguita que
     es muy buena.

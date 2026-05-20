@@ -2,7 +2,7 @@ using Firebase.Firestore;
 using UnityEngine;
 
 [FirestoreData]
-public class Level : MonoBehaviour
+public class Level
 {
     [FirestoreProperty]
     public double schemaVersion { get; set; }

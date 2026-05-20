@@ -13,6 +13,15 @@ public class ContadorCajas : MonoBehaviour
 
     void Update()
     {
-        textoCajas.text = GameManager.Instance.numCajas.ToString();
+        if (textoCajas == null) return;
+
+        if (SessionManager.shared != null && SessionManager.shared.currentUser != null)
+        {
+            textoCajas.text = SessionManager.shared.currentUser.lootboxes.ToString();
+        }
+        else
+        {
+            textoCajas.text = "0";
+        }
     }
 }

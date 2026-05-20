@@ -4,10 +4,6 @@ using UnityEngine;
 
 public class UsuarioService
 {
-
-
-    
-
     public async Task<bool> NuevoUsuario(string userId, string nombre, string email)
     {
         try{
@@ -26,10 +22,11 @@ public class UsuarioService
                 last_log = Timestamp.GetCurrentTimestamp(),
                 free_coin = 100,
                 premium_coin = 0,
+                lootboxes = 0,
                 is_admin = false,
                 xp = 0,
-                id_world = 1,
-                id_level = 1
+                id_world = "1",
+                id_level = "1"
             };
 
             // Guardamos los datos del jugador en la base de datos en la nube
@@ -53,6 +50,11 @@ public class UsuarioService
                 if (snapshot.Exists)
                 {
                     Usuario usuario = snapshot.ConvertTo<Usuario>();
+                    
+                    // Sincronizar numCajas con el valor real de Firebase
+                    if (GameManager.Instance != null)
+                        GameManager.Instance.numCajas = usuario.lootboxes;
+                    
                     return usuario;
                 }
                 else
@@ -78,7 +80,7 @@ public class UsuarioService
             return true;
             
         }
-        catch { return false; }
+        catch (System.Exception e) { Debug.LogError("Error ActualizarUsuario: " + e); return false; }
 
     }
 
@@ -91,13 +93,30 @@ public class UsuarioService
           
             FirebaseFirestore _context = DatabaseManager.shared.db;
 
-            DocumentReference docRef = _context.Collection("usuarios").Document(userId).Collection("personajes").Document(personajeNuevo.name);
+            DocumentReference docRef = _context.Collection("usuarios").Document(userId).Collection("personajes").Document(personajeNuevo.id);
 
             await docRef.SetAsync(personajeNuevo, SetOptions.MergeAll);
 
             return true;
-        }catch { return false; }
+        }catch (System.Exception e) { Debug.LogError("Error ActualizarPersonaje: " + e); return false; }
 
+    }
+
+    // subcoleccion de personajes del usuario
+    public async Task<Personaje> ObtenerPersonajeDeUsuario(string userId, string nombrePersonaje)
+    {
+        try
+        {
+            FirebaseFirestore _context = DatabaseManager.shared.db;
+            DocumentSnapshot snapshot = await _context.Collection("usuarios").Document(userId).Collection("personajes").Document(nombrePersonaje).GetSnapshotAsync();
+
+            if (snapshot.Exists)
+            {
+                return snapshot.ConvertTo<Personaje>();
+            }
+            return null;
+        }
+        catch { return null; }
     }
 
     public async Task<bool> ActualizarObjeto(string userId, Objeto objeto)
@@ -114,6 +133,43 @@ public class UsuarioService
         }
         catch { return false; }
 
+    }
+
+    public async Task<Usuario> ObtenerObjetosUsuario(string userId)
+    {
+        try
+        {
+            FirebaseFirestore _context = DatabaseManager.shared.db;
+            DocumentReference docRef = _context.Collection("usuarios").Document(userId);
+            DocumentSnapshot snapshot = await docRef.GetSnapshotAsync();
+
+            if (snapshot.Exists)
+            {
+                // Convertimos el documento al modelo Usuario
+                Usuario user = snapshot.ConvertTo<Usuario>();
+
+                // Sincronizamos con el GameManager usando los nombres exactos de tus clases
+                if (GameManager.Instance != null)
+                {
+                    GameManager.Instance.inventarioIDs = user.inventario;
+                    GameManager.Instance.pasivoEquipadoID = user.pasivo_equipado;
+                    GameManager.Instance.activosEquipadosIDs = user.objetos_equipados;
+                    GameManager.Instance.numCajas = user.lootboxes; // Sincronizar cajas con Firebase
+                }
+
+                return user;
+            }
+            else
+            {
+                Debug.LogWarning($"El usuario con ID {userId} no existe en la base de datos.");
+                return null;
+            }
+        }
+        catch (System.Exception e)
+        {
+            Debug.LogError($"Error al obtener objetos del usuario: {e.Message}");
+            return null;
+        }
     }
 
 }
