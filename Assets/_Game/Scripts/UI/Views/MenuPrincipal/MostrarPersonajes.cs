@@ -1,4 +1,4 @@
-using TMPro;
+﻿using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using System.Collections.Generic;
@@ -21,6 +21,8 @@ public class MostrarPersonajes : MonoBehaviour
     private int indicePersonajeSeleccionado = 0;
     private Dictionary<string, Personaje> cachePersonajes = new Dictionary<string, Personaje>();
     private Dictionary<string, bool> cacheEstadoDesbloqueo = new Dictionary<string, bool>();
+
+    private bool personajeActualDesbloqueado = false;
 
     void Start()
     {
@@ -49,7 +51,7 @@ public class MostrarPersonajes : MonoBehaviour
 
         string idPersonaje = personajeLocal.id;
 
-        ConfigurarBotonComoBloqueado();
+        ConfigurarBotonComoBloqueado(personajeLocal);
         
         Personaje datosAMostrar = null;
         bool estaDesbloqueado = false;
@@ -104,6 +106,8 @@ public class MostrarPersonajes : MonoBehaviour
                 estaDesbloqueado = true;
             }
 
+            personajeActualDesbloqueado = estaDesbloqueado;
+
             if (estaDesbloqueado)
             {
                 imagenSeleccionPersonaje.color = Color.white;
@@ -117,7 +121,7 @@ public class MostrarPersonajes : MonoBehaviour
 
             if (!estaDesbloqueado)
             {
-                ConfigurarBotonComoBloqueado();
+                ConfigurarBotonComoBloqueado(personajeLocal);
             }
             else if (gameManager.idPersonajeSeleccionado == idPersonaje)
             {
@@ -130,9 +134,57 @@ public class MostrarPersonajes : MonoBehaviour
         }
     }
 
-    public void SeleccionarPersonajeBoton()
+    public async void SeleccionarPersonajeBoton()
     {
-        string idElegido = gameManager.listaPersonajes[indicePersonajeSeleccionado].id;
+        var personajeLocal = gameManager.listaPersonajes[indicePersonajeSeleccionado];
+        string idElegido = personajeLocal.id;
+
+        if (!personajeActualDesbloqueado)
+        {
+            // Lógica de compra
+            if (personajeLocal.unlockCondition == "coins")
+            {
+                if (SessionManager.shared != null && SessionManager.shared.currentUser != null)
+                {
+                    int monedas = SessionManager.shared.currentUser.free_coin;
+                    if (monedas >= personajeLocal.price)
+                    {
+                        // Comprar
+                        SessionManager.shared.currentUser.free_coin -= personajeLocal.price;
+                        
+                        UsuarioService uService = new UsuarioService();
+                        await uService.ActualizarUsuario(SessionManager.shared.currentUser);
+
+                        // Guardar personaje desbloqueado
+                        Personaje datosBase = cachePersonajes[idElegido];
+                        await uService.ActualizarPersonaje(SessionManager.shared.currentUser.id, datosBase);
+
+                        // Actualizar cache local
+                        cacheEstadoDesbloqueo[idElegido] = true;
+                        personajeActualDesbloqueado = true;
+
+                        // Seleccionarlo tras comprarlo
+                        gameManager.idPersonajeSeleccionado = idElegido;
+                        ConfigurarBotonComoSeleccionado(true);
+                        imagenSeleccionPersonaje.color = Color.white;
+                        imagenPersonajeSeleccionado.color = Color.white;
+
+                        // Disparar evento de desbloqueo
+                        GameEvents.TriggerCharacterUnlocked();
+                        SoundManager.PlaySound(SoundType.Consumable); // Sonido de compra
+                        Debug.Log($"Personaje {idElegido} comprado por {personajeLocal.price} monedas.");
+                    }
+                    else
+                    {
+                        Debug.Log("No tienes suficientes monedas.");
+                        // Podríamos mostrar un mensaje en UI
+                    }
+                }
+            }
+            return;
+        }
+
+        // Selección normal
         gameManager.idPersonajeSeleccionado = idElegido;
 
         // Cambiamos el aspecto visual del botón inmediatamente
@@ -141,25 +193,22 @@ public class MostrarPersonajes : MonoBehaviour
         Debug.Log($"Personaje {idElegido} seleccionado y guardado.");
     }
 
-    private bool EsPersonajeDesbloqueado(string idPersonaje)
-    {
-        // TODO: Comprobar en la base de datos si se han cumplido las condiciones.
-        // De momento, solo "James" está desbloqueado por defecto.
-        if (idPersonaje.Equals("personaje_james", System.StringComparison.OrdinalIgnoreCase))
-        {
-            return true;
-        }
-
-        return false;
-    }
-
-    private void ConfigurarBotonComoBloqueado()
+    private void ConfigurarBotonComoBloqueado(BaseCharacter personaje)
     {
         if (botonSeleccionar == null || textoBotonSeleccionar == null) return;
 
-        textoBotonSeleccionar.text = "Bloqueado";
-        botonSeleccionar.image.color = colorSeleccionado; // Reutilizamos el color oscuro
-        botonSeleccionar.interactable = false;
+        if (personaje.unlockCondition == "coins")
+        {
+            textoBotonSeleccionar.text = $"Comprar ({personaje.price})";
+            botonSeleccionar.image.color = colorOriginalBoton; // Color normal para poder comprar
+            botonSeleccionar.interactable = true;
+        }
+        else
+        {
+            textoBotonSeleccionar.text = $"Bloqueado ({personaje.unlockCondition})";
+            botonSeleccionar.image.color = colorSeleccionado; // Reutilizamos el color oscuro
+            botonSeleccionar.interactable = false;
+        }
     }
 
     private void ConfigurarBotonComoSeleccionado(bool esSeleccionado)

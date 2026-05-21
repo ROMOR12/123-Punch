@@ -1,4 +1,4 @@
-using Firebase.Firestore;
+﻿using Firebase.Firestore;
 using System.Threading.Tasks;
 using UnityEngine;
 
@@ -88,7 +88,7 @@ public class UsuarioService
           
             FirebaseFirestore _context = DatabaseManager.shared.db;
 
-            DocumentReference docRef = _context.Collection("usuarios").Document(userId).Collection("personajes").Document(personajeNuevo.name);
+            DocumentReference docRef = _context.Collection("usuarios").Document(userId).Collection("personajes").Document(personajeNuevo.id);
 
             await docRef.SetAsync(personajeNuevo, SetOptions.MergeAll);
 
@@ -107,7 +107,9 @@ public class UsuarioService
 
             if (snapshot.Exists)
             {
-                return snapshot.ConvertTo<Personaje>();
+                Personaje p = snapshot.ConvertTo<Personaje>();
+                p.id = snapshot.Id;
+                return p;
             }
             return null;
         }

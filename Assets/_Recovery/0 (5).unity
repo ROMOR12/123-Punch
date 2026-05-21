@@ -3706,9 +3706,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::AchievementManager
   allAchievements:
   - {fileID: 11400000, guid: 642ea46a6284a7049be365cda1032377, type: 2}
-  - {fileID: 11400000, guid: ea0d01b4728d5dd4c9411bee989df0be, type: 2}
-  - {fileID: 11400000, guid: b4b023c1d8a058d418ef889a76ca7919, type: 2}
-  - {fileID: 11400000, guid: bec1b904bb3970746b2558d3f6fce64f, type: 2}
 --- !u!4 &676994842
 Transform:
   m_ObjectHideFlags: 0
@@ -8830,7 +8827,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -3.2999268, y: 85.8999}
+  m_AnchoredPosition: {x: -3.2999573, y: 85.8999}
   m_SizeDelta: {x: 2267, y: 1751.8003}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1887513939
@@ -9600,7 +9597,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -16.893677, y: -131.18408}
+  m_AnchoredPosition: {x: -16.893646, y: -131.18408}
   m_SizeDelta: {x: -153.2, y: -629.4}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &2088750656
