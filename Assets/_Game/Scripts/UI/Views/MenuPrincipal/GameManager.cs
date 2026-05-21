@@ -58,6 +58,17 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    
+    private bool notificacionesInicializadas = false;
+    private void Update()
+    {
+        if (!notificacionesInicializadas && SessionManager.shared != null && SessionManager.shared.currentUser != null)
+        {
+            new NotificacionesService().Inicializar();
+            notificacionesInicializadas = true;
+        }
+    }
+
     private void Awake()
     {
         if (GameManager.Instance == null)
