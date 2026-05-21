@@ -1,4 +1,4 @@
-﻿using TMPro;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using System.Collections.Generic;
@@ -76,6 +76,8 @@ public class MostrarPersonajes : MonoBehaviour
                 datosUsuario = await uService.ObtenerPersonajeDeUsuario(idUsuario, idPersonaje);
             }
 
+            if (this == null) return;
+
             if (datosUsuario != null)
             {
                 // El usuario lo tiene desbloqueado
@@ -86,6 +88,7 @@ public class MostrarPersonajes : MonoBehaviour
             {
                 // No lo tiene, es invitado o error. Buscamos las stats base globales.
                 Personaje datosBase = await pjServiceGlobal.ObtenerPersonaje(idPersonaje);
+                if (this == null) return;
                 datosAMostrar = datosBase;
                 estaDesbloqueado = false;
             }
@@ -96,6 +99,8 @@ public class MostrarPersonajes : MonoBehaviour
                 cacheEstadoDesbloqueo[idPersonaje] = estaDesbloqueado;
             }
         }
+
+        if (this == null || imagenSeleccionPersonaje == null || imagenPersonajeSeleccionado == null) return;
 
         if (datosAMostrar != null && gameManager.listaPersonajes[indicePersonajeSeleccionado].id == idPersonaje)
         {
@@ -154,10 +159,12 @@ public class MostrarPersonajes : MonoBehaviour
                         
                         UsuarioService uService = new UsuarioService();
                         await uService.ActualizarUsuario(SessionManager.shared.currentUser);
+                        if (this == null) return;
 
                         // Guardar personaje desbloqueado
                         Personaje datosBase = cachePersonajes[idElegido];
                         await uService.ActualizarPersonaje(SessionManager.shared.currentUser.id, datosBase);
+                        if (this == null) return;
 
                         // Actualizar cache local
                         cacheEstadoDesbloqueo[idElegido] = true;
@@ -166,8 +173,8 @@ public class MostrarPersonajes : MonoBehaviour
                         // Seleccionarlo tras comprarlo
                         gameManager.idPersonajeSeleccionado = idElegido;
                         ConfigurarBotonComoSeleccionado(true);
-                        imagenSeleccionPersonaje.color = Color.white;
-                        imagenPersonajeSeleccionado.color = Color.white;
+                        if (imagenSeleccionPersonaje != null) imagenSeleccionPersonaje.color = Color.white;
+                        if (imagenPersonajeSeleccionado != null) imagenPersonajeSeleccionado.color = Color.white;
 
                         // Disparar evento de desbloqueo
                         GameEvents.TriggerCharacterUnlocked();

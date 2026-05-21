@@ -66,12 +66,16 @@ public class PanelMejorasUI : MonoBehaviour
             // 3. Descargamos el personaje directamente de Firebase usando tu servicio
             personajeReal = await usuarioService.ObtenerPersonajeDeUsuario(usuarioReal.id, idPersonaje);
 
+            if (this == null) return;
+
             // Si no existe en el usuario, cargamos las stats base globales
             if (personajeReal == null)
             {
                 Debug.LogWarning($"El personaje '{idPersonaje}' no está en la base de datos del usuario. Cargando stats base...");
                 PersonajeService pjServiceGlobal = new PersonajeService();
                 personajeReal = await pjServiceGlobal.ObtenerPersonaje(idPersonaje);
+                
+                if (this == null) return;
                 
                 // IMPORTANTE: Aseguramos que el ID no sea nulo si Firebase no lo incluye en el documento base
                 if (personajeReal != null)
@@ -182,13 +186,15 @@ public class PanelMejorasUI : MonoBehaviour
 
         Debug.Log($"Confirmando compra. Gastando {costeAcumulado} monedas de {usuarioReal.free_coin} totales.");
 
-        btnConfirmar.interactable = false;
-        btnDescartar.interactable = false;
+        if (btnConfirmar != null) btnConfirmar.interactable = false;
+        if (btnDescartar != null) btnDescartar.interactable = false;
 
         usuarioReal.free_coin -= costeAcumulado;
 
         bool userOk = await usuarioService.ActualizarUsuario(usuarioReal);
+        if (this == null) return;
         bool personajeOk = await usuarioService.ActualizarPersonaje(usuarioReal.id, pjTemp);
+        if (this == null) return;
 
         if (userOk && personajeOk)
         {
@@ -203,8 +209,8 @@ public class PanelMejorasUI : MonoBehaviour
             ActualizarTextos();
         }
 
-        btnConfirmar.interactable = true;
-        btnDescartar.interactable = true;
+        if (btnConfirmar != null) btnConfirmar.interactable = true;
+        if (btnDescartar != null) btnDescartar.interactable = true;
     }
 
     public void BotonDescartar()
