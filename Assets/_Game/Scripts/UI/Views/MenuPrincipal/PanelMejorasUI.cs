@@ -38,6 +38,15 @@ public class PanelMejorasUI : MonoBehaviour
 
     private void Start()
     {
+        if (mejoraManager == null)
+        {
+            mejoraManager = FindFirstObjectByType<MejoraStatsManager>();
+            if (mejoraManager == null)
+            {
+                mejoraManager = gameObject.AddComponent<MejoraStatsManager>();
+                Debug.LogWarning("[PanelMejorasUI] No se encontró MejoraStatsManager en la escena. Se ha creado e instanciado uno automáticamente en este GameObject.");
+            }
+        }
         estaInicializado = true;
         CargarDatosAutomaticamente();
     }
@@ -264,10 +273,10 @@ public class PanelMejorasUI : MonoBehaviour
 
         txtMonedasJugador.text = usuarioReal.free_coin.ToString();
 
-        if (txtCosteVidaProx != null) txtCosteVidaProx.text = mejoraManager.CalcularCoste(StatType.Life, pjTemp).ToString();
-        if (txtCosteEnergiaProx != null) txtCosteEnergiaProx.text = mejoraManager.CalcularCoste(StatType.Energy, pjTemp).ToString();
-        if (txtCosteFuerzaProx != null) txtCosteFuerzaProx.text = mejoraManager.CalcularCoste(StatType.Force, pjTemp).ToString();
-        if (txtCosteRecuperacionProx != null) txtCosteRecuperacionProx.text = mejoraManager.CalcularCoste(StatType.Recovery, pjTemp).ToString();
+        if (txtCosteVidaProx != null && mejoraManager != null) txtCosteVidaProx.text = mejoraManager.CalcularCoste(StatType.Life, pjTemp).ToString();
+        if (txtCosteEnergiaProx != null && mejoraManager != null) txtCosteEnergiaProx.text = mejoraManager.CalcularCoste(StatType.Energy, pjTemp).ToString();
+        if (txtCosteFuerzaProx != null && mejoraManager != null) txtCosteFuerzaProx.text = mejoraManager.CalcularCoste(StatType.Force, pjTemp).ToString();
+        if (txtCosteRecuperacionProx != null && mejoraManager != null) txtCosteRecuperacionProx.text = mejoraManager.CalcularCoste(StatType.Recovery, pjTemp).ToString();
 
         if (costeAcumulado > 0)
         {
