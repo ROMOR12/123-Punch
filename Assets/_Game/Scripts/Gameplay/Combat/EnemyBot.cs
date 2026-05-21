@@ -320,7 +320,7 @@ public class EnemyBot : MonoBehaviour
 
         if (spriteRenderer != null && numDeath != 2) spriteRenderer.color = Color.gray;
 
-        if (playerCombat != null) playerCombat.Win();
+        GameEvents.TriggerKO(); if (playerCombat != null) playerCombat.Win();
     }
 
     public void SobrescribirStatsDeFirebase(int nuevaVida, int nuevaEnergia, int nuevaFuerza, int nuevaRecuperacion, string nuevoNombre)

@@ -9,6 +9,7 @@ public class MenuOpciones : MonoBehaviour
     public GameObject BotonReanudar;
     public GameObject BotonCerrarJuego;
     public GameObject BotonMenu;
+    public GameObject PanelLogros; // <-- Añadido para el panel de logros
 
 
     public void MostrarPanelMenu()
@@ -25,6 +26,21 @@ public class MenuOpciones : MonoBehaviour
         BotonMenu.SetActive(true);
         FadePanel.SetActive(false);
     }
+
+    public void MostrarPanelLogros()
+    {
+        SoundManager.PlaySound(SoundType.Consumable);
+        PanelLogros.SetActive(true);
+        PanelOpciones.SetActive(false); // Oculta el menú actual para mostrar los logros
+    }
+
+    public void CerrarPanelLogros()
+    {
+        SoundManager.PlaySound(SoundType.Consumable);
+        PanelLogros.SetActive(false);
+        PanelOpciones.SetActive(true); // Vuelve a mostrar el menú de opciones
+    }
+
     public void CerrarJuego()
     {
         SoundManager.PlaySound(SoundType.Consumable);

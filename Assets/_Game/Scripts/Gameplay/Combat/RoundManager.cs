@@ -1,4 +1,4 @@
-using UnityEngine;
+ï»¿using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
 using TMPro;
@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 public class RoundManager : MonoBehaviour
 {
-    [Header("Configuración Visual")]
+    [Header("Configuraciï¿½n Visual")]
     public Image[] circulosRonda;
     public Sprite spriteVacio;
     public Sprite spriteJugador;
@@ -19,7 +19,7 @@ public class RoundManager : MonoBehaviour
     public GameObject pantallaVictoriaFinal;
     public GameObject pantallaDerrotaFinal;
 
-    [Header("Estadísticas Finales")]
+    [Header("Estadï¿½sticas Finales")]
     public ResultScreenUI pantallaResultados;
     private float tiempoInicioCombate;
 
@@ -97,7 +97,7 @@ public class RoundManager : MonoBehaviour
             enemyBot.enabled = false;
         }
 
-        // Calcula cuánto ha durado la pelea
+        // Calcula cuï¿½nto ha durado la pelea
         float duracionCombate = Time.time - tiempoInicioCombate;
         SoundManager.StopMusic();
 
@@ -110,13 +110,16 @@ public class RoundManager : MonoBehaviour
 
             _ = ReclamarRecompensaServidor();
 
+            // Trigger que salta cuando el jugador gana, para los logros
+            GameEvents.TriggerFightWon();
+
             if (pantallaResultados != null)
             {
                 pantallaResultados.MostrarResultados(
                     ganoJugador = true,
                     playerCombat.contadorGolpes,
                     duracionCombate,
-                    playerCombat.contadorDañoTotal
+                    playerCombat.contadorTotalDamage
                 );
 
                 GameManager.Instance.numCajas++;
@@ -125,15 +128,18 @@ public class RoundManager : MonoBehaviour
 
             }
         }
-        else
+                else
         {
+            if (pantallaDerrotaFinal != null) pantallaDerrotaFinal.SetActive(true);
+            GameEvents.TriggerFightLost();
+
             if (pantallaResultados != null)
             {
                 pantallaResultados.MostrarResultados(
                     ganoJugador = false,
                     playerCombat.contadorGolpes,
                     duracionCombate,
-                    playerCombat.contadorDañoTotal
+                    playerCombat.contadorTotalDamage
                 );
             }
         }
@@ -144,11 +150,11 @@ public class RoundManager : MonoBehaviour
         {
             Debug.Log("Pidiendo recompensa al servidor...");
 
-            // Llamamos a la función con el nombre exacto que le pusimos en Node.js
+            // Llamamos a la funciï¿½n con el nombre exacto que le pusimos en Node.js
             HttpsCallableReference callable = functions.GetHttpsCallable("recompensarCombate");
             HttpsCallableResult result = await callable.CallAsync();
 
-            Debug.Log("¡Recompensa validada! El servidor ha sumado 100 monedas a la BD.");
+            Debug.Log("ï¿½Recompensa validada! El servidor ha sumado 100 monedas a la BD.");
 
             // Actualizamos la memoria local para que la UI o la tienda lo sepan inmediatamente
             if (SessionManager.shared != null && SessionManager.shared.currentUser != null)

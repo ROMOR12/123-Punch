@@ -1,4 +1,4 @@
-using TMPro;
+ï»¿using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 public class MiniGameMana : MonoBehaviour
 {
-    [Header("Configuración")]
+    [Header("Configuraciï¿½n")]
     public int clicksObjetivo = 50;
     public float tiempoLimite = 10f;
 
@@ -68,7 +68,7 @@ public class MiniGameMana : MonoBehaviour
         StartCoroutine(EfectoSaltarSopa());
         particulasSopa.Play();
 
-        // Condición para finalizar el juego
+        // Condiciï¿½n para finalizar el juego
         if (clicksActuales >= clicksObjetivo)
         {
             FinalizarJuego(true);
@@ -105,11 +105,11 @@ public class MiniGameMana : MonoBehaviour
     // Finaliza el juego y muestra un mensaje en funcion de si has ganado o perdido
     public async void FinalizarJuego(bool ganado)
     {
-        juegoActivo = false;
+        juegoActivo = false; GameEvents.TriggerMinigamePlayed();
         if (ganado)
         {
             Debug.Log("Ganaste!");
-            timerText.text = "¡CONSEGUIDO!";
+            timerText.text = "ï¿½CONSEGUIDO!";
             resultTitle.text = "VICTORIA!";
             await Task.Delay(1000);
             resultPanel.SetActive(true);
@@ -117,8 +117,8 @@ public class MiniGameMana : MonoBehaviour
         }
         else
         {
-            Debug.Log("Se acabó el tiempo...");
-            timerText.text = "¡Tiempo Agotado!";
+            Debug.Log("Se acabï¿½ el tiempo...");
+            timerText.text = "ï¿½Tiempo Agotado!";
             resultTitle.text = "Perdiste :(";
             await Task.Delay(1000);
             resultPanel.SetActive(true);

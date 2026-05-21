@@ -77,7 +77,7 @@ public class CombatController : MonoBehaviour
     [Header("Estadísticas de Combate")]
     public ResultScreenUI pantallaResultados;
     public int contadorGolpes = 0;
-    public int contadorDañoTotal = 0;
+    public int contadorTotalDamage = 0;
     public float tiempoInicioCombate;
 
     public Slider enemyHealthBar;
@@ -164,7 +164,7 @@ public class CombatController : MonoBehaviour
 
         tiempoInicioCombate = Time.time;
         contadorGolpes = 0;
-        contadorDañoTotal = 0;
+        contadorTotalDamage = 0;
 
         if(pantallaResultados != null)
         {
@@ -235,7 +235,7 @@ public class CombatController : MonoBehaviour
             int damageDealt = Mathf.RoundToInt(currentForce * playerDamageMultiplier);
 
             // animacion
-            StartCoroutine(ShowAttackVisuals());
+            StartCoroutine(ShowAttackVisuals()); GameEvents.TriggerPunchThrown(1);
 
             if (currentEnemy != null)
             {
@@ -275,7 +275,7 @@ public class CombatController : MonoBehaviour
             ShowDamagePopup(damageDealt, false);
 
             isHardAttack = true;
-            StartCoroutine(ShowAttackVisuals());
+            StartCoroutine(ShowAttackVisuals()); GameEvents.TriggerPunchThrown(1);
 
             if (currentEnemy != null)
             {
@@ -852,7 +852,7 @@ public class CombatController : MonoBehaviour
     void RegistrarEstadistica(int damage)
     {
         contadorGolpes++;
-        contadorDañoTotal += damage;
+        contadorTotalDamage += damage;
     }
 
     // Metodos de seguridad para que cuando se haya termiando el combate no quere nada residual

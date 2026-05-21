@@ -1,4 +1,4 @@
-using Firebase.Firestore;
+﻿using Firebase.Firestore;
 using System.Threading.Tasks;
 using UnityEngine;
 
@@ -112,7 +112,9 @@ public class UsuarioService
 
             if (snapshot.Exists)
             {
-                return snapshot.ConvertTo<Personaje>();
+                Personaje p = snapshot.ConvertTo<Personaje>();
+                p.id = snapshot.Id;
+                return p;
             }
             return null;
         }
