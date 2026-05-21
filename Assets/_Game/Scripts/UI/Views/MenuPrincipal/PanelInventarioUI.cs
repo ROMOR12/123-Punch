@@ -31,9 +31,9 @@ public class PanelInventarioUI : MonoBehaviour
 
     [Header("Servicios")]
     private UsuarioService usuarioService;
-    private ItemBase itemSeleccionado;
+    private string itemSeleccionadoID;
     private int slotADesequipar = -1;
-    private ItemBase itemADesequipar;
+    private string itemADesequiparID;
 
     private void Awake()
     {
@@ -51,12 +51,14 @@ public class PanelInventarioUI : MonoBehaviour
         if (panelDesequiparConfirmacion != null) panelDesequiparConfirmacion.SetActive(false);
     }
 
-    private void OnEnable()
+    private async void OnEnable()
     {
         if (panelEquiparConfirmacion != null) panelEquiparConfirmacion.SetActive(false);
         if (panelDesequiparConfirmacion != null) panelDesequiparConfirmacion.SetActive(false);
 
-        // 0. Sincronizar los datos en memoria con los de la base de datos (SessionManager)
+        GlobalDataService globalData = new GlobalDataService();
+        await globalData.CargarObjetosGlobales();
+
         if (SessionManager.shared != null && SessionManager.shared.currentUser != null)
         {
             Usuario user = SessionManager.shared.currentUser;
@@ -73,58 +75,62 @@ public class PanelInventarioUI : MonoBehaviour
         ActualizarUIEquipamiento();
     }
 
-    // --- 1. CARGAR INVENTARIO VISUAL ---
     private void CargarInventario()
     {
-        // Limpiar botones anteriores
         foreach (Transform child in gridInventario)
         {
             Destroy(child.gameObject);
         }
 
-        if (GameManager.Instance == null || GameManager.Instance.inventarioIDs == null) 
-        {
-            Debug.LogWarning("Inventario nulo en el GameManager.");
-            return;
-        }
+        if (GameManager.Instance == null || GameManager.Instance.inventarioIDs == null) return;
 
-        Debug.Log($"Tienes {GameManager.Instance.inventarioIDs.Count} objetos en tu inventario de Firebase.");
-
-        // 1. Agrupar items (contar cantidades)
         Dictionary<string, int> conteoItems = new Dictionary<string, int>();
         foreach (string itemID in GameManager.Instance.inventarioIDs)
         {
-            if (string.IsNullOrEmpty(itemID)) continue; // Ignorar IDs vacíos o nulos
+            if (string.IsNullOrEmpty(itemID)) continue;
+            if (itemID == "Item_LootBox") continue; // Las cajas no se listan en el inventario visual normal
 
-            if (conteoItems.ContainsKey(itemID))
-            {
-                conteoItems[itemID]++;
-            }
-            else
-            {
-                conteoItems[itemID] = 1;
-            }
+            if (conteoItems.ContainsKey(itemID)) conteoItems[itemID]++;
+            else conteoItems[itemID] = 1;
         }
 
-        // 2. Crear las filas visuales
         foreach (var kvp in conteoItems)
         {
             string itemID = kvp.Key;
             int cantidad = kvp.Value;
 
-            ItemBase itemBase = ObtenerItemPorID(itemID);
-            if (itemBase != null)
+            if (!GlobalDataService.cacheObjetos.TryGetValue(itemID, out Objeto datosFirebase))
             {
-                CrearBotonItem(itemBase, cantidad);
+                continue;
             }
-            else
-            {
-                Debug.LogError($"El ID '{itemID}' está en tu Firebase pero NO se encontró en el GameManager.");
-            }
+
+            Sprite icono = ObtenerIconoLocal(itemID);
+            CrearBotonItem(itemID, datosFirebase, icono, cantidad);
         }
     }
 
-    private void CrearBotonItem(ItemBase item, int cantidad)
+    private Sprite ObtenerIconoLocal(string itemID)
+    {
+        Sprite icono = GameManager.Instance.imageDefault;
+        if (GameManager.Instance.todosLosPasivos != null)
+        {
+            foreach (var p in GameManager.Instance.todosLosPasivos)
+                if (p != null && p.id == itemID) return p.icon;
+        }
+        if (GameManager.Instance.todosLosActivos != null)
+        {
+            foreach (var a in GameManager.Instance.todosLosActivos)
+                if (a != null && a.id == itemID) return a.icon;
+        }
+        if (GameManager.Instance.items != null)
+        {
+            foreach (var i in GameManager.Instance.items)
+                if (i != null && i.id == itemID) return i.icon;
+        }
+        return icono;
+    }
+
+    private void CrearBotonItem(string itemID, Objeto datosFirebase, Sprite icono, int cantidad)
     {
         GameObject rowObj = Instantiate(prefabItemInventario, gridInventario, false);
         rowObj.SetActive(true);
@@ -138,69 +144,60 @@ public class PanelInventarioUI : MonoBehaviour
             rt.anchoredPosition3D = Vector3.zero;
         }
 
-        Debug.Log($"[UI] Fila creada para: {item.itemBaseName} (x{cantidad}). Si no la ves en pantalla, es problema del RectTransform/Layout.");
         InventarioRowUI rowUI = rowObj.GetComponent<InventarioRowUI>();
 
         if (rowUI != null)
         {
-            // Rellenar datos
             if (rowUI.textCantidad != null) rowUI.textCantidad.text = $"x{cantidad}";
-            if (rowUI.iconoItem != null) rowUI.iconoItem.sprite = item.icon;
-            if (rowUI.textNombre != null) rowUI.textNombre.text = item.itemBaseName;
-            if (rowUI.textRareza != null) rowUI.textRareza.text = item.rarity.ToString();
+            if (rowUI.iconoItem != null) rowUI.iconoItem.sprite = icono;
+            if (rowUI.textNombre != null) rowUI.textNombre.text = datosFirebase.name;
+            if (rowUI.textRareza != null) rowUI.textRareza.text = datosFirebase.rarity;
             
             if (rowUI.textTipo != null)
             {
-                rowUI.textTipo.text = (item is Pasivo) ? "Pasivo" : "Activo";
+                rowUI.textTipo.text = datosFirebase.is_passive ? "Pasivo" : "Activo";
             }
 
-            // Configurar botón equipar
             if (rowUI.botonEquipar != null)
             {
-                rowUI.botonEquipar.onClick.AddListener(() => AbrirPopupEquipar(item));
+                rowUI.botonEquipar.onClick.AddListener(() => AbrirPopupEquipar(itemID, datosFirebase, icono));
             }
         }
         else
         {
-            // Si el usuario aún no ha puesto el script, hacemos fallback para que no pete
             Image img = rowObj.GetComponent<Image>();
             Button btn = rowObj.GetComponent<Button>();
-            if (img != null) img.sprite = item.icon;
-            if (btn != null) btn.onClick.AddListener(() => AbrirPopupEquipar(item));
+            if (img != null) img.sprite = icono;
+            if (btn != null) btn.onClick.AddListener(() => AbrirPopupEquipar(itemID, datosFirebase, icono));
         }
     }
 
-    // --- 2. LÓGICA DE EQUIPAMIENTO ---
-    private void EquiparItem(ItemBase item)
+    private void EquiparItem(string itemID, Objeto datos)
     {
-        if (item is Pasivo)
+        if (datos.is_passive)
         {
-            GameManager.Instance.pasivoEquipadoID = item.id;
+            GameManager.Instance.pasivoEquipadoID = itemID;
         }
-        else if (item is Consumible)
+        else
         {
-            // Asegurarnos de que la lista tiene al menos 2 huecos para evitar errores "Out Of Bounds"
             while (GameManager.Instance.activosEquipadosIDs.Count < 2)
             {
                 GameManager.Instance.activosEquipadosIDs.Add("");
             }
 
-            // Comprobamos si ya está equipado para no duplicarlo
-            if (GameManager.Instance.activosEquipadosIDs.Contains(item.id)) return;
+            if (GameManager.Instance.activosEquipadosIDs.Contains(itemID)) return;
 
-            // Lógica para alternar entre el hueco 1 y 2
             if (string.IsNullOrEmpty(GameManager.Instance.activosEquipadosIDs[0]))
             {
-                GameManager.Instance.activosEquipadosIDs[0] = item.id;
+                GameManager.Instance.activosEquipadosIDs[0] = itemID;
             }
             else if (string.IsNullOrEmpty(GameManager.Instance.activosEquipadosIDs[1]))
             {
-                GameManager.Instance.activosEquipadosIDs[1] = item.id;
+                GameManager.Instance.activosEquipadosIDs[1] = itemID;
             }
             else
             {
-                // Si ambos están llenos, sobrescribimos el primero por defecto
-                GameManager.Instance.activosEquipadosIDs[0] = item.id;
+                GameManager.Instance.activosEquipadosIDs[0] = itemID;
             }
         }
 
@@ -208,17 +205,14 @@ public class PanelInventarioUI : MonoBehaviour
         GuardarEquipamientoEnFirebase();
     }
 
-    // --- 3. DESEQUIPAR DESDE LA UI ---
-    // Puedes asignar estas funciones al evento OnClick de los iconos equipados
     public void DesequiparPasivo()
     {
         string idPasivo = GameManager.Instance.pasivoEquipadoID;
         if (string.IsNullOrEmpty(idPasivo)) return;
 
-        ItemBase item = GameManager.Instance.GetPasivoPorID(idPasivo);
-        if (item != null)
+        if (GlobalDataService.cacheObjetos.TryGetValue(idPasivo, out Objeto datos))
         {
-            AbrirPopupDesequipar(item, 0);
+            AbrirPopupDesequipar(idPasivo, datos, 0);
         }
     }
 
@@ -229,10 +223,9 @@ public class PanelInventarioUI : MonoBehaviour
             string idActivo1 = GameManager.Instance.activosEquipadosIDs[0];
             if (string.IsNullOrEmpty(idActivo1)) return;
 
-            ItemBase item = GameManager.Instance.GetActivoPorID(idActivo1);
-            if (item != null)
+            if (GlobalDataService.cacheObjetos.TryGetValue(idActivo1, out Objeto datos))
             {
-                AbrirPopupDesequipar(item, 1);
+                AbrirPopupDesequipar(idActivo1, datos, 1);
             }
         }
     }
@@ -244,28 +237,22 @@ public class PanelInventarioUI : MonoBehaviour
             string idActivo2 = GameManager.Instance.activosEquipadosIDs[1];
             if (string.IsNullOrEmpty(idActivo2)) return;
 
-            ItemBase item = GameManager.Instance.GetActivoPorID(idActivo2);
-            if (item != null)
+            if (GlobalDataService.cacheObjetos.TryGetValue(idActivo2, out Objeto datos))
             {
-                AbrirPopupDesequipar(item, 2);
+                AbrirPopupDesequipar(idActivo2, datos, 2);
             }
         }
     }
 
-    // --- 4. ACTUALIZAR VISUALES Y GUARDAR ---
     private void ActualizarUIEquipamiento()
     {
         // Pasivo
         string idPasivo = GameManager.Instance.pasivoEquipadoID;
         if (!string.IsNullOrEmpty(idPasivo))
         {
-            Pasivo p = GameManager.Instance.GetPasivoPorID(idPasivo);
-            if (p != null)
-            {
-                iconoPasivo.sprite = p.icon;
-                iconoPasivo.preserveAspect = true;
-                iconoPasivo.enabled = true;
-            }
+            iconoPasivo.sprite = ObtenerIconoLocal(idPasivo);
+            iconoPasivo.preserveAspect = true;
+            iconoPasivo.enabled = true;
         }
         else
         {
@@ -273,16 +260,12 @@ public class PanelInventarioUI : MonoBehaviour
         }
 
         // Activo 1
-        string idActivo1 = GameManager.Instance.activosEquipadosIDs[0];
+        string idActivo1 = GameManager.Instance.activosEquipadosIDs.Count > 0 ? GameManager.Instance.activosEquipadosIDs[0] : "";
         if (!string.IsNullOrEmpty(idActivo1))
         {
-            Consumible c1 = GameManager.Instance.GetActivoPorID(idActivo1);
-            if (c1 != null)
-            {
-                iconoActivo1.sprite = c1.icon;
-                iconoActivo1.preserveAspect = true;
-                iconoActivo1.enabled = true;
-            }
+            iconoActivo1.sprite = ObtenerIconoLocal(idActivo1);
+            iconoActivo1.preserveAspect = true;
+            iconoActivo1.enabled = true;
         }
         else
         {
@@ -290,16 +273,12 @@ public class PanelInventarioUI : MonoBehaviour
         }
 
         // Activo 2
-        string idActivo2 = GameManager.Instance.activosEquipadosIDs[1];
+        string idActivo2 = GameManager.Instance.activosEquipadosIDs.Count > 1 ? GameManager.Instance.activosEquipadosIDs[1] : "";
         if (!string.IsNullOrEmpty(idActivo2))
         {
-            Consumible c2 = GameManager.Instance.GetActivoPorID(idActivo2);
-            if (c2 != null)
-            {
-                iconoActivo2.sprite = c2.icon;
-                iconoActivo2.preserveAspect = true;
-                iconoActivo2.enabled = true;
-            }
+            iconoActivo2.sprite = ObtenerIconoLocal(idActivo2);
+            iconoActivo2.preserveAspect = true;
+            iconoActivo2.enabled = true;
         }
         else
         {
@@ -329,31 +308,17 @@ public class PanelInventarioUI : MonoBehaviour
         }
     }
 
-    // --- UTILIDADES ---
-    private ItemBase ObtenerItemPorID(string id)
+    private void AbrirPopupEquipar(string itemID, Objeto datos, Sprite icono)
     {
-        Pasivo pasivo = GameManager.Instance.GetPasivoPorID(id);
-        if (pasivo != null) return pasivo;
-
-        Consumible consumible = GameManager.Instance.GetActivoPorID(id);
-        if (consumible != null) return consumible;
-
-        return null;
-    }
-
-    // --- POPUP DE EQUIPAMIENTO ---
-    private void AbrirPopupEquipar(ItemBase item)
-    {
-        if (item == null) return;
-        itemSeleccionado = item;
+        itemSeleccionadoID = itemID;
 
         if (panelEquiparConfirmacion != null)
         {
             panelEquiparConfirmacion.SetActive(true);
 
-            if (txtNombreEquipar != null) txtNombreEquipar.text = item.itemBaseName;
-            if (txtDescripcionEquipar != null) txtDescripcionEquipar.text = item.description;
-            if (iconoEquipar != null) iconoEquipar.sprite = item.icon;
+            if (txtNombreEquipar != null) txtNombreEquipar.text = datos.name;
+            if (txtDescripcionEquipar != null) txtDescripcionEquipar.text = datos.description;
+            if (iconoEquipar != null) iconoEquipar.sprite = icono;
         }
         else
         {
@@ -363,33 +328,32 @@ public class PanelInventarioUI : MonoBehaviour
 
     private void ConfirmarEquipar()
     {
-        if (itemSeleccionado != null)
+        if (!string.IsNullOrEmpty(itemSeleccionadoID) && GlobalDataService.cacheObjetos.TryGetValue(itemSeleccionadoID, out Objeto datos))
         {
-            EquiparItem(itemSeleccionado);
+            EquiparItem(itemSeleccionadoID, datos);
         }
         CerrarPopupEquipar();
     }
 
     private void CerrarPopupEquipar()
     {
-        itemSeleccionado = null;
+        itemSeleccionadoID = "";
         if (panelEquiparConfirmacion != null)
         {
             panelEquiparConfirmacion.SetActive(false);
         }
     }
 
-    // --- POPUP DE DESEQUIPAR ---
-    private void AbrirPopupDesequipar(ItemBase item, int slot)
+    private void AbrirPopupDesequipar(string itemID, Objeto datos, int slot)
     {
-        itemADesequipar = item;
+        itemADesequiparID = itemID;
         slotADesequipar = slot;
 
         if (panelDesequiparConfirmacion != null)
         {
             panelDesequiparConfirmacion.SetActive(true);
-            panelDesequiparConfirmacionFade.SetActive(false);
-            if (txtNombreDesequipar != null) txtNombreDesequipar.text = item.itemBaseName;
+            if (panelDesequiparConfirmacionFade != null) panelDesequiparConfirmacionFade.SetActive(false); // Mantener comportamiento original
+            if (txtNombreDesequipar != null) txtNombreDesequipar.text = datos.name;
         }
         else
         {
@@ -421,36 +385,26 @@ public class PanelInventarioUI : MonoBehaviour
 
     private void CerrarPopupDesequipar()
     {
-        itemADesequipar = null;
+        itemADesequiparID = "";
         slotADesequipar = -1;
         if (panelDesequiparConfirmacion != null)
         {
             panelDesequiparConfirmacion.SetActive(false);
-            panelDesequiparConfirmacionFade.SetActive(false);
+            if (panelDesequiparConfirmacionFade != null) panelDesequiparConfirmacionFade.SetActive(false);
         }
     }
 
-    // --- TRUCO PARA PROBAR EL INVENTARIO ---
     public void BotonTruco_DarObjetos()
     {
-        // Añadimos TODOS los objetos pasivos disponibles
-        foreach (var pasivo in GameManager.Instance.todosLosPasivos)
+        foreach (var objeto in GlobalDataService.cacheObjetos.Values)
         {
-            GameManager.Instance.inventarioIDs.Add(pasivo.id);
+            if (objeto.id_Objeto != "Item_LootBox") // No regalamos cajas en el truco
+            {
+                GameManager.Instance.inventarioIDs.Add(objeto.id_Objeto);
+            }
         }
         
-        // Añadimos TODOS los objetos activos disponibles
-        foreach (var activo in GameManager.Instance.todosLosActivos)
-        {
-            GameManager.Instance.inventarioIDs.Add(activo.id);
-        }
-
-        Debug.Log("¡Todos los objetos regalados con éxito! Actualizando mochila...");
-        
-        // Recargamos visualmente
         CargarInventario();
-        
-        // Guardamos en Firebase para que se queden para siempre
         GuardarEquipamientoEnFirebase();
     }
 }

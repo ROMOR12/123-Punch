@@ -1,4 +1,4 @@
-﻿using Firebase;
+using Firebase;
 using Firebase.Auth;
 using System.Collections;
 using System.Threading.Tasks;
@@ -67,13 +67,23 @@ public class AuthManager : MonoBehaviour
         panelLoginUI.SetActive(true);
 
         // Si ya inicio sesion anteriormente
-        FirebaseUser user = auth.CurrentUser;
-        if (user != null && user.IsEmailVerified)
+                FirebaseUser user = auth.CurrentUser;
+        if (user != null)
         {
-            // Cargar datos de forma asíncrona antes de ir al juego
-            CargarDatosSesion(user.UserId);
+            if (user.IsEmailVerified)
+            {
+                // Cargar datos de forma as�ncrona antes de ir al juego
+                CargarDatosSesion(user.UserId);
+            }
+            else if (user.IsAnonymous)
+            {
+                irAlJuego = true; // Si es invitado, va directo
+            }
+            else
+            {
+                recargarEscena = true;
+            }
         }
-        else if (user != null && user.IsAnonymous) { irAlJuego = true; } else { if (user != null) { recargarEscena = true; } }
     }
 
     void Update()
