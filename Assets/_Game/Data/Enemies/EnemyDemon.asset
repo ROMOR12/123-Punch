@@ -17,7 +17,7 @@ MonoBehaviour:
   sprite: {fileID: -8638361582643608293, guid: 1fb68b59d1dac324fba793673adf4cab, type: 3}
   life: 170
   energy: 120
-  force: 7
+  force: 5
   recovery: 6
   AttackSprite: {fileID: 3660379151882484424, guid: cf6337a4aa9c6a445921e1fcc60a9475, type: 3}
   HardAttackSprite: {fileID: 2164363421233950866, guid: 908db59e14d29c847be1af6258443673, type: 3}

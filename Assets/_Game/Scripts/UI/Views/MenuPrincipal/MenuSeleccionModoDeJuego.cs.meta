@@ -1,2 +1,14 @@
 fileFormatVersion: 2
 guid: b4c5e507e18326a438ea0f070653baaa
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - ImagenModoDeJuego: {instanceID: 0}
+  - TextoModoDeJuego: {instanceID: 0}
+  - panelSeleccionNiveles: {instanceID: 0}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
