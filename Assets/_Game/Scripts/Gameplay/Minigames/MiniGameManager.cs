@@ -4,6 +4,7 @@ using UnityEngine.UI;
 using System.Collections;
 using UnityEngine.SceneManagement;
 using System.Threading.Tasks;
+using Firebase.Functions;
 
 public class MiniGameMana : MonoBehaviour
 {
@@ -138,17 +139,22 @@ public class MiniGameMana : MonoBehaviour
     {
         try
         {
+            Debug.Log("Pidiendo recompensa de Buffet Libre al servidor...");
+            FirebaseFunctions functions = FirebaseFunctions.DefaultInstance;
+            HttpsCallableReference callable = functions.GetHttpsCallable("recompensa25");
+            HttpsCallableResult result = await callable.CallAsync();
+
+            Debug.Log("¡Recompensa validada! El servidor ha sumado 25 monedas a la BD.");
+
             if (SessionManager.shared != null && SessionManager.shared.currentUser != null)
             {
                 SessionManager.shared.currentUser.free_coin += 25;
-                UsuarioService usuarioService = new UsuarioService();
-                await usuarioService.ActualizarUsuario(SessionManager.shared.currentUser);
-                Debug.Log($"Recompensa guardada: Monedas totales en memoria: {SessionManager.shared.currentUser.free_coin}");
+                Debug.Log($"Monedas totales en memoria: {SessionManager.shared.currentUser.free_coin}");
             }
         }
         catch (System.Exception e)
         {
-            Debug.LogError($"Error al guardar recompensa: {e.Message}");
+            Debug.LogError($"Error en el servidor al reclamar recompensa: {e.Message}");
         }
     }
 }

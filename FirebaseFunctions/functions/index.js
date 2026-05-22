@@ -65,3 +65,49 @@ exports.checkDailyRewards = functions.pubsub.schedule("every 1 hours").onRun(asy
         return null;
     }
 });
+
+// =======================================================
+// FUNCIONES DE RECOMPENSA DE MONEDAS
+// =======================================================
+
+async function darMonedas(uid, cantidad) {
+    if (!uid) {
+        throw new functions.https.HttpsError(
+            'unauthenticated', 
+            'El usuario debe estar autenticado para recibir recompensas.'
+        );
+    }
+
+    const usuarioRef = admin.firestore().collection('usuarios').doc(uid);
+    
+    try {
+        await usuarioRef.update({
+            free_coin: admin.firestore.FieldValue.increment(cantidad)
+        });
+        
+        return { 
+            success: true, 
+            mensaje: `Se han añadido ${cantidad} monedas exitosamente.`,
+            monedas_otorgadas: cantidad
+        };
+    } catch (error) {
+        console.error("Error al dar monedas:", error);
+        throw new functions.https.HttpsError('internal', 'Error al actualizar las monedas en la base de datos.');
+    }
+}
+
+exports.recompensa25 = functions.https.onCall(async (data, context) => {
+    return darMonedas(context.auth?.uid, 25);
+});
+
+exports.recompensa50 = functions.https.onCall(async (data, context) => {
+    return darMonedas(context.auth?.uid, 50);
+});
+
+exports.recompensa200 = functions.https.onCall(async (data, context) => {
+    return darMonedas(context.auth?.uid, 200);
+});
+
+exports.recompensa300 = functions.https.onCall(async (data, context) => {
+    return darMonedas(context.auth?.uid, 300);
+});
