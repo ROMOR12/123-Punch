@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 [CreateAssetMenu(fileName ="NuevoModoDeJuego",menuName ="ModoDeJuego")]
 public class ModosDeJuego : ScriptableObject
 {

@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
@@ -7,19 +7,19 @@ public class MostrarItems : MonoBehaviour
 {
     private TiendaService tiendaService;
 
-    [Header("Referencias de Cuadrícula Dinámica (Tienda)")]
-    [Tooltip("El contenedor (Grid Layout Group) donde se instanciarán los artículos.")]
+    [Header("Referencias de CuadrÃ­cula DinÃ¡mica (Tienda)")]
+    [Tooltip("El contenedor (Grid Layout Group) donde se instanciarÃ¡n los artÃ­culos.")]
     public Transform gridTienda;
-    [Tooltip("El prefab de la tarjeta de artículo que contiene el script TiendaItemUI.")]
+    [Tooltip("El prefab de la tarjeta de artÃ­culo que contiene el script TiendaItemUI.")]
     public GameObject prefabItemTienda;
 
     [Header("UI General de la Tienda")]
     [Tooltip("Texto para mostrar las monedas actuales del jugador en la interfaz de la tienda.")]
     public TextMeshProUGUI txtMonedasTienda;
-    [Tooltip("Texto opcional para mostrar mensajes de éxito o error al comprar.")]
+    [Tooltip("Texto opcional para mostrar mensajes de Ã©xito o error al comprar.")]
     public TextMeshProUGUI txtMensajeFeedback;
 
-    [Header("Panel de Confirmación de Compra (Popup)")]
+    [Header("Panel de ConfirmaciÃ³n de Compra (Popup)")]
     public GameObject panelConfirmacion;
     public GameObject panelConfirmacionFade;
     public TextMeshProUGUI txtNombreConfirmacion;
@@ -71,11 +71,10 @@ public class MostrarItems : MonoBehaviour
         {
             if (gridTienda == null || prefabItemTienda == null)
             {
-                Debug.LogWarning("Faltan referencias críticas en MostrarItems.");
+                Debug.LogWarning("Faltan referencias crÃ­ticas en MostrarItems.");
                 return;
             }
 
-            // Limpiar elementos previos en el grid
             foreach (Transform child in gridTienda)
             {
                 Destroy(child.gameObject);
@@ -83,11 +82,9 @@ public class MostrarItems : MonoBehaviour
 
             if (GameManager.Instance == null) return;
 
-            // 1. Cargar objetos globales de Firebase si no están cargados
             GlobalDataService globalData = new GlobalDataService();
             await globalData.CargarObjetosGlobales();
 
-            // 2. Traer ofertas activas de Firebase
             List<TiendaItem> ofertas = await tiendaService.ObtenerCatalogoActivo();
             
             int itemsMostrados = 0;
@@ -96,14 +93,12 @@ public class MostrarItems : MonoBehaviour
             {
                 if (oferta == null) continue;
 
-                // Stats del objeto bajados de Firebase
                 if (!GlobalDataService.cacheObjetos.TryGetValue(oferta.id_Objeto, out Objeto datosFirebase))
                 {
-                    Debug.LogWarning($"No se encontró objeto con ID: {oferta.id_Objeto} en la caché.");
+                    Debug.LogWarning($"No se encontrÃ³ objeto con ID: {oferta.id_Objeto} en la cachÃ©.");
                     continue;
                 }
 
-                // Buscar el icono en el GameManager local (ScriptableObjects)
                 Sprite icono = GameManager.Instance.imageDefault;
                 if (GameManager.Instance != null)
                 {
@@ -218,7 +213,7 @@ public class MostrarItems : MonoBehaviour
 
         if (SessionManager.shared == null || SessionManager.shared.currentUser == null)
         {
-            MostrarFeedback("Error: Sesión de usuario no válida.");
+            MostrarFeedback("Error: SesiÃ³n de usuario no vÃ¡lida.");
             CerrarConfirmacionCompra();
             return;
         }
@@ -237,7 +232,7 @@ public class MostrarItems : MonoBehaviour
                 GameManager.Instance.inventarioIDs = user.inventario;
             }
 
-            MostrarFeedback($"¡Has comprado {objetoSeleccionado.name}!");
+            MostrarFeedback($"Â¡Has comprado {objetoSeleccionado.name}!");
         }
         else
         {

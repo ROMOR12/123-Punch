@@ -150,7 +150,7 @@ public class RoundManager : MonoBehaviour
         {
             Debug.Log("Pidiendo recompensa al servidor...");
 
-            // Llamamos a la funci�n con el nombre exacto que le pusimos en Node.js
+            // Llamamos a la funcion de Firebase que valida la victoria y suma las monedas al usuario
             HttpsCallableReference callable = functions.GetHttpsCallable("recompensarCombate");
             HttpsCallableResult result = await callable.CallAsync();
 

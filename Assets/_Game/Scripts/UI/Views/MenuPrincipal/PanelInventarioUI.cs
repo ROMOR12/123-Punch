@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 using System.Collections.Generic;
 using TMPro;
@@ -88,7 +88,7 @@ public class PanelInventarioUI : MonoBehaviour
         foreach (string itemID in GameManager.Instance.inventarioIDs)
         {
             if (string.IsNullOrEmpty(itemID)) continue;
-            if (itemID == "Item_LootBox") continue; // Las cajas no se listan en el inventario visual normal
+            if (itemID == "Item_LootBox") continue;
 
             if (conteoItems.ContainsKey(itemID)) conteoItems[itemID]++;
             else conteoItems[itemID] = 1;
@@ -246,7 +246,6 @@ public class PanelInventarioUI : MonoBehaviour
 
     private void ActualizarUIEquipamiento()
     {
-        // Pasivo
         string idPasivo = GameManager.Instance.pasivoEquipadoID;
         if (!string.IsNullOrEmpty(idPasivo))
         {
@@ -259,7 +258,6 @@ public class PanelInventarioUI : MonoBehaviour
             iconoPasivo.enabled = false;
         }
 
-        // Activo 1
         string idActivo1 = GameManager.Instance.activosEquipadosIDs.Count > 0 ? GameManager.Instance.activosEquipadosIDs[0] : "";
         if (!string.IsNullOrEmpty(idActivo1))
         {
@@ -272,7 +270,6 @@ public class PanelInventarioUI : MonoBehaviour
             iconoActivo1.enabled = false;
         }
 
-        // Activo 2
         string idActivo2 = GameManager.Instance.activosEquipadosIDs.Count > 1 ? GameManager.Instance.activosEquipadosIDs[1] : "";
         if (!string.IsNullOrEmpty(idActivo2))
         {
@@ -352,7 +349,7 @@ public class PanelInventarioUI : MonoBehaviour
         if (panelDesequiparConfirmacion != null)
         {
             panelDesequiparConfirmacion.SetActive(true);
-            if (panelDesequiparConfirmacionFade != null) panelDesequiparConfirmacionFade.SetActive(false); // Mantener comportamiento original
+            if (panelDesequiparConfirmacionFade != null) panelDesequiparConfirmacionFade.SetActive(true);
             if (txtNombreDesequipar != null) txtNombreDesequipar.text = datos.name;
         }
         else
@@ -398,7 +395,7 @@ public class PanelInventarioUI : MonoBehaviour
     {
         foreach (var objeto in GlobalDataService.cacheObjetos.Values)
         {
-            if (objeto.id_Objeto != "Item_LootBox") // No regalamos cajas en el truco
+            if (objeto.id_Objeto != "Item_LootBox")
             {
                 GameManager.Instance.inventarioIDs.Add(objeto.id_Objeto);
             }

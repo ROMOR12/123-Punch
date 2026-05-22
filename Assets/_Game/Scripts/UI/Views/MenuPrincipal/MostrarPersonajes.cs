@@ -1,4 +1,4 @@
-using TMPro;
+﻿using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using System.Collections.Generic;
@@ -12,10 +12,10 @@ public class MostrarPersonajes : MonoBehaviour
     [SerializeField] private Image imagenSeleccionPersonaje;
     [SerializeField] private TextMeshProUGUI textoVida, textoStam, textoDanyo, textoRecuperacion, textoNombrePersonaje;
 
-    [Header("UI del Botón Seleccionar")]
+    [Header("UI del BotÃ³n Seleccionar")]
     [SerializeField] private Button botonSeleccionar;
     [SerializeField] private TextMeshProUGUI textoBotonSeleccionar;
-    [SerializeField] private Color colorSeleccionado = new Color(0.5f, 0.5f, 0.5f); // Color más oscuro
+    [SerializeField] private Color colorSeleccionado = new Color(0.5f, 0.5f, 0.5f);
     private Color colorOriginalBoton;
 
     private int indicePersonajeSeleccionado = 0;
@@ -29,7 +29,6 @@ public class MostrarPersonajes : MonoBehaviour
         gameManager = GameManager.Instance;
         if (botonSeleccionar != null) colorOriginalBoton = botonSeleccionar.image.color;
 
-        // Aquí el GameManager ya habrá leído de PlayerPrefs automáticamente
         string idGuardado = gameManager.idPersonajeSeleccionado;
 
         int indice = gameManager.listaPersonajes.FindIndex(p => p.id == idGuardado);
@@ -45,7 +44,6 @@ public class MostrarPersonajes : MonoBehaviour
     {
         var personajeLocal = gameManager.listaPersonajes[indicePersonajeSeleccionado];
 
-        // Actualizar imágenes
         imagenSeleccionPersonaje.sprite = personajeLocal.sprite != null ? personajeLocal.sprite : gameManager.imageDefault;
         imagenPersonajeSeleccionado.sprite = personajeLocal.sprite != null ? personajeLocal.sprite : gameManager.imageDefault;
 
@@ -69,7 +67,6 @@ public class MostrarPersonajes : MonoBehaviour
             PersonajeService pjServiceGlobal = new PersonajeService();
             Personaje datosUsuario = null;
 
-            // Verificamos si hay usuario activo (controla invitados y errores de sesión)
             if (SessionManager.shared != null && SessionManager.shared.currentUser != null)
             {
                 string idUsuario = SessionManager.shared.currentUser.id;
@@ -80,13 +77,11 @@ public class MostrarPersonajes : MonoBehaviour
 
             if (datosUsuario != null)
             {
-                // El usuario lo tiene desbloqueado
                 datosAMostrar = datosUsuario;
                 estaDesbloqueado = true;
             }
             else
             {
-                // No lo tiene, es invitado o error. Buscamos las stats base globales.
                 Personaje datosBase = await pjServiceGlobal.ObtenerPersonaje(idPersonaje);
                 if (this == null) return;
                 datosAMostrar = datosBase;
@@ -146,7 +141,6 @@ public class MostrarPersonajes : MonoBehaviour
 
         if (!personajeActualDesbloqueado)
         {
-            // Lógica de compra
             if (personajeLocal.unlockCondition == "coins")
             {
                 if (SessionManager.shared != null && SessionManager.shared.currentUser != null)
@@ -154,47 +148,39 @@ public class MostrarPersonajes : MonoBehaviour
                     int monedas = SessionManager.shared.currentUser.free_coin;
                     if (monedas >= personajeLocal.price)
                     {
-                        // Comprar
                         SessionManager.shared.currentUser.free_coin -= personajeLocal.price;
                         
                         UsuarioService uService = new UsuarioService();
                         await uService.ActualizarUsuario(SessionManager.shared.currentUser);
                         if (this == null) return;
 
-                        // Guardar personaje desbloqueado
                         Personaje datosBase = cachePersonajes[idElegido];
                         await uService.ActualizarPersonaje(SessionManager.shared.currentUser.id, datosBase);
                         if (this == null) return;
 
-                        // Actualizar cache local
                         cacheEstadoDesbloqueo[idElegido] = true;
                         personajeActualDesbloqueado = true;
 
-                        // Seleccionarlo tras comprarlo
                         gameManager.idPersonajeSeleccionado = idElegido;
                         ConfigurarBotonComoSeleccionado(true);
                         if (imagenSeleccionPersonaje != null) imagenSeleccionPersonaje.color = Color.white;
                         if (imagenPersonajeSeleccionado != null) imagenPersonajeSeleccionado.color = Color.white;
 
-                        // Disparar evento de desbloqueo
                         GameEvents.TriggerCharacterUnlocked();
-                        SoundManager.PlaySound(SoundType.Consumable); // Sonido de compra
+                        SoundManager.PlaySound(SoundType.Consumable);
                         Debug.Log($"Personaje {idElegido} comprado por {personajeLocal.price} monedas.");
                     }
                     else
                     {
                         Debug.Log("No tienes suficientes monedas.");
-                        // Podríamos mostrar un mensaje en UI
                     }
                 }
             }
             return;
         }
 
-        // Selección normal
         gameManager.idPersonajeSeleccionado = idElegido;
 
-        // Cambiamos el aspecto visual del botón inmediatamente
         ConfigurarBotonComoSeleccionado(true);
 
         Debug.Log($"Personaje {idElegido} seleccionado y guardado.");
@@ -207,13 +193,13 @@ public class MostrarPersonajes : MonoBehaviour
         if (personaje.unlockCondition == "coins")
         {
             textoBotonSeleccionar.text = $"Comprar ({personaje.price})";
-            botonSeleccionar.image.color = colorOriginalBoton; // Color normal para poder comprar
+            botonSeleccionar.image.color = colorOriginalBoton;
             botonSeleccionar.interactable = true;
         }
         else
         {
             textoBotonSeleccionar.text = $"Bloqueado ({personaje.unlockCondition})";
-            botonSeleccionar.image.color = colorSeleccionado; // Reutilizamos el color oscuro
+            botonSeleccionar.image.color = colorSeleccionado;
             botonSeleccionar.interactable = false;
         }
     }

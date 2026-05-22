@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
 
@@ -27,7 +27,6 @@ public class PanelMejorasUI : MonoBehaviour
     public Button btnConfirmar;
     public Button btnDescartar;
 
-    // Variables internas
     private Usuario usuarioReal;
     private Personaje personajeReal;
 
@@ -44,7 +43,7 @@ public class PanelMejorasUI : MonoBehaviour
             if (mejoraManager == null)
             {
                 mejoraManager = gameObject.AddComponent<MejoraStatsManager>();
-                Debug.LogWarning("[PanelMejorasUI] No se encontró MejoraStatsManager en la escena. Se ha creado e instanciado uno automáticamente en este GameObject.");
+                Debug.LogWarning("[PanelMejorasUI] No se encontrÃ³ MejoraStatsManager en la escena. Se ha creado e instanciado uno automÃ¡ticamente en este GameObject.");
             }
         }
         estaInicializado = true;
@@ -53,7 +52,6 @@ public class PanelMejorasUI : MonoBehaviour
 
     private void OnEnable()
     {
-        // Evitamos que OnEnable se ejecute la primera vez antes que GameManager.Awake()
         if (estaInicializado)
         {
             CargarDatosAutomaticamente();
@@ -62,31 +60,26 @@ public class PanelMejorasUI : MonoBehaviour
 
     public async void CargarDatosAutomaticamente()
     {
-        // 1. Buscamos al usuario en tu SessionManager (como haces en AuthManager)
         if (SessionManager.shared != null && SessionManager.shared.currentUser != null)
         {
             usuarioReal = SessionManager.shared.currentUser;
 
-            // 2. Buscamos qué personaje tiene seleccionado en el GameManager
             string idPersonaje = GameManager.Instance.idPersonajeSeleccionado;
 
             Debug.Log($"Usuario {usuarioReal.username} encontrado. Descargando stats de {idPersonaje}...");
 
-            // 3. Descargamos el personaje directamente de Firebase usando tu servicio
             personajeReal = await usuarioService.ObtenerPersonajeDeUsuario(usuarioReal.id, idPersonaje);
 
             if (this == null) return;
 
-            // Si no existe en el usuario, cargamos las stats base globales
             if (personajeReal == null)
             {
-                Debug.LogWarning($"El personaje '{idPersonaje}' no está en la base de datos del usuario. Cargando stats base...");
+                Debug.LogWarning($"El personaje '{idPersonaje}' no estÃ¡ en la base de datos del usuario. Cargando stats base...");
                 PersonajeService pjServiceGlobal = new PersonajeService();
                 personajeReal = await pjServiceGlobal.ObtenerPersonaje(idPersonaje);
                 
                 if (this == null) return;
                 
-                // IMPORTANTE: Aseguramos que el ID no sea nulo si Firebase no lo incluye en el documento base
                 if (personajeReal != null)
                 {
                     personajeReal.id = idPersonaje;
@@ -95,27 +88,25 @@ public class PanelMejorasUI : MonoBehaviour
 
             if (personajeReal != null)
             {
-                Debug.Log($"¡Todo listo! Monedas: {usuarioReal.free_coin}, Nivel del personaje: {personajeReal.NivelTotal}");
+                Debug.Log($"Â¡Todo listo! Monedas: {usuarioReal.free_coin}, Nivel del personaje: {personajeReal.NivelTotal}");
                 ReiniciarCarrito();
             }
             else
             {
-                Debug.LogError($"Error: No se encontró el personaje '{idPersonaje}' ni en el usuario ni en las stats base.");
+                Debug.LogError($"Error: No se encontrÃ³ el personaje '{idPersonaje}' ni en el usuario ni en las stats base.");
             }
         }
         else
         {
-            Debug.LogError("Error: El SessionManager está vacío. ¿Iniciaste sesión desde la pantalla de Login?");
+            Debug.LogError("Error: El SessionManager estÃ¡ vacÃ­o. Â¿Iniciaste sesiÃ³n desde la pantalla de Login?");
         }
     }
 
-    // --- 1. INICIALIZAR EL PANEL ---
-    // IMPORTANTE: Tienes que llamar a esto desde tu menú de selección para pasarle los datos reales
     public void AbrirPanel(Usuario user, Personaje pj)
     {
         if (user == null || pj == null)
         {
-            Debug.LogError("¡ERROR! Le estás intentando pasar un usuario o personaje VACÍO (null) al panel.");
+            Debug.LogError("Â¡ERROR! Le estÃ¡s intentando pasar un usuario o personaje VACÃO (null) al panel.");
             return;
         }
 
@@ -128,7 +119,6 @@ public class PanelMejorasUI : MonoBehaviour
         gameObject.SetActive(true);
     }
 
-    // --- 2. LÓGICA DE LOS BOTONES DE "+" ---
     public void BtnAumentarVida() { SimularMejora(StatType.Life); }
     public void BtnAumentarEnergia() { SimularMejora(StatType.Energy); }
     public void BtnAumentarFuerza() { SimularMejora(StatType.Force); }
@@ -138,18 +128,18 @@ public class PanelMejorasUI : MonoBehaviour
     {
         if (usuarioReal == null || pjTemp == null)
         {
-            Debug.LogError("No puedes mejorar porque no se ha cargado ningún usuario o personaje. ¿Llamaste a AbrirPanel()?");
+            Debug.LogError("No puedes mejorar porque no se ha cargado ningÃºn usuario o personaje. Â¿Llamaste a AbrirPanel()?");
             return;
         }
 
         if (mejoraManager == null)
         {
-            Debug.LogError("¡Falta arrastrar el MejoraStatsManager al slot del Inspector!");
+            Debug.LogError("Â¡Falta arrastrar el MejoraStatsManager al slot del Inspector!");
             return;
         }
 
         int costeProxNivel = mejoraManager.CalcularCoste(stat, pjTemp);
-        Debug.Log($"Intentando mejorar {stat}. Coste próximo nivel: {costeProxNivel}. Monedas disponibles: {usuarioReal.free_coin - costeAcumulado}");
+        Debug.Log($"Intentando mejorar {stat}. Coste prÃ³ximo nivel: {costeProxNivel}. Monedas disponibles: {usuarioReal.free_coin - costeAcumulado}");
 
         if (usuarioReal.free_coin >= (costeAcumulado + costeProxNivel))
         {
@@ -175,7 +165,7 @@ public class PanelMejorasUI : MonoBehaviour
                     break;
             }
 
-            Debug.Log($"Simulación de {stat} exitosa. Nuevo coste acumulado: {costeAcumulado}");
+            Debug.Log($"SimulaciÃ³n de {stat} exitosa. Nuevo coste acumulado: {costeAcumulado}");
             ActualizarTextos();
         }
         else
@@ -184,7 +174,6 @@ public class PanelMejorasUI : MonoBehaviour
         }
     }
 
-    // --- 3. CONFIRMAR Y DESCARTAR ---
     public async void BotonConfirmar()
     {
         if (costeAcumulado == 0)
@@ -207,7 +196,7 @@ public class PanelMejorasUI : MonoBehaviour
 
         if (userOk && personajeOk)
         {
-            Debug.Log("¡Firebase actualizado correctamente!");
+            Debug.Log("Â¡Firebase actualizado correctamente!");
             personajeReal = pjTemp;
             ReiniciarCarrito();
         }
@@ -228,7 +217,6 @@ public class PanelMejorasUI : MonoBehaviour
         ReiniciarCarrito();
     }
 
-    // --- 4. UTILIDADES ---
     private void ReiniciarCarrito()
     {
         costeAcumulado = 0;
@@ -252,10 +240,9 @@ public class PanelMejorasUI : MonoBehaviour
 
     private void ActualizarTextos()
     {
-        // Comprobación de seguridad por si te olvidaste de arrastrar algún texto en el inspector
         if (txtVida == null || txtEnergia == null || txtFuerza == null || txtRecuperacion == null || txtMonedasJugador == null || txtCosteTotal == null)
         {
-            Debug.LogError("¡ERROR GRAVE! Te has olvidado de arrastrar uno o varios Textos (TextMeshPro) al Inspector del script.");
+            Debug.LogError("Â¡ERROR GRAVE! Te has olvidado de arrastrar uno o varios Textos (TextMeshPro) al Inspector del script.");
             return;
         }
 

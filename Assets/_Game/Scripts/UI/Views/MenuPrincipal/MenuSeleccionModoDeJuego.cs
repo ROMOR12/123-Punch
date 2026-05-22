@@ -1,4 +1,4 @@
-using TMPro;
+﻿using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
@@ -69,7 +69,7 @@ public class Menu : MonoBehaviour
         string escena = "";
         switch (nombreDelModo)
         {
-            case "Campa�a":
+            case "Campaña":
                 escena = "CombateHistoria1";
                 break;
 

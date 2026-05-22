@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using Firebase.Auth;
@@ -8,19 +8,18 @@ public class PanelPerfilUsuarioUI : MonoBehaviour
     [Header("--- UI Textos ---")]
     public TextMeshProUGUI txtNombreUsuario;
     public TextMeshProUGUI txtNivelActual;
-    public TextMeshProUGUI txtProgresoXP; // Ejemplo: 150 / 300 XP
+    public TextMeshProUGUI txtProgresoXP;
 
-    [Header("--- UI Gráficos ---")]
+    [Header("--- UI GrÃ¡ficos ---")]
     public Slider sliderXP;
 
-    [Header("--- Botones de Acceso Rápido ---")]
+    [Header("--- Botones de Acceso RÃ¡pido ---")]
     public Button btnLogros;
     public Button btnPaseBatalla;
     public Button btnCerrarSesion;
 
     private void Start()
     {
-        // Suscribir eventos a los botones
         if (btnLogros != null) btnLogros.onClick.AddListener(OnClickLogros);
         if (btnPaseBatalla != null) btnPaseBatalla.onClick.AddListener(OnClickPaseBatalla);
         if (btnCerrarSesion != null) btnCerrarSesion.onClick.AddListener(OnClickCerrarSesion);
@@ -38,11 +37,9 @@ public class PanelPerfilUsuarioUI : MonoBehaviour
 
         Usuario user = SessionManager.shared.currentUser;
 
-        // Nombre
         if (txtNombreUsuario != null)
             txtNombreUsuario.text = user.username;
 
-        // --- SISTEMA DE NIVELES (Usando LevelSystem) ---
         int xpTotal = user.xp;
         int nivelActual = LevelSystem.CalcularNivel(xpTotal);
         int xpDentroDelNivel = LevelSystem.XPEnNivelActual(xpTotal);
@@ -60,25 +57,22 @@ public class PanelPerfilUsuarioUI : MonoBehaviour
             sliderXP.minValue = 0;
             sliderXP.maxValue = xpNecesaria;
             sliderXP.value = xpDentroDelNivel;
-            // Alternativamente puedes usar sliderXP.value = progreso si el min/max del slider es 0/1
         }
     }
 
     private void OnClickLogros()
     {
-        Debug.Log("[Perfil] Abriendo panel de logros... (En construcción)");
-        // TODO: Mostrar popup de "Próximamente" o abrir el panel de logros reales
+        Debug.Log("[Perfil] Abriendo panel de logros... (En construcciÃ³n)");
     }
 
     private void OnClickPaseBatalla()
     {
-        Debug.Log("[Perfil] Abriendo pase de batalla... (En construcción)");
-        // TODO: Abrir el sistema de Battle Pass
+        Debug.Log("[Perfil] Abriendo pase de batalla... (En construcciÃ³n)");
     }
 
     private void OnClickCerrarSesion()
     {
-        Debug.Log("[Perfil] Cerrando sesión...");
+        Debug.Log("[Perfil] Cerrando sesiÃ³n...");
         if (FirebaseAuth.DefaultInstance != null)
         {
             FirebaseAuth.DefaultInstance.SignOut();
@@ -89,8 +83,6 @@ public class PanelPerfilUsuarioUI : MonoBehaviour
             SessionManager.shared.LimpiarSesion();
         }
 
-        // Cargar escena de Login (o recargar la actual si el AuthManager ya lo gestiona al inicio)
         UnityEngine.SceneManagement.SceneManager.LoadScene("Login"); 
-        // Cambia "Login" por el nombre de tu escena inicial si se llama distinto.
     }
 }

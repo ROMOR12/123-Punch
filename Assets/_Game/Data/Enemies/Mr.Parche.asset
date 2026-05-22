@@ -12,10 +12,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b78ec7da10b5b5d4abc0b4bc5289282c, type: 3}
   m_Name: Mr.Parche
   m_EditorClassIdentifier: Assembly-CSharp::EnemyBase
-  id: 5
+  id: enemy_parche
   entityName: Mr.Parche
   sprite: {fileID: 0}
   life: 70
   energy: 100
   force: 3
   recovery: 9
+  unlockCondition: coins
+  price: 1000
+  AttackSprite: {fileID: 0}
+  HardAttackSprite: {fileID: 0}

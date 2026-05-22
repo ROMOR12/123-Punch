@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 using System.Collections.Generic;
 using TMPro;
@@ -24,14 +24,11 @@ public class PanelRecompensasDiariasUI : MonoBehaviour
     {
         if (recompensasService == null) recompensasService = new RecompensasService();
         
-        // Bloqueamos el botón mientras comprobamos Firebase
         if (btnReclamar != null) btnReclamar.interactable = false;
         if (txtBotonReclamar != null) txtBotonReclamar.text = "Cargando...";
 
-        // 1. Obtener la lista de los 7 días desde Firebase
         configActual = await recompensasService.ObtenerConfiguracion();
 
-        // 2. Comprobar racha y dibujar tarjetas
         RefrescarUI();
     }
 
@@ -53,21 +50,17 @@ public class PanelRecompensasDiariasUI : MonoBehaviour
 
         if (puedeReclamar)
         {
-            // Verificamos qué día le toca cobrar hoy si le da al botón
             diaACobrarHoy = recompensasService.ObtenerRachaActualizada(user);
             
-            // Si le toca el día 1, es porque es nuevo o perdió la racha, visualmente no tiene nada cobrado.
             if (diaACobrarHoy == 1) rachaYaCobrada = 0; 
             else rachaYaCobrada = diaACobrarHoy - 1;
         }
 
-        // Limpiamos los contenedores por si ya había tarjetas
         if (contenedorTarjetas != null)
         {
             foreach (Transform child in contenedorTarjetas) Destroy(child.gameObject);
         }
 
-        // Creamos las tarjetas
         for (int i = 0; i < configActual.dias.Count; i++)
         {
             var recompensa = configActual.dias[i];
@@ -89,14 +82,12 @@ public class PanelRecompensasDiariasUI : MonoBehaviour
                 }
             }
 
-            // Guardamos la referencia de lo que gana hoy para el botón
             if (puedeReclamar && recompensa.dia == diaACobrarHoy)
             {
                 recompensaDeHoy = recompensa;
             }
         }
 
-        // Configuramos el botón
         if (btnReclamar != null)
         {
             btnReclamar.interactable = puedeReclamar;
@@ -125,10 +116,9 @@ public class PanelRecompensasDiariasUI : MonoBehaviour
         
         if (ok)
         {
-            Debug.Log("¡Recompensa diaria reclamada con éxito!");
-            RefrescarUI(); // Refrescará para poner el "Tick verde" al día de hoy
+            Debug.Log("Â¡Recompensa diaria reclamada con Ã©xito!");
+            RefrescarUI();
             
-            // Esperamos 1.5 segundos para que el jugador vea el Tick verde y cerramos
             Invoke(nameof(CerrarPanel), 1.5f);
         }
         else

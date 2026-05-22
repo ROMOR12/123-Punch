@@ -29,11 +29,9 @@ public class FixAchievementPrefab
 
         GameObject instance = (GameObject)PrefabUtility.InstantiatePrefab(prefab);
         
-        // --- 1. Fix RectTransform (Balanced Medium Size) ---
         RectTransform rt = instance.GetComponent<RectTransform>();
         if (rt != null) rt.sizeDelta = new Vector2(650, 190);
 
-        // --- 2. Fix Text Colors & Outlines ---
         Color darkBrown = new Color(0.20f, 0.12f, 0.06f); 
         
         TextMeshProUGUI titulo = instance.transform.Find("Titulo")?.GetComponent<TextMeshProUGUI>();
@@ -78,7 +76,6 @@ public class FixAchievementPrefab
             progreso.rectTransform.sizeDelta = new Vector2(150, 40);
         }
 
-        // --- 3. Add Missing Components (Reward Text, Slider) ---
         Transform rewardTransform = instance.transform.Find("Recompensa");
         TextMeshProUGUI rewardText = null;
         if (rewardTransform == null)
@@ -155,7 +152,6 @@ public class FixAchievementPrefab
         sRt.anchoredPosition = new Vector2(25, 25);
         sRt.sizeDelta = new Vector2(300, 20);
 
-        // --- 4. Fix Locked Overlay ---
         Transform lockedOverlay = instance.transform.Find("LockedOverlay");
         if (lockedOverlay != null)
         {
@@ -181,7 +177,6 @@ public class FixAchievementPrefab
             }
         }
 
-        // Apply back to prefab
         PrefabUtility.SaveAsPrefabAsset(instance, path);
         GameObject.DestroyImmediate(instance);
 

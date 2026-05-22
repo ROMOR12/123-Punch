@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 
 public class LanzadorRecompensasDiarias : MonoBehaviour
 {
@@ -9,7 +9,6 @@ public class LanzadorRecompensasDiarias : MonoBehaviour
     {
         recompensasService = new RecompensasService();
         
-        // Retrasamos un poquito la comprobación para asegurarnos de que SessionManager ha cargado
         Invoke(nameof(ComprobarYAbrir), 0.5f);
     }
 
@@ -17,7 +16,6 @@ public class LanzadorRecompensasDiarias : MonoBehaviour
     {
         Usuario user = SessionManager.shared.currentUser;
         
-        // Si hay un usuario logueado y tiene recompensa disponible hoy...
         if (user != null && recompensasService.PuedeReclamar(user))
         {
             if (panelRecompensas != null)

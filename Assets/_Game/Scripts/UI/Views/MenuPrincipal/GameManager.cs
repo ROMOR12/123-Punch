@@ -1,4 +1,4 @@
-using NUnit.Framework;
+ï»¿using NUnit.Framework;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -8,9 +8,9 @@ using TMPro;
 
 public class GameManager : MonoBehaviour
 {
-    [Header("Datos de la Sesión (Firebase)")]
-    public Usuario usuarioActual; // Guardará tus monedas, xp, etc.
-    public Personaje personajeActual; // Guardará las stats y los niveles de mejora
+    [Header("Datos de la SesiÃ³n (Firebase)")]
+    public Usuario usuarioActual;
+    public Personaje personajeActual;
 
     public int numCajas = 0;
 
@@ -24,18 +24,16 @@ public class GameManager : MonoBehaviour
 
     public List<BaseCharacter> listaPersonajes;
 
-    // --- NUEVO: SISTEMA DE INVENTARIO Y EQUIPAMIENTO ---
     [Header("Inventario y Equipamiento (Firebase)")]
     public List<string> inventarioIDs = new List<string>();
     public string pasivoEquipadoID = "";
     public List<string> activosEquipadosIDs = new List<string> { "", "" };
 
     [Header("Bases de Datos Maestras (ScriptableObjects)")]
-    [Tooltip("Arrastra aquí todos los ScriptableObjects de objetos Pasivos")]
+    [Tooltip("Arrastra aquÃ­ todos los ScriptableObjects de objetos Pasivos")]
     public List<Pasivo> todosLosPasivos;
-    [Tooltip("Arrastra aquí todos los ScriptableObjects de objetos Consumibles")]
+    [Tooltip("Arrastra aquÃ­ todos los ScriptableObjects de objetos Consumibles")]
     public List<Consumible> todosLosActivos;
-    // --------------------------------------------------
 
     [Header("Progreso Actual")]
     private string _idPersonajeSeleccionado;
@@ -82,7 +80,6 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    // Métodos de utilidad opcionales para buscar objetos rápidamente
     public Pasivo GetPasivoPorID(string id) => todosLosPasivos.Find(p => p.id == id);
     public Consumible GetActivoPorID(string id) => todosLosActivos.Find(a => a.id == id);
 }
