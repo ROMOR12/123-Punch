@@ -12,10 +12,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b78ec7da10b5b5d4abc0b4bc5289282c, type: 3}
   m_Name: Patroclo
   m_EditorClassIdentifier: Assembly-CSharp::EnemyBase
-  id: 6
+  id: enemy_patroclo
   entityName: Patroclo
   sprite: {fileID: 0}
   life: 160
   energy: 80
   force: 3
   recovery: 6
+  unlockCondition: coins
+  price: 1000
+  AttackSprite: {fileID: 0}
+  HardAttackSprite: {fileID: 0}

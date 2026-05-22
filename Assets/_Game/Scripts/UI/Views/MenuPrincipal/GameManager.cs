@@ -1,4 +1,4 @@
-using NUnit.Framework;
+Ôªøusing NUnit.Framework;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -8,6 +8,10 @@ using TMPro;
 
 public class GameManager : MonoBehaviour
 {
+    [Header("Datos de la Sesi√≥n (Firebase)")]
+    public Usuario usuarioActual;
+    public Personaje personajeActual;
+
     public int numCajas = 0;
 
     public static GameManager Instance;
@@ -20,18 +24,16 @@ public class GameManager : MonoBehaviour
 
     public List<BaseCharacter> listaPersonajes;
 
-    // --- NUEVO: SISTEMA DE INVENTARIO Y EQUIPAMIENTO ---
     [Header("Inventario y Equipamiento (Firebase)")]
     public List<string> inventarioIDs = new List<string>();
     public string pasivoEquipadoID = "";
     public List<string> activosEquipadosIDs = new List<string> { "", "" };
 
     [Header("Bases de Datos Maestras (ScriptableObjects)")]
-    [Tooltip("Arrastra aquÌ todos los ScriptableObjects de objetos Pasivos")]
+    [Tooltip("Arrastra aqu√≠ todos los ScriptableObjects de objetos Pasivos")]
     public List<Pasivo> todosLosPasivos;
-    [Tooltip("Arrastra aquÌ todos los ScriptableObjects de objetos Consumibles")]
+    [Tooltip("Arrastra aqu√≠ todos los ScriptableObjects de objetos Consumibles")]
     public List<Consumible> todosLosActivos;
-    // --------------------------------------------------
 
     [Header("Progreso Actual")]
     private string _idPersonajeSeleccionado;
@@ -54,6 +56,17 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    
+    private bool notificacionesInicializadas = false;
+    private void Update()
+    {
+        if (!notificacionesInicializadas && SessionManager.shared != null && SessionManager.shared.currentUser != null)
+        {
+            new NotificacionesService().Inicializar();
+            notificacionesInicializadas = true;
+        }
+    }
+
     private void Awake()
     {
         if (GameManager.Instance == null)
@@ -67,7 +80,6 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    // MÈtodos de utilidad opcionales para buscar objetos r·pidamente
     public Pasivo GetPasivoPorID(string id) => todosLosPasivos.Find(p => p.id == id);
     public Consumible GetActivoPorID(string id) => todosLosActivos.Find(a => a.id == id);
 }

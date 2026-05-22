@@ -1,17 +1,21 @@
-using UnityEngine;
+ï»¿using UnityEngine;
 
-// Clase padre para crear personajes y enemigos fácilmente desde el editor
+// Clase padre para crear personajes y enemigos fï¿½cilmente desde el editor
 public class EntityBase : ScriptableObject
 {
-    // Identificación visual y de sistema
+    // Identificaciï¿½n visual y de sistema
     public string id;
     public string entityName;
     public Sprite sprite;
 
     [Header("Stats Base")]
-    // Estadísticas principales de combate
-    public int life;      // Vida máxima
+    // Estadï¿½sticas principales de combate
+    public int life;      // Vida mï¿½xima
     public int energy;    // Estamina para acciones
-    public int force;     // Daño base de los ataques
-    public int recovery;  // Rapidez para recuperar energía
+    public int force;     // Daï¿½o base de los ataques
+    public int recovery;  // Rapidez para recuperar energia
+
+    [Header("Desbloqueo")]
+    public string unlockCondition = "coins"; // "coins", "default", "historia_1", etc.
+    public int price = 1000;
 }

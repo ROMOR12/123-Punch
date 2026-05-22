@@ -12,17 +12,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f6266be883c0fa14d8e995d92519cd8c, type: 3}
   m_Name: Preentreno
   m_EditorClassIdentifier: Assembly-CSharp::Consumible
-  id: 11
+  id: item_preentreno
   itemBaseName: Preentreno
   description: "Si lo que quieres es rendir a tope, esto es perfecto. Eso s\xED,
-    no te pases con la dosis o prep\xE1rate para las consecuencias."
+    no te pases con la dosis o prep\xE1rate para las consecuencias.\n+10 de enegia\n+1
+    de fuerza"
   icon: {fileID: -3035938925796340463, guid: 990d2b49b18e4724cb45d7c77af98170, type: 3}
   isSkin: 0
   rarity: 1
+  precio: 500
   recuperacion:
   - statType: 1
     amount: 10
-  - statType: 3
-    amount: 1
   - statType: 2
     amount: 1

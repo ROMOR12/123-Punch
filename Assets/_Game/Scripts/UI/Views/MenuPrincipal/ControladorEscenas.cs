@@ -1,14 +1,10 @@
-using UnityEngine;
+﻿using UnityEngine;
 
 public class ControladorEscenas : MonoBehaviour
 {
     public void IrAEscenaCajas()
     {
-        if(GameManager.Instance.numCajas >= 1)
-        {
-            GameManager.Instance.numCajas--;
-            CargaEscena.Cargar("LootBoxScene");
-        }
+        CargaEscena.Cargar("LootBoxScene");
     }
 
     public void SalirDelJuego()

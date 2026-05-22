@@ -12,12 +12,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b78ec7da10b5b5d4abc0b4bc5289282c, type: 3}
   m_Name: Enemy7
   m_EditorClassIdentifier: Assembly-CSharp::EnemyBase
-  id: bot_3
-  entityName: Enemy3
+  id: bot_7
+  entityName: Enemy7
   sprite: {fileID: 4512495917946458344, guid: b82e09c4faf2aae4d9b57f07241e85ba, type: 3}
   life: 160
   energy: 115
   force: 5
   recovery: 6
+  unlockCondition: coins
+  price: 1000
   AttackSprite: {fileID: -705630041347387427, guid: 28784346688b54541a57dc1ae2c319a4, type: 3}
   HardAttackSprite: {fileID: 7632025744961774910, guid: 40e29f49f1c47e64486260d4182a3bdf, type: 3}

@@ -12,12 +12,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b78ec7da10b5b5d4abc0b4bc5289282c, type: 3}
   m_Name: EnemyZombie
   m_EditorClassIdentifier: Assembly-CSharp::EnemyBase
-  id: bot_3
-  entityName: Enemy3
+  id: bot_zombie
+  entityName: Zombie
   sprite: {fileID: -4636650400656823863, guid: 4f041e74b27e9194082c641f6b249c9b, type: 3}
   life: 185
   energy: 125
   force: 5
   recovery: 6
+  unlockCondition: coins
+  price: 1000
   AttackSprite: {fileID: 1638250545156017545, guid: c51f7b65275b6914cbc84f3d436f248a, type: 3}
   HardAttackSprite: {fileID: 2222269274593072374, guid: 5d4d50caa19a6864a8555170ea53eac2, type: 3}

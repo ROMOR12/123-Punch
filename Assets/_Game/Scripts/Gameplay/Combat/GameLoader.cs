@@ -49,20 +49,36 @@ public class GameLoader : MonoBehaviour
 
         // INICIALIZAR SERVICIOS Y DESCARGAR STATS
         PersonajeService pjService = new PersonajeService();
+        UsuarioService uService = new UsuarioService();
         EnemyService enemyService = new EnemyService();
 
-        // Lanzamos ambas descargas en paralelo para que el juego cargue m�s r�pido
-        var tareaPJ = pjService.ObtenerPersonaje(idPersonaje);
+        // Tarea del enemigo
         var tareaEnemigo = enemyService.ObtenerEnemigo(idEnemigo);
 
-        await Task.WhenAll(tareaPJ, tareaEnemigo);
+        // Tarea del jugador (buscamos primero en su BD personal)
+        Personaje personajeJugador = null;
+        if (SessionManager.shared != null && SessionManager.shared.currentUser != null)
+        {
+            string idUsuario = SessionManager.shared.currentUser.id;
+            personajeJugador = await uService.ObtenerPersonajeDeUsuario(idUsuario, idPersonaje);
+        }
+
+        // Si no tiene el personaje guardado en su perfil, bajamos las stats base globales
+        if (personajeJugador == null)
+        {
+            personajeJugador = await pjService.ObtenerPersonaje(idPersonaje);
+        }
+
+        await tareaEnemigo;
 
         // APLICAR DATOS AL JUGADOR
-        if (tareaPJ.Result != null)
+        if (personajeJugador != null)
         {
-            Personaje p = tareaPJ.Result;
+            Personaje p = personajeJugador;
             playerCombat.SobrescribirStatsDeFirebase(p.life, p.energy, p.force, p.recovery);
             Debug.Log($"Stats de {p.name} (Nube) inyectados correctamente.");
+
+            CargarInventarioEnCombate();
         }
         else
         {
@@ -78,4 +94,72 @@ public class GameLoader : MonoBehaviour
             Debug.Log($"Stats del enemigo {e.name} inyectados correctamente.");
         }
     }
-}
+
+    private void CargarInventarioEnCombate()
+    {
+        if (GameManager.Instance == null) return;
+
+        // 1. Cargar Pasivo
+        string idPasivo = GameManager.Instance.pasivoEquipadoID;
+        if (!string.IsNullOrEmpty(idPasivo))
+        {
+            Pasivo pasivoLocal = GameManager.Instance.GetPasivoPorID(idPasivo);
+            if (pasivoLocal != null)
+            {
+                Pasivo pasivo = Instantiate(pasivoLocal); // Clonamos para no sobreescribir el archivo original
+                
+                if (GlobalDataService.cacheObjetos.TryGetValue(idPasivo, out Objeto datosBD))
+                {
+                    pasivo.bonificaciones = new List<StatModifier>();
+                    if (datosBD.life != 0) pasivo.bonificaciones.Add(new StatModifier { statType = StatType.Life, amount = datosBD.life });
+                    if (datosBD.energy != 0) pasivo.bonificaciones.Add(new StatModifier { statType = StatType.Energy, amount = datosBD.energy });
+                    if (datosBD.force != 0) pasivo.bonificaciones.Add(new StatModifier { statType = StatType.Force, amount = datosBD.force });
+                    if (datosBD.recovery != 0) pasivo.bonificaciones.Add(new StatModifier { statType = StatType.Recovery, amount = datosBD.recovery });
+                    pasivo.itemBaseName = datosBD.name;
+                    pasivo.description = datosBD.description;
+                }
+
+                if (playerCombat.pasivosEquipados == null) playerCombat.pasivosEquipados = new List<Pasivo>();
+                playerCombat.pasivosEquipados.Add(pasivo);
+                pasivo.Equipar(playerCombat); // Aplica los efectos base
+                Debug.Log($"Pasivo equipado (Stats DB): {pasivo.itemBaseName}");
+            }
+        }
+
+        // 2. Cargar Consumibles (Activos)
+        List<Consumible> consumiblesParaCombate = new List<Consumible>();
+        if (GameManager.Instance.activosEquipadosIDs != null)
+        {
+            foreach (string idActivo in GameManager.Instance.activosEquipadosIDs)
+            {
+                if (!string.IsNullOrEmpty(idActivo))
+                {
+                    Consumible activoLocal = GameManager.Instance.GetActivoPorID(idActivo);
+                    if (activoLocal != null) 
+                    {
+                        Consumible activo = Instantiate(activoLocal); // Clonamos
+
+                        if (GlobalDataService.cacheObjetos.TryGetValue(idActivo, out Objeto datosBD))
+                        {
+                            activo.recuperacion = new List<StatModifier>();
+                            if (datosBD.life != 0) activo.recuperacion.Add(new StatModifier { statType = StatType.Life, amount = datosBD.life });
+                            if (datosBD.energy != 0) activo.recuperacion.Add(new StatModifier { statType = StatType.Energy, amount = datosBD.energy });
+                            if (datosBD.force != 0) activo.recuperacion.Add(new StatModifier { statType = StatType.Force, amount = datosBD.force });
+                            if (datosBD.recovery != 0) activo.recuperacion.Add(new StatModifier { statType = StatType.Recovery, amount = datosBD.recovery });
+                            activo.itemBaseName = datosBD.name;
+                            activo.description = datosBD.description;
+                        }
+                        
+                        consumiblesParaCombate.Add(activo);
+                    }
+                }
+            }
+        }
+
+        if (playerCombat.inventory != null)
+        {
+            playerCombat.inventory.Inicializar(playerCombat, consumiblesParaCombate);
+            Debug.Log($"Consumibles inicializados (Stats DB): {consumiblesParaCombate.Count}");
+        }
+    }
+}

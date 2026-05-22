@@ -1,18 +1,17 @@
-using UnityEngine;
+ï»¿using UnityEngine;
 using UnityEngine.SceneManagement;
 using System.Collections;
 
-// Script para la transicion de fade de algunas escenas
 public class SceneFader : MonoBehaviour
 {
     [Header("Referencias")]
-    public CanvasGroup faderCanvasGroup; // Panel del fade
+    public CanvasGroup faderCanvasGroup;
 
-    [Header("Configuración")]
-    public float velocidadFade = 1.0f; // Velocidad a la que va a ir el fade
+    [Header("ConfiguraciÃ³n")]
+    public float velocidadFade = 1.0f;
 
-    [Header("Automático (Intro/Logo)")]
-    public bool esAutomatico = false; // Si el cambio de escenas no requere una acción del usuario como pulsar un boton
+    [Header("AutomÃ¡tico (Intro/Logo)")]
+    public bool esAutomatico = false; // Si el cambio de escenas no requere una acciÃ³n del usuario como pulsar un boton
     public float tiempoEspera = 2.0f; // Tiempo que espera antes de cambiar de escena
     public string escenaDestino = ""; // Escena a la que va a ir
 
@@ -39,14 +38,8 @@ public class SceneFader : MonoBehaviour
 
     IEnumerator HacerFadeIn()
     {
-        // Hacemos el fade empezado por negro total y añadiendo trasnparencia poco a poco
         while (faderCanvasGroup.alpha > 0)
         {
-            // Time.deltaTime devuelve el tiempo que a pasado desde el ultimo frame, si este lo multiplicamos
-            // por la velocidad del fade, el fade siempre durara lo mismo, da igual los FPS que tengas.
-            // Si no usamos el Time.DeltaTime, lo que pasaria es que segun el dispositivo, la animacion
-            // de fade vaya mas rapido y lento segun los FPS del dispotivo, asi nos aseguramos que dure lo
-            // en todos los dispotivos
             faderCanvasGroup.alpha -= Time.deltaTime * velocidadFade;
             yield return null;
         }
@@ -57,7 +50,6 @@ public class SceneFader : MonoBehaviour
     {
         faderCanvasGroup.blocksRaycasts = true; // Bloqueamos los toques en pantalla durante el fade out
 
-        // Hacemos el fade out aumentando la transparencia del panel poco a poco
         while (faderCanvasGroup.alpha < 1)
         {
             faderCanvasGroup.alpha += Time.deltaTime * velocidadFade;
@@ -69,7 +61,6 @@ public class SceneFader : MonoBehaviour
 
     IEnumerator ProcesoAutomatico()
     {
-        // Esperamos a que termine el fade in antes de iniciar la espera
         yield return new WaitForSeconds((1f / velocidadFade) + 0.5f);
         yield return new WaitForSeconds(tiempoEspera);
 

@@ -12,15 +12,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ffd65b5f767f0614ca9692572c2b6345, type: 3}
   m_Name: Energetica
   m_EditorClassIdentifier: Assembly-CSharp::Pasivo
-  id: 1
+  id: item_pasivo_energetica
   itemBaseName: Energetica
   description: "Bebida de marca blanca. Sabe a jarabe para la tos, pero te mantendr\xE1
     despierto."
   icon: {fileID: -8950503755687733834, guid: 3504360424ba5b94a935a6ff1f21d1e6, type: 3}
   isSkin: 0
-  rarity: 1
+  rarity: 4
+  precio: 100
   bonificaciones:
   - statType: 1
-    amount: 30
+    amount: 10
   - statType: 0
-    amount: 500
+    amount: 200

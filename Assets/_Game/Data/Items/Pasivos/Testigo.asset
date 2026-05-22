@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ffd65b5f767f0614ca9692572c2b6345, type: 3}
   m_Name: Testigo
   m_EditorClassIdentifier: Assembly-CSharp::Pasivo
-  id: 9
+  id: item_pasivo_testigo
   itemBaseName: Testigo
   description: "Conocido por el palo de las carreras de relevos, este \"palo\" te
     dar\xE1 la resistencia y recuperaci\xF3n de un atleta, pero no se puede tener

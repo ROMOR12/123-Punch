@@ -1,7 +1,6 @@
-using TMPro;
+﻿using TMPro;
 using UnityEngine;
 
-// Script que actualiza el numerito para ver las cajas que tienes
 public class ContadorCajas : MonoBehaviour
 {
     private TextMeshProUGUI textoCajas;
@@ -13,9 +12,15 @@ public class ContadorCajas : MonoBehaviour
 
     void Update()
     {
-        if (textoCajas != null && GameManager.Instance != null)
+        if (textoCajas == null) return;
+
+        if (SessionManager.shared != null && SessionManager.shared.currentUser != null)
         {
-            textoCajas.text = GameManager.Instance.numCajas.ToString();
+            textoCajas.text = SessionManager.shared.currentUser.lootboxes.ToString();
+        }
+        else
+        {
+            textoCajas.text = "0";
         }
     }
 }

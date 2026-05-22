@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 
 public class MenuOpciones : MonoBehaviour
 {
@@ -9,6 +9,7 @@ public class MenuOpciones : MonoBehaviour
     public GameObject BotonReanudar;
     public GameObject BotonCerrarJuego;
     public GameObject BotonMenu;
+    public GameObject PanelLogros;
 
 
     public void MostrarPanelMenu()
@@ -25,6 +26,21 @@ public class MenuOpciones : MonoBehaviour
         BotonMenu.SetActive(true);
         FadePanel.SetActive(false);
     }
+
+    public void MostrarPanelLogros()
+    {
+        SoundManager.PlaySound(SoundType.Consumable);
+        PanelLogros.SetActive(true);
+        PanelOpciones.SetActive(false);
+    }
+
+    public void CerrarPanelLogros()
+    {
+        SoundManager.PlaySound(SoundType.Consumable);
+        PanelLogros.SetActive(false);
+        PanelOpciones.SetActive(true);
+    }
+
     public void CerrarJuego()
     {
         SoundManager.PlaySound(SoundType.Consumable);
@@ -34,19 +50,16 @@ public class MenuOpciones : MonoBehaviour
     {
         SoundManager.PlaySound(SoundType.Consumable);
         
-        // Cerramos sesión en Firebase
         if (Firebase.Auth.FirebaseAuth.DefaultInstance != null)
         {
             Firebase.Auth.FirebaseAuth.DefaultInstance.SignOut();
         }
 
-        // Limpiamos los datos del jugador de la memoria
         if (SessionManager.shared != null)
         {
             SessionManager.shared.LimpiarSesion();
         }
 
-        // Cargamos la escena de Login (usando tu script CargaEscena)
         CargaEscena.Cargar("LoginScene");
     }
 }

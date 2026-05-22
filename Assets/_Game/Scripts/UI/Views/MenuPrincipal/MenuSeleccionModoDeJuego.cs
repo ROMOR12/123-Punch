@@ -1,4 +1,4 @@
-using TMPro;
+ï»¿using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
@@ -72,7 +72,7 @@ public class Menu : MonoBehaviour
 
         switch (nombreDelModo)
         {
-            case "Campaña":
+            case "Campaï¿½a":
                 panelSeleccionNiveles.SetActive(true);
                 return;
 

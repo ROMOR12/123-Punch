@@ -12,13 +12,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f6266be883c0fa14d8e995d92519cd8c, type: 3}
   m_Name: Clembuterol
   m_EditorClassIdentifier: Assembly-CSharp::Consumible
-  id: 5
+  id: item_clembuterol
   itemBaseName: Clembuterol
-  description: Estas cansado de ser un flojeras, tomate esto para estar to fuerte
+  description: 'Estas cansado de ser un flojeras, tomate esto para estar to fuerte
     y recuperarte de los entrenos.
+
+    +1 de fuerza
+
+    +1 de recuperacion'
   icon: {fileID: -5519141506789908618, guid: 499f61dd47537cc4a9649baf85c890e0, type: 3}
   isSkin: 0
   rarity: 4
+  precio: 100
   recuperacion:
   - statType: 2
     amount: 1

@@ -1,4 +1,4 @@
-using Firebase.Firestore;
+﻿using Firebase.Firestore;
 using System.Threading.Tasks;
 using UnityEngine;
 
@@ -23,8 +23,9 @@ public class PersonajeService
 
             if (snap.Exists)
             {
-                // Si existe, Firebase convierte m�gicamente el documento a nuestra clase Personaje
-                return snap.ConvertTo<Personaje>();
+                Personaje p = snap.ConvertTo<Personaje>();
+                p.id = snap.Id;
+                return p;
             }
             else
             {
