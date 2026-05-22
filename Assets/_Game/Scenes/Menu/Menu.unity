@@ -15176,6 +15176,14 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2895521087279280766, guid: df5e0c65bbc86c4489ed5fea172cb1b7, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 288719699}
+    - target: {fileID: 2895521087279280766, guid: df5e0c65bbc86c4489ed5fea172cb1b7, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: CerrarPanelLogros
+      objectReference: {fileID: 0}
     - target: {fileID: 8972076300074034834, guid: df5e0c65bbc86c4489ed5fea172cb1b7, type: 3}
       propertyPath: m_Name
       value: AchievementsPanel
