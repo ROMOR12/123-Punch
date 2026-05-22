@@ -1,4 +1,4 @@
-﻿using TMPro;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
@@ -109,8 +109,11 @@ public class MiniGameMana : MonoBehaviour
         if (ganado)
         {
             Debug.Log("Ganaste!");
-            timerText.text = "�CONSEGUIDO!";
+            timerText.text = "CONSEGUIDO!";
             resultTitle.text = "VICTORIA!";
+            
+            _ = ReclamarRecompensaServidor();
+            
             await Task.Delay(1000);
             resultPanel.SetActive(true);
             StopAllCoroutines();
@@ -129,5 +132,23 @@ public class MiniGameMana : MonoBehaviour
     public void btn_Salir()
     {
         CargaEscena.Cargar("Menu");
+    }
+
+    private async Task ReclamarRecompensaServidor()
+    {
+        try
+        {
+            if (SessionManager.shared != null && SessionManager.shared.currentUser != null)
+            {
+                SessionManager.shared.currentUser.free_coin += 25;
+                UsuarioService usuarioService = new UsuarioService();
+                await usuarioService.ActualizarUsuario(SessionManager.shared.currentUser);
+                Debug.Log($"Recompensa guardada: Monedas totales en memoria: {SessionManager.shared.currentUser.free_coin}");
+            }
+        }
+        catch (System.Exception e)
+        {
+            Debug.LogError($"Error al guardar recompensa: {e.Message}");
+        }
     }
 }

@@ -1,8 +1,7 @@
-﻿using UnityEngine;
+using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
 using TMPro;
-using Firebase.Functions;
 using System.Threading.Tasks;
 
 public class RoundManager : MonoBehaviour
@@ -27,11 +26,8 @@ public class RoundManager : MonoBehaviour
     private int victoriasEnemigo = 0;
     private int rondaActual = 0;
 
-    private FirebaseFunctions functions;
-
     void Start()
     {
-        functions = FirebaseFunctions.DefaultInstance;
         // inicializamos los circulos que vamos a usar para mostrar las rondas
         foreach (var img in circulosRonda)
         {
@@ -148,24 +144,17 @@ public class RoundManager : MonoBehaviour
     {
         try
         {
-            Debug.Log("Pidiendo recompensa al servidor...");
-
-            // Llamamos a la funcion de Firebase que valida la victoria y suma las monedas al usuario
-            HttpsCallableReference callable = functions.GetHttpsCallable("recompensarCombate");
-            HttpsCallableResult result = await callable.CallAsync();
-
-            Debug.Log("�Recompensa validada! El servidor ha sumado 100 monedas a la BD.");
-
-            // Actualizamos la memoria local para que la UI o la tienda lo sepan inmediatamente
             if (SessionManager.shared != null && SessionManager.shared.currentUser != null)
             {
                 SessionManager.shared.currentUser.free_coin += 100;
-                Debug.Log($"Monedas totales en memoria: {SessionManager.shared.currentUser.free_coin}");
+                UsuarioService usuarioService = new UsuarioService();
+                await usuarioService.ActualizarUsuario(SessionManager.shared.currentUser);
+                Debug.Log($"Recompensa guardada: Monedas totales en memoria: {SessionManager.shared.currentUser.free_coin}");
             }
         }
         catch (System.Exception e)
         {
-            Debug.LogError($"Error en el servidor al reclamar recompensa: {e.Message}");
+            Debug.LogError($"Error al guardar recompensa: {e.Message}");
         }
     }
 }
