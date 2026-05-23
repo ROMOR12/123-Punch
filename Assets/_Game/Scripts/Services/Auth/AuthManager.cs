@@ -16,6 +16,7 @@ public class AuthManager : MonoBehaviour
     public GameObject panelOlvidoUI;
     public GameObject panelVerificacionUI;
     public GameObject panelInvitadoUI;
+    public GameObject panelSinConexionUI;
 
     [Header("--- UI LOGIN ---")]
     public TMP_InputField emailLoginInput;
@@ -67,22 +68,47 @@ public class AuthManager : MonoBehaviour
 
     void Start()
     {
+        ChequearConexion();
+    }
+
+    public void ChequearConexion()
+    {
+        if (Application.internetReachability == NetworkReachability.NotReachable)
+        {
+            CerrarTodosPaneles();
+            if (panelSinConexionUI != null) panelSinConexionUI.SetActive(true);
+            
+            if (feedbackText != null) 
+                feedbackText.text = "No hay conexión a internet.";
+        }
+        else
+        {
+            IniciarApp();
+        }
+    }
+
+    void IniciarApp()
+    {
         CerrarTodosPaneles();
-        panelLoginUI.SetActive(true);
 
         // Si ya inicio sesion anteriormente
-                FirebaseUser user = auth.CurrentUser;
+        FirebaseUser user = auth.CurrentUser;
         if (user != null)
         {
             if (user.IsEmailVerified || user.IsAnonymous)
             {
-                // Cargar datos de forma asíncrona antes de ir al juego
+                // Cargar datos de forma asíncrona antes de ir al juego sin mostrar el panel de login
                 CargarDatosSesion(user.UserId);
             }
             else
             {
                 recargarEscena = true;
             }
+        }
+        else
+        {
+            // Si no hay usuario logueado, entonces sÃ­ mostramos el panel de login
+            panelLoginUI.SetActive(true);
         }
     }
 
@@ -147,6 +173,7 @@ public class AuthManager : MonoBehaviour
         if (panelOlvidoUI != null) panelOlvidoUI.SetActive(false);
         if (panelVerificacionUI != null) panelVerificacionUI.SetActive(false);
         if (panelInvitadoUI != null) panelInvitadoUI.SetActive(false);
+        if (panelSinConexionUI != null) panelSinConexionUI.SetActive(false);
 
         LimpiarFeedback();
         LimpiarInputs();
