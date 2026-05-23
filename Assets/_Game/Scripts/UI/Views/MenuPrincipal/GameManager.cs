@@ -8,9 +8,9 @@ using TMPro;
 
 public class GameManager : MonoBehaviour
 {
-    [Header("Datos de la Sesión (Firebase)")]
-    public Usuario usuarioActual; // Guardará tus monedas, xp, etc.
-    public Personaje personajeActual; // Guardará las stats y los niveles de mejora
+    [Header("Datos de la SesiÃ³n (Firebase)")]
+    public Usuario usuarioActual;
+    public Personaje personajeActual;
 
     public int numCajas = 0;
 
@@ -23,22 +23,24 @@ public class GameManager : MonoBehaviour
     public Sprite imageDefault;
 
     public List<BaseCharacter> listaPersonajes;
+    public List<EnemyBase> listaEnemigos;
 
-    // --- NUEVO: SISTEMA DE INVENTARIO Y EQUIPAMIENTO ---
     [Header("Inventario y Equipamiento (Firebase)")]
     public List<string> inventarioIDs = new List<string>();
     public string pasivoEquipadoID = "";
     public List<string> activosEquipadosIDs = new List<string> { "", "" };
 
     [Header("Bases de Datos Maestras (ScriptableObjects)")]
-    [Tooltip("Arrastra aquí todos los ScriptableObjects de objetos Pasivos")]
+    [Tooltip("Arrastra aquÃ­ todos los ScriptableObjects de objetos Pasivos")]
     public List<Pasivo> todosLosPasivos;
-    [Tooltip("Arrastra aquí todos los ScriptableObjects de objetos Consumibles")]
+    [Tooltip("Arrastra aquÃ­ todos los ScriptableObjects de objetos Consumibles")]
     public List<Consumible> todosLosActivos;
-    // --------------------------------------------------
 
     [Header("Progreso Actual")]
     private string _idPersonajeSeleccionado;
+
+    [Header("Progreso de Niveles (Firebase)")]
+    public int nivelMaximoDesbloqueado = 1;
 
     public string idPersonajeSeleccionado
     {
@@ -58,6 +60,17 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    
+    private bool notificacionesInicializadas = false;
+    private void Update()
+    {
+        if (!notificacionesInicializadas && SessionManager.shared != null && SessionManager.shared.currentUser != null)
+        {
+            new NotificacionesService().Inicializar();
+            notificacionesInicializadas = true;
+        }
+    }
+
     private void Awake()
     {
         if (GameManager.Instance == null)
@@ -71,7 +84,26 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    // Métodos de utilidad opcionales para buscar objetos rápidamente
     public Pasivo GetPasivoPorID(string id) => todosLosPasivos.Find(p => p.id == id);
     public Consumible GetActivoPorID(string id) => todosLosActivos.Find(a => a.id == id);
+
+    public async void DesbloquearSiguienteNivel(int nivelActual)
+    {
+        if (nivelActual == nivelMaximoDesbloqueado)
+        {
+            nivelMaximoDesbloqueado++;
+
+            if (SessionManager.shared != null && SessionManager.shared.currentUser != null)
+            {
+                SessionManager.shared.currentUser.id_level = nivelMaximoDesbloqueado.ToString();
+
+                string idUsuario = SessionManager.shared.currentUser.id;
+
+                UsuarioService uService = new UsuarioService();
+                await uService.ActualizarNivelUsuario(idUsuario, nivelMaximoDesbloqueado);
+
+                Debug.Log($"Progreso actualizado en la Base de Datos para el usuario: Nivel {nivelMaximoDesbloqueado}");
+            }
+        }
+    }
 }

@@ -51,7 +51,14 @@ public class Usuario
     [FirestoreProperty]
     public string id_level { get; set; }
 
-    
+    [FirestoreProperty]
+    public Timestamp last_daily_reward { get; set; } // Marca de tiempo del último cobro
+
+    [FirestoreProperty]
+    public int daily_reward_streak { get; set; } = 0; // Racha de días consecutivos
+
+    [FirestoreProperty]
+    public string fcm_token { get; set; } = ""; // Token de Cloud Messaging para notificaciones
 
     public override string ToString()
     {

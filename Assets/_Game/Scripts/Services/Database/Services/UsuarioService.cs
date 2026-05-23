@@ -19,8 +19,8 @@ public class UsuarioService
                 username = nombre,
                 email = email,
                 first_log = Timestamp.GetCurrentTimestamp(),
-                last_log = Timestamp.GetCurrentTimestamp(),
-                free_coin = 100,
+                last_log = Timestamp.FromDateTime(System.DateTime.UtcNow.AddDays(-1)),
+                free_coin = 0,
                 premium_coin = 0,
                 lootboxes = 0,
                 is_admin = false,
@@ -112,7 +112,9 @@ public class UsuarioService
 
             if (snapshot.Exists)
             {
-                return snapshot.ConvertTo<Personaje>();
+                Personaje p = snapshot.ConvertTo<Personaje>();
+                p.id = snapshot.Id;
+                return p;
             }
             return null;
         }
@@ -169,6 +171,46 @@ public class UsuarioService
         {
             Debug.LogError($"Error al obtener objetos del usuario: {e.Message}");
             return null;
+        }
+    }
+
+    public async Task<bool> ActualizarEmail(string userId, string nuevoEmail)
+    {
+        try
+        {
+            FirebaseFirestore db = DatabaseManager.shared.db;
+            DocumentReference docRef = db.Collection("usuarios").Document(userId);
+            
+            System.Collections.Generic.Dictionary<string, object> updates = new System.Collections.Generic.Dictionary<string, object>
+            {
+                { "email", nuevoEmail }
+            };
+
+            await docRef.UpdateAsync(updates);
+            return true;
+        }
+        catch (System.Exception e)
+        {
+            Debug.LogError($"Error al actualizar email del usuario: {e.Message}");
+            return false;
+        }
+    }
+
+    public async Task ActualizarNivelUsuario(string idUsuario, int nuevoNivel)
+    {
+        try
+        {
+            FirebaseFirestore db = FirebaseFirestore.DefaultInstance;
+
+            DocumentReference userRef = db.Collection("usuarios").Document(idUsuario);
+
+            await userRef.UpdateAsync("id_level", nuevoNivel);
+
+            Debug.Log($"[Firebase] id_level actualizado con éxito a {nuevoNivel} en la BD.");
+        }
+        catch (System.Exception e)
+        {
+            Debug.LogError($"[Firebase] Error al actualizar id_level: {e.Message}");
         }
     }
 

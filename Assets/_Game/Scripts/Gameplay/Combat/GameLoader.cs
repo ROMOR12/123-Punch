@@ -91,6 +91,15 @@ public class GameLoader : MonoBehaviour
             Enemy e = tareaEnemigo.Result;
             enemyBot.SobrescribirStatsDeFirebase(e.life, e.energy, e.force, e.recovery, e.name);
             playerCombat.ActualizarUIEnemigo(e.life, e.name);
+
+            // --- CAMBIAR LOS SPRITES DEL ENEMIGO ---
+            EnemyBase visualesEnemigo = GameManager.Instance.listaEnemigos.Find(p => p.id == idEnemigo);
+            if (visualesEnemigo != null)
+            {
+                enemyBot.CambiarVisualesEnemigo(visualesEnemigo);
+            }
+            // ---------------------------------------
+
             Debug.Log($"Stats del enemigo {e.name} inyectados correctamente.");
         }
     }
@@ -103,14 +112,26 @@ public class GameLoader : MonoBehaviour
         string idPasivo = GameManager.Instance.pasivoEquipadoID;
         if (!string.IsNullOrEmpty(idPasivo))
         {
-            Pasivo pasivo = GameManager.Instance.GetPasivoPorID(idPasivo);
-            if (pasivo != null)
+            Pasivo pasivoLocal = GameManager.Instance.GetPasivoPorID(idPasivo);
+            if (pasivoLocal != null)
             {
+                Pasivo pasivo = Instantiate(pasivoLocal); // Clonamos para no sobreescribir el archivo original
+                
+                if (GlobalDataService.cacheObjetos.TryGetValue(idPasivo, out Objeto datosBD))
+                {
+                    pasivo.bonificaciones = new List<StatModifier>();
+                    if (datosBD.life != 0) pasivo.bonificaciones.Add(new StatModifier { statType = StatType.Life, amount = datosBD.life });
+                    if (datosBD.energy != 0) pasivo.bonificaciones.Add(new StatModifier { statType = StatType.Energy, amount = datosBD.energy });
+                    if (datosBD.force != 0) pasivo.bonificaciones.Add(new StatModifier { statType = StatType.Force, amount = datosBD.force });
+                    if (datosBD.recovery != 0) pasivo.bonificaciones.Add(new StatModifier { statType = StatType.Recovery, amount = datosBD.recovery });
+                    pasivo.itemBaseName = datosBD.name;
+                    pasivo.description = datosBD.description;
+                }
+
                 if (playerCombat.pasivosEquipados == null) playerCombat.pasivosEquipados = new List<Pasivo>();
                 playerCombat.pasivosEquipados.Add(pasivo);
                 pasivo.Equipar(playerCombat); // Aplica los efectos base
-                Debug.Log($"Pasivo equipado: {pasivo.itemBaseName}");
-                // Los pasivos son permanentes, no se consumen al entrar en combate
+                Debug.Log($"Pasivo equipado (Stats DB): {pasivo.itemBaseName}");
             }
         }
 
@@ -122,8 +143,24 @@ public class GameLoader : MonoBehaviour
             {
                 if (!string.IsNullOrEmpty(idActivo))
                 {
-                    Consumible activo = GameManager.Instance.GetActivoPorID(idActivo);
-                    if (activo != null) consumiblesParaCombate.Add(activo);
+                    Consumible activoLocal = GameManager.Instance.GetActivoPorID(idActivo);
+                    if (activoLocal != null) 
+                    {
+                        Consumible activo = Instantiate(activoLocal); // Clonamos
+
+                        if (GlobalDataService.cacheObjetos.TryGetValue(idActivo, out Objeto datosBD))
+                        {
+                            activo.recuperacion = new List<StatModifier>();
+                            if (datosBD.life != 0) activo.recuperacion.Add(new StatModifier { statType = StatType.Life, amount = datosBD.life });
+                            if (datosBD.energy != 0) activo.recuperacion.Add(new StatModifier { statType = StatType.Energy, amount = datosBD.energy });
+                            if (datosBD.force != 0) activo.recuperacion.Add(new StatModifier { statType = StatType.Force, amount = datosBD.force });
+                            if (datosBD.recovery != 0) activo.recuperacion.Add(new StatModifier { statType = StatType.Recovery, amount = datosBD.recovery });
+                            activo.itemBaseName = datosBD.name;
+                            activo.description = datosBD.description;
+                        }
+                        
+                        consumiblesParaCombate.Add(activo);
+                    }
                 }
             }
         }
@@ -131,7 +168,7 @@ public class GameLoader : MonoBehaviour
         if (playerCombat.inventory != null)
         {
             playerCombat.inventory.Inicializar(playerCombat, consumiblesParaCombate);
-            Debug.Log($"Consumibles inicializados: {consumiblesParaCombate.Count}");
+            Debug.Log($"Consumibles inicializados (Stats DB): {consumiblesParaCombate.Count}");
         }
     }
 }

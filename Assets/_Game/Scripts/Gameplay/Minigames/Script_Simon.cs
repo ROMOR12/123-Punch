@@ -3,6 +3,8 @@ using UnityEngine.UI;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
+using Firebase.Functions;
+using System.Threading.Tasks;
 
 /*
  * public class Script_Simon : MonoBehaviour
@@ -12,9 +14,9 @@ using TMPro;
     public GameObject acierto;
     public GameObject error;
     public TextMeshProUGUI Tiempo;
-    public TextMeshProUGUI textoPuntos; // <--- NUEVO: Arrastra aquÌ un texto para los puntos
+    public TextMeshProUGUI textoPuntos; // <--- NUEVO: Arrastra aqu√≠ un texto para los puntos
 
-    [Header("ConfiguraciÛn")]
+    [Header("Configuraci√≥n")]
     public float tiempoInicial = 30f;
     private float tiempoRestante;
     private int puntosActuales = 0; // <--- NUEVO: Contador de puntos
@@ -61,7 +63,7 @@ using TMPro;
         puedePresionar = false;
         pasoActual = 0;
 
-        // AÒadimos un paso m·s a la secuencia infinita
+        // A√±adimos un paso m√°s a la secuencia infinita
         secuenciaJuego.Add(Random.Range(0, botonesObjetos.Length));
 
         yield return new WaitForSeconds(0.8f);
@@ -69,7 +71,7 @@ using TMPro;
         foreach (int indice in secuenciaJuego)
         {
             yield return StartCoroutine(AnimarYBrillar(indice));
-            yield return new WaitForSeconds(0.2f); // Un poco m·s r·pido para dar ritmo
+            yield return new WaitForSeconds(0.2f); // Un poco m√°s r√°pido para dar ritmo
         }
 
         puedePresionar = true;
@@ -90,7 +92,7 @@ using TMPro;
             {
                 puntosActuales += 10; // Sumamos 10 puntos por ronda completada
                 ActualizarTextoPuntos();
-                StartCoroutine(MostrarFeedback(true)); // CÌrculo verde al completar ronda
+                StartCoroutine(MostrarFeedback(true)); // C√≠rculo verde al completar ronda
                 StartCoroutine(SiguienteRonda());
             }
         }
@@ -123,11 +125,11 @@ using TMPro;
     void FinalizarPorTiempo()
     {
         juegoActivo = false;
-        // AquÌ podrÌas mostrar un panel de "PuntuaciÛn Final"
+        // Aqu√≠ podr√≠as mostrar un panel de "Puntuaci√≥n Final"
         tiempoRestante = 0;
         Tiempo.text = "00:00";
         StopAllCoroutines();
-        // AquÌ el juego se detiene porque el tiempo llegÛ a cero
+        // Aqu√≠ el juego se detiene porque el tiempo lleg√≥ a cero
         Debug.Log("Fin de la partida. Puntos totales: " + puntosActuales);
     }
 
@@ -161,7 +163,7 @@ public class Script_Simon : MonoBehaviour
     public GameObject resultScreen;
     public TextMeshProUGUI title;
 
-    [Header("ConfiguraciÛn del DesafÌo")]
+    [Header("Configuraci√≥n del Desaf√≠o")]
     public int metaObjetos = 6;
 
     private List<int> secuenciaJuego = new List<int>();
@@ -183,7 +185,7 @@ public class Script_Simon : MonoBehaviour
         secuenciaJuego.Clear();
         pasoActual = 0;
 
-        if (textoEstado) textoEstado.text = "Presta atenciÛn";
+        if (textoEstado) textoEstado.text = "Presta atenci√≥n";
 
         yield return new WaitForSeconds(2.0f);
 
@@ -258,12 +260,39 @@ public class Script_Simon : MonoBehaviour
     {
         juegoActivo = false;
         puedePresionar = false;
-        if (textoEstado) textoEstado.text = "°DESAFÕO COMPLETADO!";
+        if (textoEstado) textoEstado.text = "¬°DESAF√çO COMPLETADO!";
         StartCoroutine(MostrarFeedback(true));
         Debug.Log("El jugador ha ganado el minijuego.");
+        
+        GameEvents.TriggerMinigamePlayed();
+
+        _ = ReclamarRecompensaServidor();
 
         title.text = "HAS GANADO!!";
         resultScreen.SetActive(true);
+    }
+
+    private async Task ReclamarRecompensaServidor()
+    {
+        try
+        {
+            Debug.Log("Pidiendo recompensa de Sim√≥n Dice al servidor...");
+            FirebaseFunctions functions = FirebaseFunctions.DefaultInstance;
+            HttpsCallableReference callable = functions.GetHttpsCallable("recompensa50");
+            HttpsCallableResult result = await callable.CallAsync();
+
+            Debug.Log("¬°Recompensa validada! El servidor ha sumado 50 monedas a la BD.");
+
+            if (SessionManager.shared != null && SessionManager.shared.currentUser != null)
+            {
+                SessionManager.shared.currentUser.free_coin += 50;
+                Debug.Log($"Monedas totales en memoria: {SessionManager.shared.currentUser.free_coin}");
+            }
+        }
+        catch (System.Exception e)
+        {
+            Debug.LogError($"Error en el servidor al reclamar recompensa: {e.Message}");
+        }
     }
 
     void PerderPartida()
@@ -272,7 +301,7 @@ public class Script_Simon : MonoBehaviour
         puedePresionar = false;
         StopAllCoroutines();
 
-        if (textoEstado) textoEstado.text = "°ERROR! INT…NTALO DE NUEVO";
+        if (textoEstado) textoEstado.text = "¬°ERROR! INT√âNTALO DE NUEVO";
         StartCoroutine(MostrarFeedback(false));
 
         #if UNITY_ANDROID || UNITY_IOS

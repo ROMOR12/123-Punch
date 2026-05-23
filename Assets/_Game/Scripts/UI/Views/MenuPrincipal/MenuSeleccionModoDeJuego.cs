@@ -1,4 +1,4 @@
-using TMPro;
+﻿using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
@@ -11,6 +11,8 @@ public class Menu : MonoBehaviour
     private Image ImagenModoDeJuego;
     [SerializeField]
     private TextMeshProUGUI TextoModoDeJuego;
+    [SerializeField]
+    private GameObject PanelSelleccionNivel;
 
     private GameManager gameManager;
 
@@ -71,9 +73,9 @@ public class Menu : MonoBehaviour
         string escena = "";
         switch (nombreDelModo)
         {
-            case "Campa�a":
-                escena = "CombateHistoria1";
-                break;
+            case "Campaña":
+                PanelSelleccionNivel.SetActive(true);
+                return;
 
             case "Buffet LIbre": 
                 escena = "EatingMinigame";
@@ -98,5 +100,10 @@ public class Menu : MonoBehaviour
     public void CerrarChat()
     {
         ChatGlobal.SetActive(false);
+    }
+    
+    public void CerrarPanel()
+    {
+        PanelSelleccionNivel.SetActive(false);
     }
 }

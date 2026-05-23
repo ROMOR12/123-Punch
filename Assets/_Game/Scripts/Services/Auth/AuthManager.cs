@@ -15,6 +15,8 @@ public class AuthManager : MonoBehaviour
     public GameObject panelRegistroUI;
     public GameObject panelOlvidoUI;
     public GameObject panelVerificacionUI;
+    public GameObject panelInvitadoUI;
+    public GameObject panelSinConexionUI;
 
     [Header("--- UI LOGIN ---")]
     public TMP_InputField emailLoginInput;
@@ -29,45 +31,84 @@ public class AuthManager : MonoBehaviour
     [Header("--- UI OLVIDO ---")]
     public TMP_InputField emailOlvidoInput;
 
+    [Header("--- UI INVITADO ---")]
+    public TMP_InputField usernameInvitadoInput;
+
     [Header("--- FEEDBACK ---")]
     public TMP_Text feedbackText;
 
     [Header("--- FADE ---")]
     public SceneFader faderScript;
 
-    private FirebaseAuth auth;
+    private FirebaseAuth _auth;
+    private FirebaseAuth auth
+    {
+        get
+        {
+            if (_auth == null)
+            {
+                _auth = FirebaseAuth.DefaultInstance;
+            }
+            return _auth;
+        }
+    }
+
     private bool irAlJuego = false;
     private bool recargarEscena = false;
 
-    // Regex para el correoy la contraseÒa
+    // Regex para el correoy la contrase√±a
     private const string MatchEmailPattern =
         @"^(([\w-]+\.)+[\w-]+|([a-zA-Z]{1}|[\w-]{2,}))@((([0-1]?[0-9]{1,2}|25[0-5]|2[0-4][0-9])\.([0-1]?[0-9]{1,2}|25[0-5]|2[0-4][0-9])\.([0-1]?[0-9]{1,2}|25[0-5]|2[0-4][0-9])\.([0-1]?[0-9]{1,2}|25[0-5]|2[0-4][0-9])){1}|([a-zA-Z]+[\w-]+\.)+[a-zA-Z]{2,4})$";
     private const string MatchPasswordPattern = @"^(?=.*[a-zA-Z])(?=.*\d).{6,}$";
 
     void Awake()
     {
-        auth = FirebaseAuth.DefaultInstance;
+        _auth = FirebaseAuth.DefaultInstance;
     }
 
     void Start()
     {
-        CerrarTodosPaneles();
-        panelLoginUI.SetActive(true);
+        ChequearConexion();
+    }
 
-        // Si ya inicio sesion anteriormente
-        FirebaseUser user = auth.CurrentUser;
-        if (user.IsEmailVerified)
+    public void ChequearConexion()
+    {
+        if (Application.internetReachability == NetworkReachability.NotReachable)
         {
-            // Cargar datos de forma asÌncrona antes de ir al juego
-            CargarDatosSesion(user.UserId);
-        }
-        else if (user.IsAnonymous)
-        {
-            irAlJuego = true; // Si es invitado, va directo
+            CerrarTodosPaneles();
+            if (panelSinConexionUI != null) panelSinConexionUI.SetActive(true);
+            
+            if (feedbackText != null) 
+                feedbackText.text = "No hay conexi√≥n a internet.";
         }
         else
         {
-            recargarEscena = true;
+            IniciarApp();
+        }
+    }
+
+    void IniciarApp()
+    {
+        CerrarTodosPaneles();
+
+        // Si ya inicio sesion anteriormente
+        FirebaseUser user = auth.CurrentUser;
+        if (user != null)
+        {
+            if (user.IsEmailVerified || user.IsAnonymous)
+            {
+                // Cargar datos de forma as√≠ncrona antes de ir al juego sin mostrar el panel de login
+                CargarDatosSesion(user.UserId);
+            }
+            else
+            {
+                recargarEscena = true;
+            }
+        }
+        else
+        {
+            // Si no hay usuario logueado, entonces s√É¬≠ mostramos el panel de login
+            panelLoginUI.SetActive(true);
         }
     }
 
@@ -88,10 +129,7 @@ public class AuthManager : MonoBehaviour
                 panelVerificacionUI.SetActive(true);
                 if (feedbackText) feedbackText.text = "Verifica tu correo para continuar.";
             }
-            else
-            {
-                SceneManager.LoadScene(SceneManager.GetActiveScene().name);
-            }
+            else if (auth.CurrentUser != null) { SceneManager.LoadScene(SceneManager.GetActiveScene().name); }
         }
     }
     bool EsEmailValido(string email)
@@ -122,12 +160,20 @@ public class AuthManager : MonoBehaviour
         panelOlvidoUI.SetActive(true); 
     }
 
+    public void IrAInvitado() 
+    { 
+        CerrarTodosPaneles(); 
+        if (panelInvitadoUI != null) panelInvitadoUI.SetActive(true); 
+    }
+
     public void CerrarTodosPaneles()
     {
-        panelLoginUI.SetActive(false);
-        panelRegistroUI.SetActive(false);
-        panelOlvidoUI.SetActive(false);
-        panelVerificacionUI.SetActive(false);
+        if (panelLoginUI != null) panelLoginUI.SetActive(false);
+        if (panelRegistroUI != null) panelRegistroUI.SetActive(false);
+        if (panelOlvidoUI != null) panelOlvidoUI.SetActive(false);
+        if (panelVerificacionUI != null) panelVerificacionUI.SetActive(false);
+        if (panelInvitadoUI != null) panelInvitadoUI.SetActive(false);
+        if (panelSinConexionUI != null) panelSinConexionUI.SetActive(false);
 
         LimpiarFeedback();
         LimpiarInputs();
@@ -144,6 +190,7 @@ public class AuthManager : MonoBehaviour
         if (passRegisterConfirmInput) passRegisterConfirmInput.text = "";
 
         if (emailOlvidoInput) emailOlvidoInput.text = "";
+        if (usernameInvitadoInput) usernameInvitadoInput.text = "";
     }
 
     void LimpiarFeedback() 
@@ -168,13 +215,13 @@ public class AuthManager : MonoBehaviour
             yield return new WaitUntil(() => task.IsCompleted);
 
             // Si esta verificado
-            if (user.IsEmailVerified)
+            if (user != null && user.IsEmailVerified)
             {
-                feedbackText.text = "°Verificado!";
+                feedbackText.text = "¬°Verificado!";
                 yield return new WaitForSeconds(1f);
                 irAlJuego = true;
             }
-            else feedbackText.text = "A˙n no verificado. Revisa tu correo.";
+            else feedbackText.text = "A√∫n no verificado. Revisa tu correo.";
         }
     }
 
@@ -185,12 +232,12 @@ public class AuthManager : MonoBehaviour
 
         if (datosUsuario != null)
         {
-            SessionManager.shared.currentUser = datosUsuario;
+            SessionManager.shared.currentUser = datosUsuario; if (AchievementManager.Instance != null) { AchievementManager.Instance.LoadAchievementsData(); }
             irAlJuego = true;
         }
         else
         {
-            auth.SignOut(); // Si por alg˙n motivo no existe en DB, lo deslogueamos
+            auth.SignOut(); // Si por alg√∫n motivo no existe en DB, lo deslogueamos
             CerrarTodosPaneles();
             panelLoginUI.SetActive(true);
         }
@@ -218,13 +265,13 @@ public class AuthManager : MonoBehaviour
 
         if (string.IsNullOrEmpty(email) || string.IsNullOrEmpty(pass))
         {
-            feedbackText.text = "Rellena correo y contraseÒa";
+            feedbackText.text = "Rellena correo y contrase√±a";
             return;
         }
 
         if (!EsEmailValido(email))
         {
-            feedbackText.text = "El formato del correo no es v·lido.";
+            feedbackText.text = "El formato del correo no es v√°lido.";
             return;
         }
 
@@ -232,11 +279,11 @@ public class AuthManager : MonoBehaviour
 
         try
         {
-            // Iniciamos sesiÛn en Firebase Auth
+            // Iniciamos sesi√≥n en Firebase Auth
             AuthResult result = await auth.SignInWithEmailAndPasswordAsync(email, pass);
             FirebaseUser user = result.User;
 
-            if (user.IsEmailVerified)
+            if (user != null && user.IsEmailVerified)
             {
                 feedbackText.text = "Cargando datos del jugador...";
 
@@ -246,8 +293,8 @@ public class AuthManager : MonoBehaviour
 
                 if (datosUsuario != null)
                 {
-                    // Guardamos los datos en la sesiÛn
-                    SessionManager.shared.currentUser = datosUsuario;
+                    // Guardamos los datos en la sesi√≥n
+                    SessionManager.shared.currentUser = datosUsuario; if (AchievementManager.Instance != null) { AchievementManager.Instance.LoadAchievementsData(); }
                     irAlJuego = true;
                 }
                 else
@@ -266,11 +313,60 @@ public class AuthManager : MonoBehaviour
         }
     }
 
-    public void LoginInvitado()
+    public async void LoginInvitado()
     {
-        feedbackText.text = "Entrando como invitado...";
-        // Entramos como usuario anonimo
-        auth.SignInAnonymouslyAsync().ContinueWith(task => { if (!task.IsFaulted) irAlJuego = true; });
+        string username = usernameInvitadoInput != null ? usernameInvitadoInput.text : "";
+        
+        if (string.IsNullOrEmpty(username))
+        {
+            if (feedbackText) feedbackText.text = "Por favor, escribe un nombre de usuario.";
+            return;
+        }
+        
+        if (username.Length < 3)
+        {
+            if (feedbackText) feedbackText.text = "El usuario debe tener m√≠nimo 3 caracteres.";
+            return;
+        }
+
+        if (feedbackText) feedbackText.text = "Creando cuenta de invitado...";
+
+        try
+        {
+            // Entramos como usuario anonimo en Firebase Auth
+            AuthResult result = await auth.SignInAnonymouslyAsync();
+            FirebaseUser newUser = result.User;
+
+            if (newUser != null)
+            {
+                if (feedbackText) feedbackText.text = "Registrando perfil en la base de datos...";
+
+                // Intentamos insertar el usuario an√≥nimo en Firestore
+                UsuarioService usuarioService = new UsuarioService();
+                
+                // Usamos un correo falso para que la BD no d√© problemas de validaci√≥n de nulos
+                string fakeEmail = "invitado_" + newUser.UserId.Substring(0, 5) + "@anon.com";
+                bool resultado = await usuarioService.NuevoUsuario(newUser.UserId, username, fakeEmail);
+
+                if (resultado)
+                {
+                    if (feedbackText) feedbackText.text = "¬°Cuenta creada! Entrando al juego...";
+                    CargarDatosSesion(newUser.UserId);
+                }
+                else
+                {
+                    if (feedbackText) feedbackText.text = "Error al crear el perfil en la base de datos.";
+                }
+            }
+        }
+        catch (System.AggregateException e)
+        {
+            if (feedbackText) feedbackText.text = ObtenerMensajeError(e);
+        }
+        catch (System.Exception e)
+        {
+            if (feedbackText) feedbackText.text = e.Message;
+        }
     }
 
     public async void Registrarse()
@@ -290,25 +386,25 @@ public class AuthManager : MonoBehaviour
 
         if (usuario.Length < 3)
         {
-            feedbackText.text = "El usuario debe tener mÌnimo 3 caracteres.";
+            feedbackText.text = "El usuario debe tener m√≠nimo 3 caracteres.";
             return;
         }
 
         if (!EsEmailValido(email))
         {
-            feedbackText.text = "El formato del correo no es v·lido.";
+            feedbackText.text = "El formato del correo no es v√°lido.";
             return;
         }
 
         if (!EsPasswordValida(pass))
         {
-            feedbackText.text = "La contraseÒa necesita 6 caracteres, 1 n˙mero y 1 letra.";
+            feedbackText.text = "La contrase√±a necesita 6 caracteres, 1 n√∫mero y 1 letra.";
             return;
         }
 
         if (pass != passConf)
         {
-            feedbackText.text = "Las contraseÒas no coinciden";
+            feedbackText.text = "Las contrase√±as no coinciden";
             return;
         }
 
@@ -316,7 +412,7 @@ public class AuthManager : MonoBehaviour
 
         try
         {
-            // Intentamos registrar el usuario en el servicio de autentificaciÛn
+            // Intentamos registrar el usuario en el servicio de autentificaci√≥n
             AuthResult result = await auth.CreateUserWithEmailAndPasswordAsync(email, pass);
             // Recogemos el usuario para la base de datos
             FirebaseUser newUser = result.User;
@@ -341,7 +437,7 @@ public class AuthManager : MonoBehaviour
         }
     }
 
-    public void EnviarCorreoRecuperacion()
+    public async void EnviarCorreoRecuperacion()
     {
         string email = emailOlvidoInput.text;
 
@@ -353,23 +449,36 @@ public class AuthManager : MonoBehaviour
 
         if (!EsEmailValido(email))
         {
-            feedbackText.text = "El formato del correo no es v·lido.";
+            feedbackText.text = "El formato del correo no es v√°lido.";
+            return;
+        }
+
+        if (auth == null)
+        {
+            feedbackText.text = "Error: Firebase Auth no est√° inicializado.";
             return;
         }
 
         feedbackText.text = "Enviando...";
 
-        // Enviamos el correo de recuperacion de la contraseÒa
-        auth.SendPasswordResetEmailAsync(email).ContinueWithOnMainThread(task =>
+        try
         {
-            if (task.IsFaulted || task.IsCanceled)
+            // Enviamos el correo de recuperacion de la contrase√±a
+            await auth.SendPasswordResetEmailAsync(email);
+            feedbackText.text = "¬°Correo enviado! Revisa tu bandeja.";
+        }
+        catch (System.Exception e)
+        {
+            System.AggregateException aggregate = e as System.AggregateException;
+            if (aggregate != null)
             {
-                string errorMsg = ObtenerMensajeError(task.Exception);
-                feedbackText.text = errorMsg;
-                return;
+                feedbackText.text = ObtenerMensajeError(aggregate);
             }
-            feedbackText.text = "°Correo enviado! Revisa tu bandeja.";
-        });
+            else
+            {
+                feedbackText.text = "Error: " + e.Message;
+            }
+        }
     }
 
     string ObtenerMensajeError(System.AggregateException exception)
@@ -395,27 +504,28 @@ public class AuthManager : MonoBehaviour
             switch (codigoError)
             {
                 case AuthError.EmailAlreadyInUse:
-                    return "Ese correo ya est· registrado.";
+                    return "Ese correo ya est√° registrado.";
 
                 case AuthError.WrongPassword:
                 case AuthError.UserNotFound:
                 case AuthError.Failure:
                 case AuthError.InvalidCredential:
-                    return "El correo o la contraseÒa son incorrectos.";
+                    return "El correo o la contrase√±a son incorrectos.";
 
                 case AuthError.InvalidEmail:
-                    return "El formato del correo est· mal.";
+                    return "El formato del correo est√° mal.";
 
                 case AuthError.MissingEmail:
                     return "Falta escribir el correo.";
 
                 case AuthError.MissingPassword:
-                    return "Falta escribir la contraseÒa.";
+                    return "Falta escribir la contrase√±a.";
 
                 default:
                     return $"Error: {firebaseEx.Message}";
             }
         }
-        return "Error de conexiÛn o desconocido: " + exception.Message;
+        return "Error de conexi√≥n o desconocido: " + exception.Message;
     }
 }
+

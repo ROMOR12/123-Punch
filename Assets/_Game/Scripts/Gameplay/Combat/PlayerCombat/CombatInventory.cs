@@ -12,6 +12,11 @@ public class CombatInventory : MonoBehaviour
     private List<Consumible> mochilaConsumibles = new List<Consumible>();
     private CombatController playerCombat;
 
+    private void Awake()
+    {
+        ActualizarInterfazObjeto();
+    }
+
     public void Inicializar(CombatController player, List<Consumible> itemsIniciales)
     {
         playerCombat = player;
@@ -106,15 +111,18 @@ public class CombatInventory : MonoBehaviour
             {
                 imagenBotonConsumible.sprite = primerItem.icon;
                 imagenBotonConsumible.enabled = true;
+                gameObject.SetActive(true); // Mostrar el objeto completo
             }
             else
             {
                 imagenBotonConsumible.enabled = false;
+                gameObject.SetActive(false); // Ocultar el objeto completo
             }
         }
         else
         {
             imagenBotonConsumible.enabled = false;
+            gameObject.SetActive(false); // Ocultar el objeto completo
         }
 
         if (flechaConsumible != null)

@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using Unity.VisualScripting.Antlr3.Runtime.Misc;
@@ -77,7 +77,7 @@ public class CombatController : MonoBehaviour
     [Header("Estadísticas de Combate")]
     public ResultScreenUI pantallaResultados;
     public int contadorGolpes = 0;
-    public int contadorDañoTotal = 0;
+    public int contadorTotalDamage = 0;
     public float tiempoInicioCombate;
 
     public Slider enemyHealthBar;
@@ -102,9 +102,17 @@ public class CombatController : MonoBehaviour
 
         if (inventory != null)
         {
-            Debug.Log("¡Inventario enlazado correctamente! Cargando consumibles...");
-            List<Consumible> items = (playerData != null) ? playerData.objetosConsumibles : null;
-            inventory.Inicializar(this, items);
+            if (GameObject.FindObjectOfType<GameLoader>() != null)
+            {
+                // Dejamos el inventario vacío temporalmente hasta que el GameLoader baje los datos de Firebase
+                inventory.Inicializar(this, null);
+            }
+            else
+            {
+                // Si no hay GameLoader, cargamos los objetos por defecto (útil para pruebas)
+                List<Consumible> items = (playerData != null) ? playerData.objetosConsumibles : null;
+                inventory.Inicializar(this, items);
+            }
         }
 
         if (playerData != null)
@@ -156,7 +164,7 @@ public class CombatController : MonoBehaviour
         if (enemyHealthBar != null && currentEnemy != null)
         {
             if (EnemyName != null) EnemyName.text = currentEnemy.enemyData.name;
-            float enemyMax = (float)currentEnemy.enemyData.life;
+            float enemyMax = (float)currentEnemy.maxLife;
             enemyHealthBar.maxValue = enemyMax;
             enemyHealthBar.value = enemyMax;
             UpdateHealthText(enemyHealthText, enemyMax, enemyMax);
@@ -164,7 +172,7 @@ public class CombatController : MonoBehaviour
 
         tiempoInicioCombate = Time.time;
         contadorGolpes = 0;
-        contadorDañoTotal = 0;
+        contadorTotalDamage = 0;
 
         if(pantallaResultados != null)
         {
@@ -235,7 +243,7 @@ public class CombatController : MonoBehaviour
             int damageDealt = Mathf.RoundToInt(currentForce * playerDamageMultiplier);
 
             // animacion
-            StartCoroutine(ShowAttackVisuals());
+            StartCoroutine(ShowAttackVisuals()); GameEvents.TriggerPunchThrown(1);
 
             if (currentEnemy != null)
             {
@@ -270,12 +278,14 @@ public class CombatController : MonoBehaviour
         {
             GastarEnergia(hardAttackCost);
             SoundManager.PlaySound(SoundType.StrongHit);
-            int damageDealt = Mathf.RoundToInt(currentForce * playerDamageMultiplier * 2f);
+            
+            // Hacemos que el golpe fuerte quite el cuádruple de daño en vez del doble para que merezca la pena
+            int damageDealt = Mathf.RoundToInt(currentForce * playerDamageMultiplier * 4f);
 
             ShowDamagePopup(damageDealt, false);
 
             isHardAttack = true;
-            StartCoroutine(ShowAttackVisuals());
+            StartCoroutine(ShowAttackVisuals()); GameEvents.TriggerPunchThrown(1);
 
             if (currentEnemy != null)
             {
@@ -719,7 +729,7 @@ public class CombatController : MonoBehaviour
 
         if (currentEnemy != null && enemyHealthBar != null)
         {
-            float maxVidaEnemigo = (float)currentEnemy.enemyData.life;
+            float maxVidaEnemigo = (float)currentEnemy.maxLife;
             enemyHealthBar.value = maxVidaEnemigo;
             UpdateHealthText(enemyHealthText, maxVidaEnemigo, maxVidaEnemigo);
         }
@@ -852,7 +862,7 @@ public class CombatController : MonoBehaviour
     void RegistrarEstadistica(int damage)
     {
         contadorGolpes++;
-        contadorDañoTotal += damage;
+        contadorTotalDamage += damage;
     }
 
     // Metodos de seguridad para que cuando se haya termiando el combate no quere nada residual

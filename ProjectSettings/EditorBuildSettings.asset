@@ -38,6 +38,30 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/_Game/Scenes/Combat/History/CombateHistoria1.unity
     guid: 7af8c265aaa35e34a8970f75ca0bc813
+  - enabled: 1
+    path: Assets/_Game/Scenes/Combat/History/CombateHistoria2.unity
+    guid: d398e1fb88cca574e832f545072dba4a
+  - enabled: 1
+    path: Assets/_Game/Scenes/Combat/History/CombateHistoria3.unity
+    guid: 10f5633ca2f91824ca74dd6c06611309
+  - enabled: 1
+    path: Assets/_Game/Scenes/Combat/History/CombateHistoria4.unity
+    guid: 7c3d7b49a7ee71c4eb78170b30f4f50a
+  - enabled: 1
+    path: Assets/_Game/Scenes/Combat/History/CombateHistoria5.unity
+    guid: afc70b3b2ea7ffc46ae6afd3f87ff102
+  - enabled: 1
+    path: Assets/_Game/Scenes/Combat/History/CombateHistoria6.unity
+    guid: bd6c9bbcd875dc74aa34f214c1235201
+  - enabled: 1
+    path: Assets/_Game/Scenes/Combat/History/CombateHistoria7.unity
+    guid: be55de34de3b36a42a3e78f4264b5546
+  - enabled: 1
+    path: Assets/_Game/Scenes/Combat/History/CombateHistoria8.unity
+    guid: b21c856532c250c4b859a9351c77d135
+  - enabled: 1
+    path: Assets/_Game/Scenes/Combat/History/CombateHistoria9.unity
+    guid: 3200abaf852bb6243b98336f25d9c1c2
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
   m_UseUCBPForAssetBundles: 0

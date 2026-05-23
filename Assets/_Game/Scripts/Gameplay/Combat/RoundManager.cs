@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 public class RoundManager : MonoBehaviour
 {
-    [Header("Configuración Visual")]
+    [Header("Configuraciï¿½n Visual")]
     public Image[] circulosRonda;
     public Sprite spriteVacio;
     public Sprite spriteJugador;
@@ -19,19 +19,19 @@ public class RoundManager : MonoBehaviour
     public GameObject pantallaVictoriaFinal;
     public GameObject pantallaDerrotaFinal;
 
-    [Header("Estadísticas Finales")]
+    [Header("Estadï¿½sticas Finales")]
     public ResultScreenUI pantallaResultados;
     private float tiempoInicioCombate;
+
+    [Header("ProgresoNivel")]
+    public int numeroNivelActual = 1;
 
     private int victoriasJugador = 0;
     private int victoriasEnemigo = 0;
     private int rondaActual = 0;
 
-    private FirebaseFunctions functions;
-
     void Start()
     {
-        functions = FirebaseFunctions.DefaultInstance;
         // inicializamos los circulos que vamos a usar para mostrar las rondas
         foreach (var img in circulosRonda)
         {
@@ -97,7 +97,7 @@ public class RoundManager : MonoBehaviour
             enemyBot.enabled = false;
         }
 
-        // Calcula cuánto ha durado la pelea
+        // Calcula cuï¿½nto ha durado la pelea
         float duracionCombate = Time.time - tiempoInicioCombate;
         SoundManager.StopMusic();
 
@@ -110,13 +110,21 @@ public class RoundManager : MonoBehaviour
 
             _ = ReclamarRecompensaServidor();
 
+            // Trigger que salta cuando el jugador gana, para los logros
+            GameEvents.TriggerFightWon();
+
+            if (GameManager.Instance != null)
+            {
+                GameManager.Instance.DesbloquearSiguienteNivel(numeroNivelActual);
+            }
+
             if (pantallaResultados != null)
             {
                 pantallaResultados.MostrarResultados(
                     ganoJugador = true,
                     playerCombat.contadorGolpes,
                     duracionCombate,
-                    playerCombat.contadorDañoTotal
+                    playerCombat.contadorTotalDamage
                 );
 
                 GameManager.Instance.numCajas++;
@@ -125,15 +133,18 @@ public class RoundManager : MonoBehaviour
 
             }
         }
-        else
+                else
         {
+            if (pantallaDerrotaFinal != null) pantallaDerrotaFinal.SetActive(true);
+            GameEvents.TriggerFightLost();
+
             if (pantallaResultados != null)
             {
                 pantallaResultados.MostrarResultados(
                     ganoJugador = false,
                     playerCombat.contadorGolpes,
                     duracionCombate,
-                    playerCombat.contadorDañoTotal
+                    playerCombat.contadorTotalDamage
                 );
             }
         }
@@ -142,18 +153,19 @@ public class RoundManager : MonoBehaviour
     {
         try
         {
-            Debug.Log("Pidiendo recompensa al servidor...");
+            Debug.Log("Pidiendo recompensa de combate al servidor...");
 
-            // Llamamos a la función con el nombre exacto que le pusimos en Node.js
-            HttpsCallableReference callable = functions.GetHttpsCallable("recompensarCombate");
+            // Llamamos a la funcion de Firebase que valida la victoria y suma las monedas al usuario
+            FirebaseFunctions functions = FirebaseFunctions.DefaultInstance;
+            HttpsCallableReference callable = functions.GetHttpsCallable("recompensa200");
             HttpsCallableResult result = await callable.CallAsync();
 
-            Debug.Log("¡Recompensa validada! El servidor ha sumado 100 monedas a la BD.");
+            Debug.Log("Â¡Recompensa validada! El servidor ha sumado 200 monedas a la BD.");
 
             // Actualizamos la memoria local para que la UI o la tienda lo sepan inmediatamente
             if (SessionManager.shared != null && SessionManager.shared.currentUser != null)
             {
-                SessionManager.shared.currentUser.free_coin += 100;
+                SessionManager.shared.currentUser.free_coin += 200;
                 Debug.Log($"Monedas totales en memoria: {SessionManager.shared.currentUser.free_coin}");
             }
         }

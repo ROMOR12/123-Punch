@@ -1,4 +1,4 @@
-using Firebase.Firestore;
+ï»¿using Firebase.Firestore;
 using System.Threading.Tasks;
 using UnityEngine;
 
@@ -6,7 +6,7 @@ public class MejoraStatsManager : MonoBehaviour
 {
     private UsuarioService usuarioService = new UsuarioService();
 
-    [Header("Configuración de Costes Base")]
+    [Header("ConfiguraciÃ³n de Costes Base")]
     public int costeBaseVida = 50;
     public int costeBaseEnergia = 50;
     public int costeBaseFuerza = 100;
@@ -19,8 +19,6 @@ public class MejoraStatsManager : MonoBehaviour
     public int aumentoFuerza = 1;
     public int aumentoRecuperacion = 1;
 
-    // --- CÁLCULO DE COSTES ---
-    // Usamos tu StatType de GameStats.cs
     public int CalcularCoste(StatType stat, Personaje personaje)
     {
         int vecesMejorado = 0;
@@ -37,7 +35,6 @@ public class MejoraStatsManager : MonoBehaviour
         return Mathf.RoundToInt(costeBase * Mathf.Pow(multiplicadorPorMejora, vecesMejorado));
     }
 
-    // --- PROCESO DE COMPRA ---
     public async Task<bool> ComprarMejora(Usuario usuario, Personaje personajeActual, StatType stat)
     {
         int coste = CalcularCoste(stat, personajeActual);
@@ -48,10 +45,8 @@ public class MejoraStatsManager : MonoBehaviour
             return false;
         }
 
-        // 1. Restamos monedas al usuario
         usuario.free_coin -= coste;
 
-        // 2. Aplicamos la mejora al personaje (Sube el contador Y los stats reales)
         switch (stat)
         {
             case StatType.Life:
@@ -72,13 +67,12 @@ public class MejoraStatsManager : MonoBehaviour
                 break;
         }
 
-        // 3. Guardamos ambos en Firebase
         bool userOk = await usuarioService.ActualizarUsuario(usuario);
         bool personajeOk = await usuarioService.ActualizarPersonaje(usuario.id, personajeActual);
 
         if (userOk && personajeOk)
         {
-            Debug.Log($"¡Se ha mejorado la stat {stat}! Nivel actual: {personajeActual.NivelTotal}");
+            Debug.Log($"Â¡Se ha mejorado la stat {stat}! Nivel actual: {personajeActual.NivelTotal}");
             return true;
         }
 
