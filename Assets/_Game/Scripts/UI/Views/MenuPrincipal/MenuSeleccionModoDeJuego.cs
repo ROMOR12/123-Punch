@@ -11,6 +11,8 @@ public class Menu : MonoBehaviour
     private Image ImagenModoDeJuego;
     [SerializeField]
     private TextMeshProUGUI TextoModoDeJuego;
+    [SerializeField]
+    private GameObject PanelSelleccionNivel;
 
     private GameManager gameManager;
 
@@ -70,8 +72,8 @@ public class Menu : MonoBehaviour
         switch (nombreDelModo)
         {
             case "Campaña":
-                escena = "CombateHistoria1";
-                break;
+                PanelSelleccionNivel.SetActive(true);
+                return;
 
             case "Buffet LIbre": 
                 escena = "EatingMinigame";
@@ -86,5 +88,10 @@ public class Menu : MonoBehaviour
                 break;
         }
         CargaEscena.Cargar(escena);
+    }
+
+    public void CerrarPanel()
+    {
+        PanelSelleccionNivel.SetActive(false);
     }
 }
