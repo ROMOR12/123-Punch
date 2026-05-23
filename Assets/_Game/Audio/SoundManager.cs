@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System;
 
-// Cat醠ogos cerrados con todos los sonidos. 
+// Cat谩logos cerrados con todos los sonidos. 
 public enum SoundType
 {
     HIT,
@@ -32,18 +32,18 @@ public class SoundManager : MonoBehaviour
     [Range(0f, 1f)] public float musicVolume = 0.5f;
     [Range(0f, 1f)] public float sfxVolume = 1f;
 
-    [Header("Configuraci髇 SFX(juego)")]
-    // Listas que se auto-rellenan bas醤dose en los Enums de arriba
+    [Header("Configuraci贸n SFX(juego)")]
+    // Listas que se auto-rellenan bas谩ndose en los Enums de arriba
     [SerializeField] private SoundList[] soundList;
 
     [Header("Configuracion Sonidos UI")]
     [SerializeField] private SoundList[] uiSoundList;
 
-    [Header("M鷖ica de Fondo")]
+    [Header("M煤sica de Fondo")]
     [SerializeField] private AudioSource musicSource;
     [SerializeField] private AudioClip BackgroundMusic;
 
-    // Patr髇 Singleton: Permite llamar al SoundManager desde cualquier script sin buscar referencias
+    // Patr贸n Singleton: Permite llamar al SoundManager desde cualquier script sin buscar referencias
     private static SoundManager instance;
     private AudioSource sfxSource;
 
@@ -61,16 +61,18 @@ public class SoundManager : MonoBehaviour
         if (Application.isPlaying)
         {
             DontDestroyOnLoad(this.gameObject); // Sobrevive al cambiar de escena
+            musicVolume = PlayerPrefs.GetFloat("MusicVolume", 0.5f);
+            sfxVolume = PlayerPrefs.GetFloat("SFXVolume", 1f);
         }
     }
 
     private void Start()
     {
-        // Inicializaci髇 de seguridad para las listas
+        // Inicializaci贸n de seguridad para las listas
         if (soundList == null) soundList = new SoundList[0];
         if (uiSoundList == null) uiSoundList = new SoundList[0];
 
-        // Autoconfiguraci髇 de los canales de audio (Efectos y M鷖ica)
+        // Autoconfiguraci贸n de los canales de audio (Efectos y M煤sica)
         AudioSource[] allSources = GetComponents<AudioSource>();
 
         if (allSources.Length > 0)
@@ -122,7 +124,7 @@ public class SoundManager : MonoBehaviour
             PlayMusic(instance.BackgroundMusic);
     }
 
-    // Reproduce un efecto. Soporta delay as韓crono para sincronizar con animaciones
+    // Reproduce un efecto. Soporta delay as铆ncrono para sincronizar con animaciones
     public static async void PlaySound(SoundType sound, float delay = 0f)
     {
         if (instance == null || instance.soundList == null) return;
@@ -151,17 +153,17 @@ public class SoundManager : MonoBehaviour
     {
         if (instance == null || instance.uiSoundList == null) return;
 
-        // Validaci髇 de 韓dice
+        // Validaci贸n de 铆ndice
         if ((int)sound < instance.uiSoundList.Length)
         {
             SoundList soundItem = instance.uiSoundList[(int)sound];
 
-            // Reutiliza la funci髇 auxiliar para reproducir el clip
+            // Reutiliza la funci贸n auxiliar para reproducir el clip
             PlayClipFromItem(soundItem);
         }
     }
 
-    // M閠odo auxiliar para no repetir c骴igo.
+    // M茅todo auxiliar para no repetir c贸digo.
     // Recibe una lista de sonidos, elige uno al azar para dar variedad, y lo reproduce.
     private static void PlayClipFromItem(SoundList item)
     {
@@ -211,7 +213,7 @@ public class SoundManager : MonoBehaviour
         SyncList(ref uiSoundList, typeof(UiSoundType));
     }
 
-    // Redimensiona y nombra los arrays autom醫icamente bas醤dose en los Enums
+    // Redimensiona y nombra los arrays autom谩ticamente bas谩ndose en los Enums
     private void SyncList(ref SoundList[] list, Type enumType)
     {
         string[] names = Enum.GetNames(enumType);

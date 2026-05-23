@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+using UnityEngine;
+using UnityEngine.UI;
 
 public class MenuOpciones : MonoBehaviour
 {
@@ -10,8 +11,46 @@ public class MenuOpciones : MonoBehaviour
     public GameObject BotonCerrarJuego;
     public GameObject BotonMenu;
     public GameObject PanelLogros;
+    public GameObject PanelAudio;
+    public Slider sliderMusic;
+    public Slider sliderSFX;
 
+    private void Start()
+    {
+        SoundManager sm = FindFirstObjectByType<SoundManager>();
+        if (sm != null)
+        {
+            if (sliderMusic != null) 
+            {
+                sliderMusic.value = sm.musicVolume;
+                sliderMusic.onValueChanged.AddListener(CambiarVolumenMusica);
+                AgregarTextoASlider(sliderMusic, "Música");
+            }
+            if (sliderSFX != null) 
+            {
+                sliderSFX.value = sm.sfxVolume;
+                sliderSFX.onValueChanged.AddListener(CambiarVolumenSFX);
+                AgregarTextoASlider(sliderSFX, "SFX");
+            }
+        }
+    }
 
+    private void AgregarTextoASlider(Slider slider, string texto)
+    {
+        if (slider.transform.Find("Label_Generado") == null)
+        {
+            GameObject txtObj = new GameObject("Label_Generado");
+            txtObj.transform.SetParent(slider.transform, false);
+            var rect = txtObj.AddComponent<RectTransform>();
+            rect.anchoredPosition = new Vector2(0, 30);
+            rect.sizeDelta = new Vector2(200, 30);
+            var tmp = txtObj.AddComponent<TMPro.TextMeshProUGUI>();
+            tmp.text = texto;
+            tmp.fontSize = 24;
+            tmp.alignment = TMPro.TextAlignmentOptions.Center;
+            tmp.color = Color.white;
+        }
+    }
     public void MostrarPanelMenu()
     {
         SoundManager.PlaySound(SoundType.Consumable);
@@ -39,6 +78,36 @@ public class MenuOpciones : MonoBehaviour
         SoundManager.PlaySound(SoundType.Consumable);
         PanelLogros.SetActive(false);
         PanelOpciones.SetActive(true);
+    }
+
+    public void MostrarPanelAudio()
+    {
+        SoundManager.PlaySound(SoundType.Consumable);
+        if (PanelAudio != null) PanelAudio.SetActive(true);
+        if (PanelOpciones != null) PanelOpciones.SetActive(false);
+    }
+
+    public void CerrarPanelAudio()
+    {
+        SoundManager.PlaySound(SoundType.Consumable);
+        if (PanelAudio != null) PanelAudio.SetActive(false);
+        if (PanelOpciones != null) PanelOpciones.SetActive(true);
+    }
+
+    public void CambiarVolumenMusica(float volumen)
+    {
+        SoundManager sm = FindFirstObjectByType<SoundManager>();
+        if (sm != null) sm.musicVolume = volumen;
+        PlayerPrefs.SetFloat("MusicVolume", volumen);
+        PlayerPrefs.Save();
+    }
+
+    public void CambiarVolumenSFX(float volumen)
+    {
+        SoundManager sm = FindFirstObjectByType<SoundManager>();
+        if (sm != null) sm.sfxVolume = volumen;
+        PlayerPrefs.SetFloat("SFXVolume", volumen);
+        PlayerPrefs.Save();
     }
 
     public void CerrarJuego()

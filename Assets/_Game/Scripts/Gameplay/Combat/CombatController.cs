@@ -102,7 +102,7 @@ public class CombatController : MonoBehaviour
 
         if (inventory != null)
         {
-            if (GameObject.FindObjectOfType<GameLoader>() != null)
+            if (GameObject.FindFirstObjectByType<GameLoader>() != null)
             {
                 // Dejamos el inventario vacío temporalmente hasta que el GameLoader baje los datos de Firebase
                 inventory.Inicializar(this, null);
