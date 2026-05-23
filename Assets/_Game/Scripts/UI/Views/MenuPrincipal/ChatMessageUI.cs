@@ -8,6 +8,13 @@ public class ChatMessageUI : MonoBehaviour
 
     public void Setup(string username, string mensaje)
     {
+
+        Debug.Log(usernameText);
+        Debug.Log(messageText);
+        Debug.Log("Prueba de mensaje seteado");
+
+
+
         usernameText.text = username;
         messageText.text = mensaje;
     }
