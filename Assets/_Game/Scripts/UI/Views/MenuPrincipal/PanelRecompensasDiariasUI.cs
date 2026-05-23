@@ -116,7 +116,6 @@ public class PanelRecompensasDiariasUI : MonoBehaviour
         
         if (ok)
         {
-            Debug.Log("Â¡Recompensa diaria reclamada con Ã©xito!");
             RefrescarUI();
             
             Invoke(nameof(CerrarPanel), 1.5f);
