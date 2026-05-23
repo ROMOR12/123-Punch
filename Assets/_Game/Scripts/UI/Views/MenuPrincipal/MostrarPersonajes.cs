@@ -1,4 +1,4 @@
-﻿using TMPro;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using System.Collections.Generic;
@@ -132,6 +132,13 @@ public class MostrarPersonajes : MonoBehaviour
                 ConfigurarBotonComoSeleccionado(false);
             }
         }
+
+        // Sincronizar con el panel de mejoras para evitar que se queden los costes del personaje anterior
+        PanelMejorasUI panelMejoras = Object.FindFirstObjectByType<PanelMejorasUI>();
+        if (panelMejoras != null && panelMejoras.gameObject.activeInHierarchy)
+        {
+            panelMejoras.CargarDatosAutomaticamente();
+        }
     }
 
     public async void SeleccionarPersonajeBoton()
@@ -247,5 +254,21 @@ public class MostrarPersonajes : MonoBehaviour
     {
         indicePersonajeSeleccionado = (indicePersonajeSeleccionado == gameManager.listaPersonajes.Count - 1) ? 0 : indicePersonajeSeleccionado + 1;
         ActualizarPersonaje();
+    }
+
+
+    // Obtener el id del personaje que se esta mostrando actualmente.
+    public string ObtenerIdPersonajeVisible()
+    {
+        if (gameManager != null && gameManager.listaPersonajes != null && gameManager.listaPersonajes.Count > 0)
+        {
+            return gameManager.listaPersonajes[indicePersonajeSeleccionado].id;
+        }
+        return GameManager.Instance.idPersonajeSeleccionado;
+    }
+
+    public bool EstaPersonajeVisibleDesbloqueado()
+    {
+        return personajeActualDesbloqueado;
     }
 }
