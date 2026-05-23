@@ -25,7 +25,7 @@ public class EnemyBot : MonoBehaviour
     public Sprite iconoAtaqueFuerte;
     public Sprite iconoFinta;
 
-    private float maxLife;
+    public float maxLife;
     private float currentForce;
     private float currentEnergy;
     private float currentRecovery;

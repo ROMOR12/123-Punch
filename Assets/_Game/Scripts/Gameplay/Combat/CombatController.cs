@@ -102,9 +102,17 @@ public class CombatController : MonoBehaviour
 
         if (inventory != null)
         {
-            Debug.Log("¡Inventario enlazado correctamente! Cargando consumibles...");
-            List<Consumible> items = (playerData != null) ? playerData.objetosConsumibles : null;
-            inventory.Inicializar(this, items);
+            if (GameObject.FindObjectOfType<GameLoader>() != null)
+            {
+                // Dejamos el inventario vacío temporalmente hasta que el GameLoader baje los datos de Firebase
+                inventory.Inicializar(this, null);
+            }
+            else
+            {
+                // Si no hay GameLoader, cargamos los objetos por defecto (útil para pruebas)
+                List<Consumible> items = (playerData != null) ? playerData.objetosConsumibles : null;
+                inventory.Inicializar(this, items);
+            }
         }
 
         if (playerData != null)
@@ -156,7 +164,7 @@ public class CombatController : MonoBehaviour
         if (enemyHealthBar != null && currentEnemy != null)
         {
             if (EnemyName != null) EnemyName.text = currentEnemy.enemyData.name;
-            float enemyMax = (float)currentEnemy.enemyData.life;
+            float enemyMax = (float)currentEnemy.maxLife;
             enemyHealthBar.maxValue = enemyMax;
             enemyHealthBar.value = enemyMax;
             UpdateHealthText(enemyHealthText, enemyMax, enemyMax);
@@ -721,7 +729,7 @@ public class CombatController : MonoBehaviour
 
         if (currentEnemy != null && enemyHealthBar != null)
         {
-            float maxVidaEnemigo = (float)currentEnemy.enemyData.life;
+            float maxVidaEnemigo = (float)currentEnemy.maxLife;
             enemyHealthBar.value = maxVidaEnemigo;
             UpdateHealthText(enemyHealthText, maxVidaEnemigo, maxVidaEnemigo);
         }

@@ -263,6 +263,8 @@ public class Script_Simon : MonoBehaviour
         if (textoEstado) textoEstado.text = "¡DESAFÍO COMPLETADO!";
         StartCoroutine(MostrarFeedback(true));
         Debug.Log("El jugador ha ganado el minijuego.");
+        
+        GameEvents.TriggerMinigamePlayed();
 
         _ = ReclamarRecompensaServidor();
 
