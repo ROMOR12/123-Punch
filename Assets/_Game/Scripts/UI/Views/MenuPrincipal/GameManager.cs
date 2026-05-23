@@ -39,6 +39,9 @@ public class GameManager : MonoBehaviour
     [Header("Progreso Actual")]
     private string _idPersonajeSeleccionado;
 
+    [Header("Progreso de Niveles (Firebase)")]
+    public int nivelMaximoDesbloqueado = 1;
+
     public string idPersonajeSeleccionado
     {
         get
@@ -83,4 +86,24 @@ public class GameManager : MonoBehaviour
 
     public Pasivo GetPasivoPorID(string id) => todosLosPasivos.Find(p => p.id == id);
     public Consumible GetActivoPorID(string id) => todosLosActivos.Find(a => a.id == id);
+
+    public async void DesbloquearSiguienteNivel(int nivelActual)
+    {
+        if (nivelActual == nivelMaximoDesbloqueado)
+        {
+            nivelMaximoDesbloqueado++;
+
+            if (SessionManager.shared != null && SessionManager.shared.currentUser != null)
+            {
+                SessionManager.shared.currentUser.id_level = nivelMaximoDesbloqueado.ToString();
+
+                string idUsuario = SessionManager.shared.currentUser.id;
+
+                UsuarioService uService = new UsuarioService();
+                await uService.ActualizarNivelUsuario(idUsuario, nivelMaximoDesbloqueado);
+
+                Debug.Log($"Progreso actualizado en la Base de Datos para el usuario: Nivel {nivelMaximoDesbloqueado}");
+            }
+        }
+    }
 }

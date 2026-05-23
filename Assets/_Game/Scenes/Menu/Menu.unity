@@ -967,6 +967,7 @@ GameObject:
   - component: {fileID: 113139413}
   - component: {fileID: 113139412}
   - component: {fileID: 113139411}
+  - component: {fileID: 113139414}
   m_Layer: 5
   m_Name: Level 1
   m_TagString: Untagged
@@ -1088,6 +1089,19 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 113139409}
   m_CullTransparentMesh: 1
+--- !u!114 &113139414
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 113139409}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 19e09db96fc8daf40ad0c9c6236844f9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BotonNivel
+  numeroDeEsteNivel: 1
 --- !u!1 &130871833
 GameObject:
   m_ObjectHideFlags: 0
@@ -5345,6 +5359,7 @@ GameObject:
   - component: {fileID: 590716369}
   - component: {fileID: 590716368}
   - component: {fileID: 590716367}
+  - component: {fileID: 590716370}
   m_Layer: 5
   m_Name: Level 4
   m_TagString: Untagged
@@ -5466,6 +5481,19 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 590716365}
   m_CullTransparentMesh: 1
+--- !u!114 &590716370
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 590716365}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 19e09db96fc8daf40ad0c9c6236844f9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BotonNivel
+  numeroDeEsteNivel: 4
 --- !u!1 &600597770
 GameObject:
   m_ObjectHideFlags: 0
@@ -8415,6 +8443,7 @@ GameObject:
   - component: {fileID: 819514847}
   - component: {fileID: 819514846}
   - component: {fileID: 819514845}
+  - component: {fileID: 819514848}
   m_Layer: 5
   m_Name: Level 2
   m_TagString: Untagged
@@ -8536,6 +8565,19 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 819514843}
   m_CullTransparentMesh: 1
+--- !u!114 &819514848
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 819514843}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 19e09db96fc8daf40ad0c9c6236844f9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BotonNivel
+  numeroDeEsteNivel: 2
 --- !u!1 &842848200
 GameObject:
   m_ObjectHideFlags: 0
@@ -10211,6 +10253,7 @@ GameObject:
   - component: {fileID: 965971889}
   - component: {fileID: 965971888}
   - component: {fileID: 965971887}
+  - component: {fileID: 965971890}
   m_Layer: 5
   m_Name: Level 7
   m_TagString: Untagged
@@ -10332,6 +10375,19 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 965971885}
   m_CullTransparentMesh: 1
+--- !u!114 &965971890
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 965971885}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 19e09db96fc8daf40ad0c9c6236844f9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BotonNivel
+  numeroDeEsteNivel: 7
 --- !u!1 &971768963
 GameObject:
   m_ObjectHideFlags: 0
@@ -10613,6 +10669,7 @@ GameObject:
   - component: {fileID: 1045791813}
   - component: {fileID: 1045791812}
   - component: {fileID: 1045791811}
+  - component: {fileID: 1045791814}
   m_Layer: 5
   m_Name: Level 5
   m_TagString: Untagged
@@ -10734,6 +10791,19 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1045791809}
   m_CullTransparentMesh: 1
+--- !u!114 &1045791814
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1045791809}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 19e09db96fc8daf40ad0c9c6236844f9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BotonNivel
+  numeroDeEsteNivel: 5
 --- !u!1 &1046428306
 GameObject:
   m_ObjectHideFlags: 0
@@ -14081,6 +14151,7 @@ GameObject:
   - component: {fileID: 1413399179}
   - component: {fileID: 1413399178}
   - component: {fileID: 1413399177}
+  - component: {fileID: 1413399180}
   m_Layer: 5
   m_Name: Level 6
   m_TagString: Untagged
@@ -14202,6 +14273,19 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1413399175}
   m_CullTransparentMesh: 1
+--- !u!114 &1413399180
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1413399175}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 19e09db96fc8daf40ad0c9c6236844f9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BotonNivel
+  numeroDeEsteNivel: 6
 --- !u!1 &1417234822
 GameObject:
   m_ObjectHideFlags: 0
@@ -14980,6 +15064,7 @@ GameObject:
   - component: {fileID: 1502711482}
   - component: {fileID: 1502711481}
   - component: {fileID: 1502711480}
+  - component: {fileID: 1502711483}
   m_Layer: 5
   m_Name: Level 3
   m_TagString: Untagged
@@ -15101,6 +15186,19 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1502711478}
   m_CullTransparentMesh: 1
+--- !u!114 &1502711483
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1502711478}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 19e09db96fc8daf40ad0c9c6236844f9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BotonNivel
+  numeroDeEsteNivel: 3
 --- !u!1 &1509602461
 GameObject:
   m_ObjectHideFlags: 0
@@ -15185,6 +15283,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 79d76a364f49cb84bb01f44d1ced196e, type: 2}
   - {fileID: 11400000, guid: 24c029b27ce02c64496ebcd5ff737964, type: 2}
   - {fileID: 11400000, guid: 416d5d0923acdd941a580a72a9bd87d9, type: 2}
+  nivelMaximoDesbloqueado: 1
 --- !u!4 &1509602463
 Transform:
   m_ObjectHideFlags: 0
@@ -17124,6 +17223,7 @@ GameObject:
   - component: {fileID: 1666212244}
   - component: {fileID: 1666212243}
   - component: {fileID: 1666212242}
+  - component: {fileID: 1666212245}
   m_Layer: 5
   m_Name: Level 8
   m_TagString: Untagged
@@ -17245,6 +17345,19 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1666212240}
   m_CullTransparentMesh: 1
+--- !u!114 &1666212245
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1666212240}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 19e09db96fc8daf40ad0c9c6236844f9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BotonNivel
+  numeroDeEsteNivel: 8
 --- !u!1 &1666588393
 GameObject:
   m_ObjectHideFlags: 0
@@ -20840,6 +20953,7 @@ GameObject:
   - component: {fileID: 1986139609}
   - component: {fileID: 1986139608}
   - component: {fileID: 1986139607}
+  - component: {fileID: 1986139610}
   m_Layer: 5
   m_Name: Level 9
   m_TagString: Untagged
@@ -20961,6 +21075,19 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1986139605}
   m_CullTransparentMesh: 1
+--- !u!114 &1986139610
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1986139605}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 19e09db96fc8daf40ad0c9c6236844f9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BotonNivel
+  numeroDeEsteNivel: 9
 --- !u!1 &1991135318
 GameObject:
   m_ObjectHideFlags: 0
@@ -22343,7 +22470,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -16.893738, y: -131.18408}
+  m_AnchoredPosition: {x: -16.893799, y: -131.18408}
   m_SizeDelta: {x: -153.2, y: -629.4}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &2088750656
