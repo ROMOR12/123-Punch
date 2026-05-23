@@ -16,6 +16,8 @@ public class Menu : MonoBehaviour
 
     private GameManager gameManager;
 
+    public GameObject ChatGlobal;
+
     private void Start()
     {
         gameManager = GameManager.Instance;
@@ -93,5 +95,19 @@ public class Menu : MonoBehaviour
     public void CerrarPanel()
     {
         PanelSelleccionNivel.SetActive(false);
+    }
+
+
+
+
+
+
+    public void AbrirChat()
+    {
+        ChatGlobal.SetActive(true);
+    }
+    public void CerrarChat()
+    {
+        ChatGlobal.SetActive(false);
     }
 }
