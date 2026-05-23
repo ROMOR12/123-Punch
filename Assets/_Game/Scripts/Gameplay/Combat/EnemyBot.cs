@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using UnityEngine;
 using static UnityEngine.EventSystems.EventTrigger;
 
@@ -333,6 +333,16 @@ public class EnemyBot : MonoBehaviour
         enemyName = nuevoNombre;
         name = enemyName;
 
-        Debug.Log($"¡Stats del enemigo {nuevoNombre} actualizadas desde Firebase!");
+        Debug.Log($"Stats del enemigo {nuevoNombre} actualizadas desde Firebase!");
+    }
+
+    public void CambiarVisualesEnemigo(EnemyBase nuevosVisuales)
+    {
+        enemyData = nuevosVisuales;
+        if (spriteRenderer != null && enemyData.sprite != null)
+        {
+            spriteRenderer.sprite = enemyData.sprite;
+            originalColor = spriteRenderer.color; // Guardar el color base
+        }
     }
 }

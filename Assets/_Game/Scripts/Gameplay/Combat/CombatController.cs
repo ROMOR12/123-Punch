@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using Unity.VisualScripting.Antlr3.Runtime.Misc;
@@ -270,7 +270,9 @@ public class CombatController : MonoBehaviour
         {
             GastarEnergia(hardAttackCost);
             SoundManager.PlaySound(SoundType.StrongHit);
-            int damageDealt = Mathf.RoundToInt(currentForce * playerDamageMultiplier * 2f);
+            
+            // Hacemos que el golpe fuerte quite el cuádruple de daño en vez del doble para que merezca la pena
+            int damageDealt = Mathf.RoundToInt(currentForce * playerDamageMultiplier * 4f);
 
             ShowDamagePopup(damageDealt, false);
 

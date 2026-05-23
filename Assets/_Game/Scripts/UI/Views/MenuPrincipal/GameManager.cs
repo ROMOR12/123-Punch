@@ -1,4 +1,4 @@
-﻿using NUnit.Framework;
+using NUnit.Framework;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -23,6 +23,7 @@ public class GameManager : MonoBehaviour
     public Sprite imageDefault;
 
     public List<BaseCharacter> listaPersonajes;
+    public List<EnemyBase> listaEnemigos;
 
     [Header("Inventario y Equipamiento (Firebase)")]
     public List<string> inventarioIDs = new List<string>();

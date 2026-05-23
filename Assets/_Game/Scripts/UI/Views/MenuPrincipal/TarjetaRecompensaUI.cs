@@ -15,7 +15,7 @@ public class TarjetaRecompensaUI : MonoBehaviour
 
     public void Configurar(RecompensaDiaria recompensa, Sprite spriteIcono, string nombreItem, bool yaReclamado, bool esDiaActual)
     {
-        if (txtDia != null) txtDia.text = $"DÃ­a {recompensa.dia}";
+        if (txtDia != null) txtDia.text = $"Día {recompensa.dia}";
         if (txtNombreItem != null) txtNombreItem.text = nombreItem;
         if (txtCantidad != null) txtCantidad.text = $"x{recompensa.cantidad}";
         if (icono != null && spriteIcono != null) icono.sprite = spriteIcono;

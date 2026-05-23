@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using UnityEngine;
 using System.Threading.Tasks;
 using System;
@@ -129,8 +129,23 @@ public class AchievementManager : MonoBehaviour
 
         if (!string.IsNullOrEmpty(currentLoadingUserId))
         {
-            // Trigger daily login when achievements are loaded for the user
-            GameEvents.TriggerDailyLogin();
+            if (SessionManager.shared != null && SessionManager.shared.currentUser != null)
+            {
+                var user = SessionManager.shared.currentUser;
+                DateTime lastLogDate = user.last_log.ToDateTime().Date;
+                bool esNuevoDia = lastLogDate < System.DateTime.UtcNow.Date;
+                
+                // Siempre actualizamos el last_log a la fecha exacta de ahora para tener el registro real
+                user.last_log = Timestamp.GetCurrentTimestamp();
+                UsuarioService uService = new UsuarioService();
+                _ = uService.ActualizarUsuario(user);
+                
+                // Pero solo lanzamos el evento diario si ha pasado un dÃ­a entero
+                if (esNuevoDia)
+                {
+                    GameEvents.TriggerDailyLogin();
+                }
+            }
         }
     }
 

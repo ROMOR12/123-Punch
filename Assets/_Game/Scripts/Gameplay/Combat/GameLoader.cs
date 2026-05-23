@@ -91,6 +91,15 @@ public class GameLoader : MonoBehaviour
             Enemy e = tareaEnemigo.Result;
             enemyBot.SobrescribirStatsDeFirebase(e.life, e.energy, e.force, e.recovery, e.name);
             playerCombat.ActualizarUIEnemigo(e.life, e.name);
+
+            // --- CAMBIAR LOS SPRITES DEL ENEMIGO ---
+            EnemyBase visualesEnemigo = GameManager.Instance.listaEnemigos.Find(p => p.id == idEnemigo);
+            if (visualesEnemigo != null)
+            {
+                enemyBot.CambiarVisualesEnemigo(visualesEnemigo);
+            }
+            // ---------------------------------------
+
             Debug.Log($"Stats del enemigo {e.name} inyectados correctamente.");
         }
     }

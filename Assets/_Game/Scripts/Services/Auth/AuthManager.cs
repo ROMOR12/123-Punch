@@ -15,6 +15,7 @@ public class AuthManager : MonoBehaviour
     public GameObject panelRegistroUI;
     public GameObject panelOlvidoUI;
     public GameObject panelVerificacionUI;
+    public GameObject panelInvitadoUI;
 
     [Header("--- UI LOGIN ---")]
     public TMP_InputField emailLoginInput;
@@ -28,6 +29,9 @@ public class AuthManager : MonoBehaviour
 
     [Header("--- UI OLVIDO ---")]
     public TMP_InputField emailOlvidoInput;
+
+    [Header("--- UI INVITADO ---")]
+    public TMP_InputField usernameInvitadoInput;
 
     [Header("--- FEEDBACK ---")]
     public TMP_Text feedbackText;
@@ -70,14 +74,10 @@ public class AuthManager : MonoBehaviour
                 FirebaseUser user = auth.CurrentUser;
         if (user != null)
         {
-            if (user.IsEmailVerified)
+            if (user.IsEmailVerified || user.IsAnonymous)
             {
-                // Cargar datos de forma as�ncrona antes de ir al juego
+                // Cargar datos de forma asíncrona antes de ir al juego
                 CargarDatosSesion(user.UserId);
-            }
-            else if (user.IsAnonymous)
-            {
-                irAlJuego = true; // Si es invitado, va directo
             }
             else
             {
@@ -134,12 +134,19 @@ public class AuthManager : MonoBehaviour
         panelOlvidoUI.SetActive(true); 
     }
 
+    public void IrAInvitado() 
+    { 
+        CerrarTodosPaneles(); 
+        if (panelInvitadoUI != null) panelInvitadoUI.SetActive(true); 
+    }
+
     public void CerrarTodosPaneles()
     {
-        panelLoginUI.SetActive(false);
-        panelRegistroUI.SetActive(false);
-        panelOlvidoUI.SetActive(false);
-        panelVerificacionUI.SetActive(false);
+        if (panelLoginUI != null) panelLoginUI.SetActive(false);
+        if (panelRegistroUI != null) panelRegistroUI.SetActive(false);
+        if (panelOlvidoUI != null) panelOlvidoUI.SetActive(false);
+        if (panelVerificacionUI != null) panelVerificacionUI.SetActive(false);
+        if (panelInvitadoUI != null) panelInvitadoUI.SetActive(false);
 
         LimpiarFeedback();
         LimpiarInputs();
@@ -156,6 +163,7 @@ public class AuthManager : MonoBehaviour
         if (passRegisterConfirmInput) passRegisterConfirmInput.text = "";
 
         if (emailOlvidoInput) emailOlvidoInput.text = "";
+        if (usernameInvitadoInput) usernameInvitadoInput.text = "";
     }
 
     void LimpiarFeedback() 
@@ -278,11 +286,60 @@ public class AuthManager : MonoBehaviour
         }
     }
 
-    public void LoginInvitado()
+    public async void LoginInvitado()
     {
-        feedbackText.text = "Entrando como invitado...";
-        // Entramos como usuario anonimo
-        auth.SignInAnonymouslyAsync().ContinueWith(task => { if (!task.IsFaulted) irAlJuego = true; });
+        string username = usernameInvitadoInput != null ? usernameInvitadoInput.text : "";
+        
+        if (string.IsNullOrEmpty(username))
+        {
+            if (feedbackText) feedbackText.text = "Por favor, escribe un nombre de usuario.";
+            return;
+        }
+        
+        if (username.Length < 3)
+        {
+            if (feedbackText) feedbackText.text = "El usuario debe tener mínimo 3 caracteres.";
+            return;
+        }
+
+        if (feedbackText) feedbackText.text = "Creando cuenta de invitado...";
+
+        try
+        {
+            // Entramos como usuario anonimo en Firebase Auth
+            AuthResult result = await auth.SignInAnonymouslyAsync();
+            FirebaseUser newUser = result.User;
+
+            if (newUser != null)
+            {
+                if (feedbackText) feedbackText.text = "Registrando perfil en la base de datos...";
+
+                // Intentamos insertar el usuario anónimo en Firestore
+                UsuarioService usuarioService = new UsuarioService();
+                
+                // Usamos un correo falso para que la BD no dé problemas de validación de nulos
+                string fakeEmail = "invitado_" + newUser.UserId.Substring(0, 5) + "@anon.com";
+                bool resultado = await usuarioService.NuevoUsuario(newUser.UserId, username, fakeEmail);
+
+                if (resultado)
+                {
+                    if (feedbackText) feedbackText.text = "¡Cuenta creada! Entrando al juego...";
+                    CargarDatosSesion(newUser.UserId);
+                }
+                else
+                {
+                    if (feedbackText) feedbackText.text = "Error al crear el perfil en la base de datos.";
+                }
+            }
+        }
+        catch (System.AggregateException e)
+        {
+            if (feedbackText) feedbackText.text = ObtenerMensajeError(e);
+        }
+        catch (System.Exception e)
+        {
+            if (feedbackText) feedbackText.text = e.Message;
+        }
     }
 
     public async void Registrarse()
