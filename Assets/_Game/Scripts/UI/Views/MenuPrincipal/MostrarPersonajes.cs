@@ -3,6 +3,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using System.Collections.Generic;
 
+// esta clase gestiona la visualizacion, compra y seleccion de los diferentes personajes del juego en la UI
 public class MostrarPersonajes : MonoBehaviour
 {
     private GameManager gameManager;
@@ -12,7 +13,7 @@ public class MostrarPersonajes : MonoBehaviour
     [SerializeField] private Image imagenSeleccionPersonaje;
     [SerializeField] private TextMeshProUGUI textoVida, textoStam, textoDanyo, textoRecuperacion, textoNombrePersonaje;
 
-    [Header("UI del BotÃ³n Seleccionar")]
+    [Header("UI del Botón Seleccionar")]
     [SerializeField] private Button botonSeleccionar;
     [SerializeField] private TextMeshProUGUI textoBotonSeleccionar;
     [SerializeField] private Color colorSeleccionado = new Color(0.5f, 0.5f, 0.5f);
@@ -24,8 +25,9 @@ public class MostrarPersonajes : MonoBehaviour
 
     private bool personajeActualDesbloqueado = false;
 
-    void Start()
+    private void Start()
     {
+        // esta funcion inicializa el gestor y recupera el ultimo personaje seleccionado para mostrarlo en pantalla
         gameManager = GameManager.Instance;
         if (botonSeleccionar != null) colorOriginalBoton = botonSeleccionar.image.color;
 
@@ -42,6 +44,7 @@ public class MostrarPersonajes : MonoBehaviour
 
     private async void ActualizarPersonaje()
     {
+        // esta funcion descarga los datos del personaje actual desde la cache o firebase y actualiza la interfaz
         var personajeLocal = gameManager.listaPersonajes[indicePersonajeSeleccionado];
 
         imagenSeleccionPersonaje.sprite = personajeLocal.sprite != null ? personajeLocal.sprite : gameManager.imageDefault;
@@ -133,7 +136,7 @@ public class MostrarPersonajes : MonoBehaviour
             }
         }
 
-        // Sincronizar con el panel de mejoras para evitar que se queden los costes del personaje anterior
+        // esta funcion sincroniza los datos del panel de mejoras con el nuevo personaje seleccionado
         PanelMejorasUI panelMejoras = Object.FindFirstObjectByType<PanelMejorasUI>();
         if (panelMejoras != null && panelMejoras.gameObject.activeInHierarchy)
         {
@@ -143,6 +146,7 @@ public class MostrarPersonajes : MonoBehaviour
 
     public async void SeleccionarPersonajeBoton()
     {
+        // esta funcion gestiona la seleccion o compra de un personaje al presionar el boton principal
         var personajeLocal = gameManager.listaPersonajes[indicePersonajeSeleccionado];
         string idElegido = personajeLocal.id;
 
@@ -195,6 +199,7 @@ public class MostrarPersonajes : MonoBehaviour
 
     private void ConfigurarBotonComoBloqueado(BaseCharacter personaje)
     {
+        // esta funcion configura el boton para comprar el personaje si esta bloqueado y requiere monedas
         if (botonSeleccionar == null || textoBotonSeleccionar == null) return;
 
         if (personaje.unlockCondition == "coins")
@@ -213,6 +218,7 @@ public class MostrarPersonajes : MonoBehaviour
 
     private void ConfigurarBotonComoSeleccionado(bool esSeleccionado)
     {
+        // esta funcion cambia el estado visual del boton entre seleccionado o disponible para seleccionar
         if (botonSeleccionar == null || textoBotonSeleccionar == null) return;
 
         if (esSeleccionado)
@@ -231,6 +237,7 @@ public class MostrarPersonajes : MonoBehaviour
 
     private void MostrarDatosEnPantalla(Personaje datos)
     {
+        // esta funcion rellena los campos de texto de la UI con los valores de estadisticas del personaje
         textoVida.text = datos.life.ToString();
         textoStam.text = datos.energy.ToString();
         textoDanyo.text = datos.force.ToString();
@@ -240,26 +247,28 @@ public class MostrarPersonajes : MonoBehaviour
 
     private void SetTextosCargando()
     {
+        // esta funcion coloca textos de carga mientras se descargan las estadisticas del personaje
         textoVida.text = "..."; textoStam.text = "..."; textoDanyo.text = "...";
         textoRecuperacion.text = "..."; textoNombrePersonaje.text = "Cargando...";
     }
 
     public void CambiarPersonajeBotonIzquierdo()
     {
+        // esta funcion cambia la visualizacion al personaje anterior de la lista
         indicePersonajeSeleccionado = (indicePersonajeSeleccionado == 0) ? gameManager.listaPersonajes.Count - 1 : indicePersonajeSeleccionado - 1;
         ActualizarPersonaje();
     }
 
     public void CambiarPersonajeBotonDerecho()
     {
+        // esta funcion cambia la visualizacion al siguiente personaje de la lista
         indicePersonajeSeleccionado = (indicePersonajeSeleccionado == gameManager.listaPersonajes.Count - 1) ? 0 : indicePersonajeSeleccionado + 1;
         ActualizarPersonaje();
     }
 
-
-    // Obtener el id del personaje que se esta mostrando actualmente.
     public string ObtenerIdPersonajeVisible()
     {
+        // esta funcion devuelve el identificador unico del personaje visible actualmente en el carrusel
         if (gameManager != null && gameManager.listaPersonajes != null && gameManager.listaPersonajes.Count > 0)
         {
             return gameManager.listaPersonajes[indicePersonajeSeleccionado].id;
@@ -269,6 +278,7 @@ public class MostrarPersonajes : MonoBehaviour
 
     public bool EstaPersonajeVisibleDesbloqueado()
     {
+        // esta funcion indica si el personaje visible en pantalla esta desbloqueado por el usuario
         return personajeActualDesbloqueado;
     }
 }

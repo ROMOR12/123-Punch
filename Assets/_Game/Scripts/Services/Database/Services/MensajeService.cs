@@ -3,9 +3,10 @@ using System;
 using System.Threading.Tasks;
 using UnityEngine;
 
+// esta clase gestiona los servicios de envio de mensajes al chat en la base de datos
 public class MensajeService : MonoBehaviour
 {
-
+    // esta funcion envia un nuevo mensaje de chat a la coleccion global de firebase firestore
     public async Task EnviarMensaje(string userId, string username, string texto)
     {
         try
@@ -27,6 +28,5 @@ public class MensajeService : MonoBehaviour
         {
             Console.WriteLine("Error al enviar mensaje a la BD");
         }
-
     }
 }

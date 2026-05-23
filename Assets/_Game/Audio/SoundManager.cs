@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System;
 
-// Catálogos cerrados con todos los sonidos. 
+// esta enumeracion define los diferentes tipos de efectos de sonido del juego
 public enum SoundType
 {
     HIT,
@@ -19,12 +19,13 @@ public enum SoundType
     Dodge
 }
 
+// esta enumeracion define los efectos de sonido de la interfaz de usuario
 public enum UiSoundType
 {
     CLICK
 }
 
-// Gestor central de audio.
+// esta clase gestiona los diferentes canales de audio y la reproduccion de musica y efectos en el juego
 [RequireComponent(typeof(AudioSource)), ExecuteInEditMode]
 public class SoundManager : MonoBehaviour
 {
@@ -33,23 +34,24 @@ public class SoundManager : MonoBehaviour
     [Range(0f, 1f)] public float sfxVolume = 1f;
 
     [Header("Configuración SFX(juego)")]
-    // Listas que se auto-rellenan basándose en los Enums de arriba
+    // esta variable almacena la lista de efectos de sonido del juego
     [SerializeField] private SoundList[] soundList;
 
     [Header("Configuracion Sonidos UI")]
+    // esta variable almacena la lista de sonidos exclusivos de la interfaz
     [SerializeField] private SoundList[] uiSoundList;
 
     [Header("Música de Fondo")]
     [SerializeField] private AudioSource musicSource;
     [SerializeField] private AudioClip BackgroundMusic;
 
-    // Patrón Singleton: Permite llamar al SoundManager desde cualquier script sin buscar referencias
+    // esta variable guarda la instancia unica del gestor para acceder desde otros scripts
     private static SoundManager instance;
     private AudioSource sfxSource;
 
     private void Awake()
     {
-        // Asegura que solo exista UN SoundManager en todo el juego
+        // esta funcion inicializa el patron singleton y carga la configuracion guardada del volumen
         if (instance != null && instance != this)
         {
             if (Application.isPlaying) Destroy(this.gameObject);
@@ -60,7 +62,7 @@ public class SoundManager : MonoBehaviour
 
         if (Application.isPlaying)
         {
-            DontDestroyOnLoad(this.gameObject); // Sobrevive al cambiar de escena
+            DontDestroyOnLoad(this.gameObject); // esta funcion hace que el gestor persista al cambiar de escena
             musicVolume = PlayerPrefs.GetFloat("MusicVolume", 0.5f);
             sfxVolume = PlayerPrefs.GetFloat("SFXVolume", 1f);
         }
@@ -68,11 +70,10 @@ public class SoundManager : MonoBehaviour
 
     private void Start()
     {
-        // Inicialización de seguridad para las listas
+        // esta funcion inicializa las referencias de los componentes de audio
         if (soundList == null) soundList = new SoundList[0];
         if (uiSoundList == null) uiSoundList = new SoundList[0];
 
-        // Autoconfiguración de los canales de audio (Efectos y Música)
         AudioSource[] allSources = GetComponents<AudioSource>();
 
         if (allSources.Length > 0)
@@ -106,7 +107,7 @@ public class SoundManager : MonoBehaviour
 
     private void Update()
     {
-        // Actualiza el volumen en tiempo real desde el inspector
+        // esta funcion actualiza los volumenes en tiempo real desde el inspector
         if (musicSource != null)
         {
             musicSource.volume = musicVolume;
@@ -124,7 +125,7 @@ public class SoundManager : MonoBehaviour
             PlayMusic(instance.BackgroundMusic);
     }
 
-    // Reproduce un efecto. Soporta delay asíncrono para sincronizar con animaciones
+    // esta funcion reproduce un efecto de sonido especifico con un retraso opcional
     public static async void PlaySound(SoundType sound, float delay = 0f)
     {
         if (instance == null || instance.soundList == null) return;
@@ -138,7 +139,7 @@ public class SoundManager : MonoBehaviour
         {
             SoundList soundItem = instance.soundList[(int)sound];
 
-            // Si hay varios clips para un mismo sonido, elige uno al azar para dar variedad
+            // esta funcion selecciona un clip aleatorio si hay varios configurados para evitar la repeticion
             if (soundItem.Sounds != null && soundItem.Sounds.Length > 0)
             {
                 AudioClip randomClip = soundItem.Sounds[UnityEngine.Random.Range(0, soundItem.Sounds.Length)];
@@ -148,23 +149,20 @@ public class SoundManager : MonoBehaviour
         }
     }
 
-    // Hace exactamente lo mismo que PlaySound, pero busca en la lista de sonidos de la Interfaz.
+    // esta funcion reproduce un sonido especifico de la interfaz de usuario
     public static void PlayUiSound(UiSoundType sound)
     {
         if (instance == null || instance.uiSoundList == null) return;
 
-        // Validación de índice
         if ((int)sound < instance.uiSoundList.Length)
         {
             SoundList soundItem = instance.uiSoundList[(int)sound];
 
-            // Reutiliza la función auxiliar para reproducir el clip
             PlayClipFromItem(soundItem);
         }
     }
 
-    // Método auxiliar para no repetir código.
-    // Recibe una lista de sonidos, elige uno al azar para dar variedad, y lo reproduce.
+    // esta funcion reproduce un clip de sonido aleatorio de una lista de sonidos dada
     private static void PlayClipFromItem(SoundList item)
     {
         if (item.Sounds != null && item.Sounds.Length > 0)
@@ -204,16 +202,15 @@ public class SoundManager : MonoBehaviour
         }
     }
 
-    // --- HERRAMIENTAS DE EDITOR ---
 #if UNITY_EDITOR
     private void OnEnable()
     {
-        // Al modificar el script, sincroniza el Inspector con los Enums
+        // esta funcion sincroniza las listas del inspector al modificar el script
         SyncList(ref soundList, typeof(SoundType));
         SyncList(ref uiSoundList, typeof(UiSoundType));
     }
 
-    // Redimensiona y nombra los arrays automáticamente basándose en los Enums
+    // esta funcion ajusta el tamano y nombre de las listas segun los tipos de enumerados
     private void SyncList(ref SoundList[] list, Type enumType)
     {
         string[] names = Enum.GetNames(enumType);
@@ -228,7 +225,7 @@ public class SoundManager : MonoBehaviour
 #endif
 }
 
-// Estructura auxiliar para poder agrupar un array de AudioClips bajo un mismo nombre en el Inspector
+// esta clase define una estructura de datos para agrupar clips de audio en el editor
 [Serializable]
 public class SoundList
 {

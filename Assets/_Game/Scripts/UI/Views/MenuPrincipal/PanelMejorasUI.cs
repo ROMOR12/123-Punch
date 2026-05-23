@@ -2,6 +2,7 @@ using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
 
+// esta clase controla la interfaz visual de mejoras, la simulacion del coste acumulado y la confirmacion en firebase
 public class PanelMejorasUI : MonoBehaviour
 {
     [Header("Referencias a Scripts")]
@@ -38,13 +39,14 @@ public class PanelMejorasUI : MonoBehaviour
 
     private void Start()
     {
+        // esta funcion inicializa el gestor de mejoras y descarga los datos actuales del personaje
         if (mejoraManager == null)
         {
             mejoraManager = FindFirstObjectByType<MejoraStatsManager>();
             if (mejoraManager == null)
             {
                 mejoraManager = gameObject.AddComponent<MejoraStatsManager>();
-                Debug.LogWarning("[PanelMejorasUI] No se encontrÃ³ MejoraStatsManager en la escena. Se ha creado e instanciado uno automÃ¡ticamente en este GameObject.");
+                Debug.LogWarning("[PanelMejorasUI] No se encontró MejoraStatsManager en la escena. Se ha creado e instanciado uno automáticamente en este GameObject.");
             }
         }
         estaInicializado = true;
@@ -53,6 +55,7 @@ public class PanelMejorasUI : MonoBehaviour
 
     private void OnEnable()
     {
+        // esta funcion recarga los datos del panel al activar el componente
         if (estaInicializado)
         {
             CargarDatosAutomaticamente();
@@ -61,12 +64,13 @@ public class PanelMejorasUI : MonoBehaviour
 
     public async void CargarDatosAutomaticamente()
     {
+        // esta funcion descarga los datos de las estadisticas del personaje y su estado de desbloqueo
         if (SessionManager.shared != null && SessionManager.shared.currentUser != null)
         {
             usuarioReal = SessionManager.shared.currentUser;
 
             string idPersonaje = GameManager.Instance.idPersonajeSeleccionado;
-            // Buscar personaje visible en la escena.
+            
             MostrarPersonajes mp = Object.FindFirstObjectByType<MostrarPersonajes>();
             if (mp != null) idPersonaje = mp.ObtenerIdPersonajeVisible();
 
@@ -78,7 +82,7 @@ public class PanelMejorasUI : MonoBehaviour
 
             if (personajeReal == null)
             {
-                Debug.LogWarning($"El personaje '{idPersonaje}' no estÃ¡ en la base de datos del usuario. Cargando stats base...");
+                Debug.LogWarning($"El personaje '{idPersonaje}' no está en la base de datos del usuario. Cargando stats base...");
                 PersonajeService pjServiceGlobal = new PersonajeService();
                 personajeReal = await pjServiceGlobal.ObtenerPersonaje(idPersonaje);
                 
@@ -102,25 +106,26 @@ public class PanelMejorasUI : MonoBehaviour
 
             if (personajeReal != null)
             {
-                Debug.Log($"Â¡Todo listo! Monedas: {usuarioReal.free_coin}, Nivel del personaje: {personajeReal.NivelTotal}");
+                Debug.Log($"Todo listo. Monedas: {usuarioReal.free_coin}, Nivel del personaje: {personajeReal.NivelTotal}");
                 ReiniciarCarrito();
             }
             else
             {
-                Debug.LogError($"Error: No se encontrÃ³ el personaje '{idPersonaje}' ni en el usuario ni en las stats base.");
+                Debug.LogError($"Error: No se encontró el personaje '{idPersonaje}' ni en el usuario ni en las stats base.");
             }
         }
         else
         {
-            Debug.LogError("Error: El SessionManager estÃ¡ vacÃ­o. Â¿Iniciaste sesiÃ³n desde la pantalla de Login?");
+            Debug.LogError("Error: El SessionManager está vacío.");
         }
     }
 
     public void AbrirPanel(Usuario user, Personaje pj)
     {
+        // esta funcion abre la ventana de mejoras asociando el usuario y personaje dados
         if (user == null || pj == null)
         {
-            Debug.LogError("¡ERROR! Le estas intentando pasar un usuario o personaje VACiO (null) al panel.");
+            Debug.LogError("Error: Se intenta abrir el panel con usuario o personaje nulos.");
             return;
         }
 
@@ -140,6 +145,7 @@ public class PanelMejorasUI : MonoBehaviour
 
     private void SimularMejora(StatType stat)
     {
+        // esta funcion simula la compra de una mejora incrementando el coste acumulado y el nivel del atributo temporal
         if (!estaDesbloqueado)
         {
             Debug.LogWarning("No puedes mejorar un personaje que esta bloqueado.");
@@ -148,18 +154,18 @@ public class PanelMejorasUI : MonoBehaviour
 
         if (usuarioReal == null || pjTemp == null)
         {
-            Debug.LogError("No puedes mejorar porque no se ha cargado ningÃºn usuario o personaje. Â¿Llamaste a AbrirPanel()?");
+            Debug.LogError("No puedes mejorar porque no se ha cargado ningún usuario o personaje.");
             return;
         }
 
         if (mejoraManager == null)
         {
-            Debug.LogError("Â¡Falta arrastrar el MejoraStatsManager al slot del Inspector!");
+            Debug.LogError("Falta la referencia a MejoraStatsManager.");
             return;
         }
 
         int costeProxNivel = mejoraManager.CalcularCoste(stat, pjTemp);
-        Debug.Log($"Intentando mejorar {stat}. Coste prÃ³ximo nivel: {costeProxNivel}. Monedas disponibles: {usuarioReal.free_coin - costeAcumulado}");
+        Debug.Log($"Intentando mejorar {stat}. Coste próximo nivel: {costeProxNivel}. Monedas disponibles: {usuarioReal.free_coin - costeAcumulado}");
 
         if (usuarioReal.free_coin >= (costeAcumulado + costeProxNivel))
         {
@@ -185,7 +191,7 @@ public class PanelMejorasUI : MonoBehaviour
                     break;
             }
 
-            Debug.Log($"SimulaciÃ³n de {stat} exitosa. Nuevo coste acumulado: {costeAcumulado}");
+            Debug.Log($"Simulación de {stat} exitosa. Nuevo coste acumulado: {costeAcumulado}");
             ActualizarTextos();
         }
         else
@@ -196,6 +202,7 @@ public class PanelMejorasUI : MonoBehaviour
 
     public async void BotonConfirmar()
     {
+        // esta funcion aplica de forma definitiva las mejoras en la base de datos y descuenta las monedas del usuario
         if (costeAcumulado == 0)
         {
             Debug.Log("No hay ninguna mejora en el carrito para confirmar.");
@@ -216,7 +223,7 @@ public class PanelMejorasUI : MonoBehaviour
 
         if (userOk && personajeOk)
         {
-            Debug.Log("Â¡Firebase actualizado correctamente!");
+            Debug.Log("Firebase actualizado correctamente.");
             personajeReal = pjTemp;
             ReiniciarCarrito();
         }
@@ -233,12 +240,14 @@ public class PanelMejorasUI : MonoBehaviour
 
     public void BotonDescartar()
     {
+        // esta funcion cancela las mejoras seleccionadas y limpia el carro de compra simulado
         Debug.Log("Mejoras descartadas por el usuario.");
         ReiniciarCarrito();
     }
 
     private void ReiniciarCarrito()
     {
+        // esta funcion reestablece los valores de las estadisticas y costes acumulados al estado inicial
         costeAcumulado = 0;
 
         pjTemp = new Personaje
@@ -260,9 +269,10 @@ public class PanelMejorasUI : MonoBehaviour
 
     private void ActualizarTextos()
     {
+        // esta funcion refresca los textos del panel y colorea de verde los atributos aumentados o de rojo si no hay fondos
         if (txtVida == null || txtEnergia == null || txtFuerza == null || txtRecuperacion == null || txtMonedasJugador == null || txtCosteTotal == null)
         {
-            Debug.LogError("Â¡ERROR GRAVE! Te has olvidado de arrastrar uno o varios Textos (TextMeshPro) al Inspector del script.");
+            Debug.LogError("Error: Faltan referencias a componentes TextMeshProUGUI en el inspector.");
             return;
         }
 
