@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
 
@@ -34,6 +34,7 @@ public class PanelMejorasUI : MonoBehaviour
     private int costeAcumulado = 0;
 
     private bool estaInicializado = false;
+    private bool estaDesbloqueado = false;
 
     private void Start()
     {
@@ -65,6 +66,9 @@ public class PanelMejorasUI : MonoBehaviour
             usuarioReal = SessionManager.shared.currentUser;
 
             string idPersonaje = GameManager.Instance.idPersonajeSeleccionado;
+            // Buscar personaje visible en la escena.
+            MostrarPersonajes mp = Object.FindFirstObjectByType<MostrarPersonajes>();
+            if (mp != null) idPersonaje = mp.ObtenerIdPersonajeVisible();
 
             Debug.Log($"Usuario {usuarioReal.username} encontrado. Descargando stats de {idPersonaje}...");
 
@@ -84,6 +88,16 @@ public class PanelMejorasUI : MonoBehaviour
                 {
                     personajeReal.id = idPersonaje;
                 }
+            }
+
+            estaDesbloqueado = false;
+            if (mp != null)
+            {
+                estaDesbloqueado = mp.EstaPersonajeVisibleDesbloqueado();
+            }
+            else if (personajeReal != null && idPersonaje.Equals("personaje_james", System.StringComparison.OrdinalIgnoreCase))
+            {
+                estaDesbloqueado = true;
             }
 
             if (personajeReal != null)
@@ -106,7 +120,7 @@ public class PanelMejorasUI : MonoBehaviour
     {
         if (user == null || pj == null)
         {
-            Debug.LogError("Â¡ERROR! Le estÃ¡s intentando pasar un usuario o personaje VACÃO (null) al panel.");
+            Debug.LogError("¡ERROR! Le estas intentando pasar un usuario o personaje VACiO (null) al panel.");
             return;
         }
 
@@ -126,6 +140,12 @@ public class PanelMejorasUI : MonoBehaviour
 
     private void SimularMejora(StatType stat)
     {
+        if (!estaDesbloqueado)
+        {
+            Debug.LogWarning("No puedes mejorar un personaje que esta bloqueado.");
+            return;
+        }
+
         if (usuarioReal == null || pjTemp == null)
         {
             Debug.LogError("No puedes mejorar porque no se ha cargado ningÃºn usuario o personaje. Â¿Llamaste a AbrirPanel()?");
@@ -260,10 +280,32 @@ public class PanelMejorasUI : MonoBehaviour
 
         txtMonedasJugador.text = usuarioReal.free_coin.ToString();
 
-        if (txtCosteVidaProx != null && mejoraManager != null) txtCosteVidaProx.text = mejoraManager.CalcularCoste(StatType.Life, pjTemp).ToString();
-        if (txtCosteEnergiaProx != null && mejoraManager != null) txtCosteEnergiaProx.text = mejoraManager.CalcularCoste(StatType.Energy, pjTemp).ToString();
-        if (txtCosteFuerzaProx != null && mejoraManager != null) txtCosteFuerzaProx.text = mejoraManager.CalcularCoste(StatType.Force, pjTemp).ToString();
-        if (txtCosteRecuperacionProx != null && mejoraManager != null) txtCosteRecuperacionProx.text = mejoraManager.CalcularCoste(StatType.Recovery, pjTemp).ToString();
+        int monedasDisponibles = usuarioReal.free_coin - costeAcumulado;
+
+        if (txtCosteVidaProx != null && mejoraManager != null) 
+        {
+            int cost = mejoraManager.CalcularCoste(StatType.Life, pjTemp);
+            txtCosteVidaProx.text = cost.ToString();
+            txtCosteVidaProx.color = monedasDisponibles >= cost ? Color.white : Color.red;
+        }
+        if (txtCosteEnergiaProx != null && mejoraManager != null) 
+        {
+            int cost = mejoraManager.CalcularCoste(StatType.Energy, pjTemp);
+            txtCosteEnergiaProx.text = cost.ToString();
+            txtCosteEnergiaProx.color = monedasDisponibles >= cost ? Color.white : Color.red;
+        }
+        if (txtCosteFuerzaProx != null && mejoraManager != null) 
+        {
+            int cost = mejoraManager.CalcularCoste(StatType.Force, pjTemp);
+            txtCosteFuerzaProx.text = cost.ToString();
+            txtCosteFuerzaProx.color = monedasDisponibles >= cost ? Color.white : Color.red;
+        }
+        if (txtCosteRecuperacionProx != null && mejoraManager != null) 
+        {
+            int cost = mejoraManager.CalcularCoste(StatType.Recovery, pjTemp);
+            txtCosteRecuperacionProx.text = cost.ToString();
+            txtCosteRecuperacionProx.color = monedasDisponibles >= cost ? Color.white : Color.red;
+        }
 
         if (costeAcumulado > 0)
         {
