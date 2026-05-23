@@ -11,7 +11,6 @@ public class ChatMessageUI : MonoBehaviour
 
         Debug.Log(usernameText);
         Debug.Log(messageText);
-        Debug.Log("Prueba de mensaje seteado");
 
 
 
