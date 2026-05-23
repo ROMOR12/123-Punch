@@ -16823,7 +16823,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::GameLoader
   playerCombat: {fileID: 284555278}
   enemyBot: {fileID: 1810799658}
-  idEnemigo: bot_1
+  idEnemigo: bot_2
 --- !u!1 &462762814
 GameObject:
   m_ObjectHideFlags: 0
@@ -26951,6 +26951,7 @@ MonoBehaviour:
   pantallaVictoriaFinal: {fileID: 1464653009674788787, guid: 8bd04d6de789b024aa9babbbdc3288d1, type: 3}
   pantallaDerrotaFinal: {fileID: 1464653009674788787, guid: 8bd04d6de789b024aa9babbbdc3288d1, type: 3}
   pantallaResultados: {fileID: 594022308}
+  numeroNivelActual: 2
 --- !u!1 &1899917613
 GameObject:
   m_ObjectHideFlags: 0

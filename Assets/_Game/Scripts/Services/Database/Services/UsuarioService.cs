@@ -196,4 +196,22 @@ public class UsuarioService
         }
     }
 
+    public async Task ActualizarNivelUsuario(string idUsuario, int nuevoNivel)
+    {
+        try
+        {
+            FirebaseFirestore db = FirebaseFirestore.DefaultInstance;
+
+            DocumentReference userRef = db.Collection("usuarios").Document(idUsuario);
+
+            await userRef.UpdateAsync("id_level", nuevoNivel);
+
+            Debug.Log($"[Firebase] id_level actualizado con éxito a {nuevoNivel} en la BD.");
+        }
+        catch (System.Exception e)
+        {
+            Debug.LogError($"[Firebase] Error al actualizar id_level: {e.Message}");
+        }
+    }
+
 }

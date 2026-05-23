@@ -16921,7 +16921,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::GameLoader
   playerCombat: {fileID: 284555278}
   enemyBot: {fileID: 1810799658}
-  idEnemigo: bot_1
+  idEnemigo: bot_5
 --- !u!1 &462762814
 GameObject:
   m_ObjectHideFlags: 0
@@ -17877,7 +17877,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 1496230876274797527, guid: fb653ec19f132ac4b993173e9fface06, type: 3}
+  m_Sprite: {fileID: -6023118156441580722, guid: ff7e9720fc83d894bb2306ffa3d65cfb, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -26352,7 +26352,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 1
-  m_Sprite: {fileID: 4512495917946458344, guid: b82e09c4faf2aae4d9b57f07241e85ba, type: 3}
+  m_Sprite: {fileID: 7314102719650294899, guid: bd1b608301b1e7a4cb4c508800950a0c, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -26391,7 +26391,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1145e3dbe29e9644c978a1ffd69e17e0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyBot
-  enemyData: {fileID: 11400000, guid: 2be882280fe9d5641b942bad16622cf1, type: 2}
+  enemyData: {fileID: 11400000, guid: 4bdda718835159240aa65d15467d27c0, type: 2}
   spriteRenderer: {fileID: 1810799656}
   playerCombat: {fileID: 284555278}
   minWaitTime: 2
@@ -26955,6 +26955,7 @@ MonoBehaviour:
   pantallaVictoriaFinal: {fileID: 1464653009674788787, guid: 8bd04d6de789b024aa9babbbdc3288d1, type: 3}
   pantallaDerrotaFinal: {fileID: 1464653009674788787, guid: 8bd04d6de789b024aa9babbbdc3288d1, type: 3}
   pantallaResultados: {fileID: 594022308}
+  numeroNivelActual: 5
 --- !u!1 &1899917613
 GameObject:
   m_ObjectHideFlags: 0

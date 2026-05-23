@@ -23,6 +23,9 @@ public class RoundManager : MonoBehaviour
     public ResultScreenUI pantallaResultados;
     private float tiempoInicioCombate;
 
+    [Header("ProgresoNivel")]
+    public int numeroNivelActual = 1;
+
     private int victoriasJugador = 0;
     private int victoriasEnemigo = 0;
     private int rondaActual = 0;
@@ -109,6 +112,11 @@ public class RoundManager : MonoBehaviour
 
             // Trigger que salta cuando el jugador gana, para los logros
             GameEvents.TriggerFightWon();
+
+            if (GameManager.Instance != null)
+            {
+                GameManager.Instance.DesbloquearSiguienteNivel(numeroNivelActual);
+            }
 
             if (pantallaResultados != null)
             {
