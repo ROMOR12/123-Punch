@@ -1,5 +1,9 @@
 ## Miembros del equipo
 David Santos Requena
+Roberto Ortuño Morcillo
+Nicolás Martínez López
+Miguel Torregrosa López
+Saúl Cánovas Navarro 
 
 ## Descripción del Proyecto
 **123-Punch** Es un videojuego desarrollado en Unity. Se trata de un juego interactivo con mecánicas que involucran combates (vs Bot y modo Historia) y funcionalidades sociales como un chat global gestionado a través de bases de datos. El juego cuenta con sistemas de personajes, menús interactivos, chat en tiempo real, combates y estadísticas de jugadores.
