@@ -776,7 +776,13 @@ public class CombatController : MonoBehaviour
 
         transformDeLaFoto.rotation = rotacionFinal;
 
-        if (roundManager != null)
+        // Cambiamos para diferenciar el Rey del Ring con el roundManager
+
+        if (ReyDelRingManager.Instance != null && ReyDelRingManager.Instance.IsModoActivo)
+        {
+            ReyDelRingManager.Instance.AlMorirJugador();
+        }
+        else if (roundManager != null)
         {
             roundManager.RegistrarFinDeRonda(false);
         }
@@ -855,6 +861,14 @@ public class CombatController : MonoBehaviour
         victory = true;
         SoundManager.StopMusic();
 
+        // excepción para el modo rey del ring
+
+        if (ReyDelRingManager.Instance != null && ReyDelRingManager.Instance.IsModoActivo)
+        {
+            ReyDelRingManager.Instance.AlDerrotarEnemigo();
+            return; 
+        }
+
         if (roundManager != null) roundManager.RegistrarFinDeRonda(true);
     }
 
@@ -929,7 +943,6 @@ public class CombatController : MonoBehaviour
         }
     }
 
-    // Añade esto al final de CombatController.cs
     public void CambiarVisualesPersonaje(BaseCharacter nuevosVisuales)
     {
         // Actualizamos la referencia al ScriptableObject
@@ -948,5 +961,18 @@ public class CombatController : MonoBehaviour
         }
 
         Debug.Log($"¡Visuales cambiados a: {playerData.entityName}!");
+    }
+
+    // Lógica para que aparezca el siguiente enemigo en el Rey del Ring
+    public void SiguienteEnemigoReyDelRing(EnemyBot nuevoEnemigo)
+    {
+        victory = false;
+        currentEnemy = nuevoEnemigo;
+
+        if (nuevoEnemigo != null)
+        {
+            // Actualizamos los datos del enemigo
+            ActualizarUIEnemigo((int)nuevoEnemigo.enemyData.life, nuevoEnemigo.enemyData.name);
+        }
     }
 }
