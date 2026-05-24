@@ -1,0 +1,16 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0d286d4811116714092929e27ca6e650, type: 3}
+  m_Name: ReyDelRing
+  m_EditorClassIdentifier: Assembly-CSharp::ModosDeJuego
+  Imagen: {fileID: 3671641484738450144, guid: 53735d87a384fdb40b617db805383cef, type: 3}
+  Nombre: Rey del Ring

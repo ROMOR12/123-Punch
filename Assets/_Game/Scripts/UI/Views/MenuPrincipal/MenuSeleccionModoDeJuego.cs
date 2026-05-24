@@ -84,6 +84,10 @@ public class Menu : MonoBehaviour
             case "Simon dice":
                 escena = "SimonMain";
                 break;
+
+            case "Rey del Ring":
+                escena = "ReyDelRingCombat";
+                break;
         }
         CargaEscena.Cargar(escena);
     }
